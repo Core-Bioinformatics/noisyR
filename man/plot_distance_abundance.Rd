@@ -54,5 +54,10 @@ A list of all the plots (returned silently), which are also plotted to the conso
         or specified pdf file
 }
 \description{
-Creates the abundance-distance line and box plots for each sample
+Creates the abundance-distance line and box plots for each sample.
+}
+\examples{
+plot_distance_abundance(
+  abn.matrix=matrix(2^(10*seq(0,1,length.out=100))),
+  dist.matrix=matrix(seq(0,1,length.out=100)+(runif(100)/5)))
 }

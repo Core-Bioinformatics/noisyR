@@ -1,7 +1,7 @@
 #' Function to remove the noisy reads from the expression matrix
-#' @description This function is used to remove the noisy reads from the expression matrix;
-#' it uses as input a vector of abundance thresholds;
-#' all entries below the noise threshold are replaced with the noise threshold
+#' @description This function is used to remove the noisy reads from the expression matrix.
+#' It uses as input a vector of abundance thresholds;
+#' all entries below the noise threshold are replaced with the noise threshold.
 #' @param expression.matrix the expression matrix
 #' @param abn.thresh a vector of abundance thresholds; must be the same length
 #' as the number of columns of the expression matrix
@@ -16,7 +16,9 @@
 #' @return Returns a matrix of the same dims as the expression matrix,  with the noise removed.
 #' This matrix has no entries remaining below the noise threshold.
 #' @export
-#' @examples
+#' @examples remove_noise_matrix(
+#'     expression.matrix = matrix(1:100, ncol=5),
+#'     abn.thresh=c(5,30,45,62,83))
 remove_noise_matrix <- function(expression.matrix, abn.thresh,
                                 add.thresh=TRUE, average.thresh=TRUE,
                                 remove.noisy.features=TRUE, export.csv=NULL){

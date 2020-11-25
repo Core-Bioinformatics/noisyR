@@ -1,6 +1,6 @@
 #' Function to extract exon names and positions from a gtf file
 #' @description This function is used to extract all exons and their positions
-#' in the genome from an inoput gtf file
+#' in the genome from an input gtf file.
 #' @param filename path to the gtf file
 #' @return Returns a tibble of the ids, names, chromosomes, start and end positions
 #' of each exon found in the gtf file. If refGenome is installed, that is used
@@ -8,22 +8,7 @@
 #' @export
 #' @examples
 cast_gtf_to_genes = function(filename){
-  if(require(refGenome)){
-    dir <- getwd()
-    setwd(dirname(filename))
-    gtf <- refGenome::ensemblGenome()
-    refGenome::read.gtf(object=gtf,
-                        filename=basename(filename))
-    setwd(dir)
-    if(!base::is.null(gtf@ev$genes)){
-      genes <- gtf@ev$genes
-    }else{
-      genes <- gtf@ev$gtf
-    }
-    genes <- tibble::as_tibble(genes)
-  }else{
-    base::message("Package refGenome not installed, reading manually...")
-    genes <- tibble::as_tibble(utils::read.table(filename,
+  genes <- tibble::as_tibble(utils::read.table(filename,
                                                  sep="\t",
                                                  stringsAsFactors = FALSE)) %>%
       tibble::rowid_to_column(var="id")
@@ -41,12 +26,12 @@ cast_gtf_to_genes = function(filename){
       }else{
         return(NA)}
     }
+    feature=NULL; id=NULL; gene_id=NULL; seqid=NULL; start=NULL; end=NULL
     genes <- genes %>% dplyr::filter(feature=="exon")
     genes <- genes %>% dplyr::mutate(
       gene_id = base::unlist(base::lapply(genes$attributes,
                                           extract_attributes,
                                           "gene_id")))
-  }
   genes <- genes %>%
     dplyr::select(id, gene_id, seqid, start, end)
   return(genes)

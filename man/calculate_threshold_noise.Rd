@@ -6,8 +6,8 @@
 \usage{
 calculate_threshold_noise(
   expression.matrix,
-  dist.matrix = NULL,
   abn.matrix = NULL,
+  dist.matrix = NULL,
   dist.thresh = 0.25,
   binsize = 0.1,
   dump.stats = NULL,
@@ -17,9 +17,12 @@ calculate_threshold_noise(
 \arguments{
 \item{expression.matrix}{expression matrix, should be the one used in calculate_distance_matrices()}
 
-\item{dist.matrix, abn.matrix}{the input distance and abundance matrices as calculated by
+\item{abn.matrix, dist.matrix}{the input distance and abundance matrices as calculated by
 calculate_distance_matrices(); if either is not supplied, only a fixed threshold is
 calculated based on the density}
+
+\item{dist.thresh}{correlation threshold to be used to find corresponding abundance threshold.
+The default, 0.25 is usually suitable for the Pearson correlation (the default method)}
 
 \item{binsize}{size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)}
 
@@ -29,9 +32,6 @@ calculated based on the density}
 must be one of get_methods_calculate_noise_threshold();
 if set, it skips all other methods; this is meant for speed, to be used internally or if rerunning
 an analysis and is not recommended as a first approach.}
-
-\item{dist.thr}{correlation threshold to be used to find corresponding abundance threshold.
-The default, 0.25 is usually suitable for the Pearson correlation (the default method)}
 }
 \value{
 Normal output is a tibble containing information on thresholds calculated using different
@@ -44,4 +44,12 @@ the same length as the number of columns in the expression matrix.
 This function is used to calculate the noise threshold for a given expression matrix.
 It uses as input a distance matrix and the corresponding abundance matrix.
 A variety of methods are available to obtain an abundance threshold using an input distance threshold.
+}
+\examples{
+obj <- calculate_distance_matrices_counts(
+    expression.matrix = matrix(1:100, ncol=5),
+    method="correlation_pearson",
+    n.elements.per.window=3)
+calculate_threshold_noise(obj$exp, obj$abn, obj$dist,
+    method.chosen="Boxplot-IQR")
 }

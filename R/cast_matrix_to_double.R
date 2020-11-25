@@ -1,5 +1,6 @@
-#' Casts a matrix of any type to double
-#' to make it compatible with the rest of the functions
+#' Cast a matrix of any type to double
+#' @description Transforms values in the expression matrix to double,
+#' to make it compatible with the rest of the functions.
 #' @param expression.matrix The expression matrix (usually read from a file)
 #' @return The expression matrix transformed to double, preserving row and column names
 #' @export

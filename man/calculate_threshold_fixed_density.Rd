@@ -27,7 +27,8 @@ The function outputs a single value corresponding to the median of the minima ca
 for each column of the matrix. floor() is taken as a conservative estimate
 }
 \description{
-This function is used to estimate the first local minimum of the density of a vector.
+This function is used to estimate the first local minimum of the
+density of a vector.
 It is meant to be used on the distribution of abundances of genes in a sample;
 since the distribution tails off, finding the global minimum is not appropriate.
 The plot option can be used to visualise the pprocess.

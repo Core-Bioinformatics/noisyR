@@ -16,5 +16,5 @@ for the reading and is faster, otherwise the gtf is read manually with a warning
 }
 \description{
 This function is used to extract all exons and their positions
-in the genome from an inoput gtf file
+in the genome from an inoput gtf file.
 }

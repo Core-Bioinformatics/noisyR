@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimise_window_length.R
 \name{optimise_window_length}
 \alias{optimise_window_length}
-\title{Calcualte the distance matrices using the count matrix}
+\title{Optimise the elements per window for the count matrix approach}
 \usage{
 optimise_window_length(
   expression.matrix,
@@ -22,22 +22,29 @@ optimise_window_length(
 defaults to pearson correlation; list of all methods in
 get_methods_correlation_distance()}
 
+\item{winlen.min, winlen.max, winlen.by}{definition of the parameter search space}
+
 \item{nstep.frac}{an alternative way to specify the step size, as a fraction of
-the window length; default is 5%}
+the window length; default is 5\%}
 
-\item{n.elements.per.window}{number of elements to have in a window,
-default 10\% of the number of rows}
+\item{iternum}{number of iterations for the subsampling and calculation of JSE;
+subsampling is needed because shorter windows have fewer points}
 
-\item{nstep}{step size to slide across, default 1\% of n.elements.per.window}
+\item{save.plot}{name of the pdf in which to print the output plot
+showing the distribution of JSE by window}
 }
 \value{
 A single value of the optimal number of elements per window
 }
 \description{
-This function generates an average correlation/distance coefficient
-for every sliding window, for each sample in the expression matrix.
-That is done by comparing the distribution of genes in each window across samples
+This function optimises the number of elements per window
+that is used in calculate_distance_matrices_counts(), by requiring
+the distribution of correlations/distances to stabilise to a
+uniform distribution. The Jensen-Shannon divergence is used to assess
+the stability.
 }
 \examples{
-
+optimise_window_length(
+matrix(1:100+runif(100), ncol=5, byrow=TRUE),
+  winlen.min=3, winlen.max=5, iternum=5)
 }

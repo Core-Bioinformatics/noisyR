@@ -1,5 +1,6 @@
 #' Function to find the first local minimum of the density of a vector
-#' @description This function is used to estimate the first local minimum of the density of a vector.
+#' @description This function is used to estimate the first local minimum of the
+#' density of a vector.
 #' It is meant to be used on the distribution of abundances of genes in a sample;
 #' since the distribution tails off, finding the global minimum is not appropriate.
 #' The plot option can be used to visualise the pprocess.
@@ -35,6 +36,7 @@ calculate_threshold_fixed_density = function(mat, log.transform=TRUE, adjust=2, 
     secondmax <- xmain[ymain==base::max(ymain)]
     firstmin <- xmain[ymain==base::min(ymain[xmain<secondmax])]
     if(makeplots){
+      x=NULL; y=NULL
       print(ggplot2::ggplot(data=base::data.frame("x"=dens$x, "y"=dens$y)) +
               ggplot2::geom_line(mapping=ggplot2::aes(x=x, y=y)) +
               ggplot2::geom_vline(xintercept=firstmin, color="blue"))

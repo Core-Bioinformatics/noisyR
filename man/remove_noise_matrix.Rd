@@ -36,7 +36,12 @@ Returns a matrix of the same dims as the expression matrix,  with the noise remo
 This matrix has no entries remaining below the noise threshold.
 }
 \description{
-This function is used to remove the noisy reads from the expression matrix;
-it uses as input a vector of abundance thresholds;
-all entries below the noise threshold are replaced with the noise threshold
+This function is used to remove the noisy reads from the expression matrix.
+It uses as input a vector of abundance thresholds;
+all entries below the noise threshold are replaced with the noise threshold.
+}
+\examples{
+remove_noise_matrix(
+    expression.matrix = matrix(1:100, ncol=5),
+    abn.thresh=c(5,30,45,62,83))
 }

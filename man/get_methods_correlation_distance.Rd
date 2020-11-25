@@ -16,9 +16,9 @@ if names=FALSE, a vector of types (similarity/dissimilarity measure) of the same
 }
 \description{
 This function outputs the methods available for the calculation of
-the correlation or distance; the standard correlation methods use stats::cor and
-a wide variety of distance methods are available using the philentropy package;
-to be used as input in calculate_distance_matrices_*()
+the correlation or distance. The standard correlation methods use stats::cor and
+a wide variety of distance methods are available using the philentropy package.
+To be used as input in calculate_distance_matrices_*().
 }
 \examples{
 get_methods_correlation_distance()

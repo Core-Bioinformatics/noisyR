@@ -11,7 +11,7 @@ A character vector of options for the method arguement of calculate_threshold_no
 }
 \description{
 This function outputs the methods available for the calculation of
-the noise threshold; to be used as input in calculate_threshold_noise()
+the noise threshold. To be used as input in calculate_threshold_noise().
 }
 \examples{
 get_methods_calculate_noise_threshold()

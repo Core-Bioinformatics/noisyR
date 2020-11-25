@@ -3,18 +3,21 @@ Type: Package
 Title: Noise Quantification in High Throughput Sequencing Output
 Version: 0.1.0
 Authors@R: c(
-            person("name", "surname", , "im383@cam.ac.uk", c("aut", "cre")),
+            person("Ilias", "Moutsopoulos", , "im383@cam.ac.uk", c("aut", "cre")),
             person("Irina", "Mohorianu", , "iim22@cam.ac.uk", role = c("aut","ctb")),
             person("Hajk-Georg", "Drost", , "hajk-georg.drost@tuebingen.mpg.de", role="ctb")
             )
 Maintainer: Ilias Moutsopoulos <im383@cam.ac.uk>
-Description: Noise Quantification in
-     High Throughput Sequencing Output
+Description: Quantifies and removes technical noise from high-throughput 
+        sequencing data. Two approaches are used, one based on the count
+        matrix, and one using the alignment BAM files directly.
+        Contains several options for every step of the process, as well
+        as tools to quality check and assess the stability of output.
 Depends: R (>= 3.1.2)
 Imports: utils, grDevices, tibble, dplyr, tidyr, magrittr, ggplot2, RColorBrewer,
         preprocessCore, matrixStats, IRanges, GenomicRanges, Rsamtools,
-        philentropy
-Suggests: testthat, roxygen2, refGenome, doParallel, foreach
+        philentropy, doParallel, foreach
+Suggests: testthat, roxygen2, refGenome
 License: GPL-2
 Encoding: UTF-8
 LazyData: true

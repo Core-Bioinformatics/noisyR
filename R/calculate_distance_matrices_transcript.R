@@ -56,6 +56,7 @@ calculate_distance_matrices_transcript <- function(
   if(base::is.null(bams)){
     bams <- base::list.files(path.bams, pattern=".bam$", full.names=TRUE)
   }
+  if(base::length(bams)<2) base::stop("Please provide at least 2 BAM files")
   for(j in 1:base::length(bams)){
     bamIndex <- base::paste0(bams[j], ".bai")
     if(!base::file.exists(bamIndex)){
@@ -72,6 +73,7 @@ calculate_distance_matrices_transcript <- function(
     genes <- noisyr::cast_gtf_to_genes(path.gtf)
     base::message("Done")
   }
+  if(base::nrow(genes)<2) base::stop("Please provide at least 2 genes")
   if(!base::is.null(expression.matrix)){
     genes.subset <- genes[base::match(base::rownames(expression.matrix),
                                       genes$gene_id),]
@@ -102,7 +104,7 @@ calculate_distance_matrices_transcript <- function(
                            ncol=base::length(bams))
   base::message("Calculating distances...")
   start_time <- base::Sys.time()
-  if(ncores>1 & require(doParallel)){
+  if(ncores>1){
     doParallel::registerDoParallel(cores=ncores)
     dist.exp.mats <- foreach::foreach(
       n=1:ngenes,
@@ -114,8 +116,6 @@ calculate_distance_matrices_transcript <- function(
                                          mapq.unique=mapq.unique,
                                          slack=slack)
         profile <- obj$profile
-
-
         cors <- stats::cor(base::unname(profile), method=base.method)
         cors[cors==1] = NA
         avCors <- base::colMeans(cors, na.rm=TRUE)
@@ -133,7 +133,6 @@ calculate_distance_matrices_transcript <- function(
       dist.exp.mats[, (base::length(bams)+1):(2*base::length(bams))]
 
   }else{
-    if(ncores>1) message("doParallel not installed, reverting to sequential execution...")
     for(n in 1:ngenes){
       obj <- noisyr::calculate_profile(gene=genes.subset[n,],
                                        bams=bams,

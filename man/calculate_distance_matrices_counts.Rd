@@ -25,7 +25,7 @@ default 10\% of the number of rows}
 \item{nstep}{step size to slide across, default 1\% of n.elements.per.window}
 
 \item{nstep.frac}{an alternative way to specify the step size, as a fraction of
-the window length; default is 5%}
+the window length; default is 5\%}
 }
 \value{
 A list with three elements: the first element is the expression matrix,
@@ -36,10 +36,11 @@ A list with three elements: the first element is the expression matrix,
 \description{
 This function generates an average correlation/distance coefficient
 for every sliding window, for each sample in the expression matrix.
-That is done by comparing the distribution of genes in each window across samples
+That is done by comparing the distribution of genes in each window across samples.
 }
 \examples{
 calculate_distance_matrices_counts(
     expression.matrix = matrix(1:100, ncol=5),
-    method="correlation_pearson")
+    method="correlation_pearson",
+    n.elements.per.window=3)
 }

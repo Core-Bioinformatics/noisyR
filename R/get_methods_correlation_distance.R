@@ -1,8 +1,8 @@
 #' Show the methods for calculating correlation or distance
 #' @description This function outputs the methods available for the calculation of
-#' the correlation or distance; the standard correlation methods use stats::cor and
-#' a wide variety of distance methods are available using the philentropy package;
-#' to be used as input in calculate_distance_matrices_*()
+#' the correlation or distance. The standard correlation methods use stats::cor and
+#' a wide variety of distance methods are available using the philentropy package.
+#' To be used as input in calculate_distance_matrices_*().
 #' @param names whether to output names (default) or characterisation
 #' as similarity or dissimilarity (used internally to invert dissimilarity measures)
 #' @return A character vector of options for the method arguement of calculate_distance_matrices_*();

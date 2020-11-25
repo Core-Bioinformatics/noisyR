@@ -7,7 +7,7 @@
 #' must be one of get_methods_calculate_noise_threshold()
 #' @param stats.df a tibble, as output by calculate_threshold_noise();
 #' if supplied and the chosen method appears in it, the corresponding threshold is used directly.
-#' @param dist.matrix,abn.matrix the input distance and abundance matrices as calculated by
+#' @param abn.matrix,dist.matrix the input distance and abundance matrices as calculated by
 #' calculate_distance_matrices(); only needed if stats.df is not supplied;
 #' if either is not supplied, only a fixed threshold is
 #' calculated based on the density
@@ -26,11 +26,18 @@
 #' using the specified method.
 #' All entries below the noise threshold are replaced with the noise threshold.
 #' @export
-#' @examples
+#' @examples obj <- calculate_distance_matrices_counts(
+#'     expression.matrix = matrix(1:100, ncol=5),
+#'     method="correlation_pearson",
+#'     n.elements.per.window=3)
+#' remove_noise_method(
+#'     expression.matrix=obj$exp,
+#'     abn.matrix=obj$abn,
+#'     dist.matrix=obj$dist)
 remove_noise_method = function(expression.matrix,
                                method.chosen="Boxplot-IQR",
                                stats.df=NULL,
-                               dist.matrix=NULL, abn.matrix=NULL,
+                               abn.matrix=NULL, dist.matrix=NULL,
                                dist.thresh=0.25, binsize=0.1,
                                add.thresh=TRUE, average.thresh=TRUE,
                                remove.noisy.features=TRUE, export.csv=NULL){

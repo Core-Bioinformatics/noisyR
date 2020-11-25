@@ -2,8 +2,7 @@
 % Please edit documentation in R/cast_matrix_to_double.R
 \name{cast_matrix_to_double}
 \alias{cast_matrix_to_double}
-\title{Casts a matrix of any type to double
-to make it compatible with the rest of the functions}
+\title{Cast a matrix of any type to double}
 \usage{
 cast_matrix_to_double(expression.matrix)
 }
@@ -14,8 +13,8 @@ cast_matrix_to_double(expression.matrix)
 The expression matrix transformed to double, preserving row and column names
 }
 \description{
-Casts a matrix of any type to double
-to make it compatible with the rest of the functions
+Transforms values in the expression matrix to double,
+to make it compatible with the rest of the functions.
 }
 \examples{
 cast_matrix_to_double(matrix(

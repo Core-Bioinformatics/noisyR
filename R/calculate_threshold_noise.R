@@ -3,10 +3,10 @@
 #' It uses as input a distance matrix and the corresponding abundance matrix.
 #' A variety of methods are available to obtain an abundance threshold using an input distance threshold.
 #' @param expression.matrix expression matrix, should be the one used in calculate_distance_matrices()
-#' @param dist.matrix,abn.matrix the input distance and abundance matrices as calculated by
+#' @param abn.matrix,dist.matrix the input distance and abundance matrices as calculated by
 #' calculate_distance_matrices(); if either is not supplied, only a fixed threshold is
 #' calculated based on the density
-#' @param dist.thr correlation threshold to be used to find corresponding abundance threshold.
+#' @param dist.thresh correlation threshold to be used to find corresponding abundance threshold.
 #' The default, 0.25 is usually suitable for the Pearson correlation (the default method)
 #' @param binsize size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)
 #' @param dump.stats name of csv to export different thresholds calculated (optional)
@@ -20,9 +20,14 @@
 #' then the output is a vector of noise thresholds,
 #' the same length as the number of columns in the expression matrix.
 #' @export
-#' @examples
+#' @examples obj <- calculate_distance_matrices_counts(
+#'     expression.matrix = matrix(1:100, ncol=5),
+#'     method="correlation_pearson",
+#'     n.elements.per.window=3)
+#' calculate_threshold_noise(obj$exp, obj$abn, obj$dist,
+#'     method.chosen="Boxplot-IQR")
 calculate_threshold_noise <- function(
-  expression.matrix, dist.matrix=NULL, abn.matrix=NULL,
+  expression.matrix, abn.matrix=NULL, dist.matrix=NULL,
   dist.thresh=0.25, binsize=0.1, dump.stats=NULL,
   method.chosen=NULL)
 {
@@ -282,7 +287,6 @@ calculate_threshold_noise <- function(
     }
     return(stats.df)
   }else{
-    base::print(stats.df)
     return(thresholds.vec)
   }
 }

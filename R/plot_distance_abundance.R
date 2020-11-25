@@ -1,5 +1,5 @@
 #' Plot the distance
-#' @description Creates the abundance-distance line and box plots for each sample
+#' @description Creates the abundance-distance line and box plots for each sample.
 #' @param abn.matrix,dist.matrix abundance and distance matrix,
 #' as calculated by calculate_distance_matrices()
 #' @param sample.names names for the plots, enumerates the samples by default
@@ -18,7 +18,9 @@
 #' @return A list of all the plots (returned silently), which are also plotted to the console,
 #'         or specified pdf file
 #' @export
-#' @examples
+#' @examples plot_distance_abundance(
+#'   abn.matrix=matrix(2^(10*seq(0,1,length.out=100))),
+#'   dist.matrix=matrix(seq(0,1,length.out=100)+(runif(100)/5)))
 plot_distance_abundance <- function(abn.matrix, dist.matrix,
                                sample.names=paste("Sample", 1:ncol(abn.matrix)),
                                distance.name="Pearson correlation",
@@ -26,6 +28,7 @@ plot_distance_abundance <- function(abn.matrix, dist.matrix,
                                only.boxplot=FALSE, binsize=0.5, last.together=30,
                                show.counts=TRUE, add.threshold=NULL, file.name=NULL)
 {
+  x=NULL; y=NULL; median=NULL
   if(only.boxplot){log.transform <- TRUE}
   if(log.transform){abn.matrix <- base::log2(abn.matrix+1)}
   if(base::is.null(min.y) & base::is.null(max.y)){

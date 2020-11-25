@@ -1,7 +1,7 @@
 #' Calcualte the distance matrices using the count matrix
 #' @description This function generates an average correlation/distance coefficient
 #' for every sliding window, for each sample in the expression matrix.
-#' That is done by comparing the distribution of genes in each window across samples
+#' That is done by comparing the distribution of genes in each window across samples.
 #' @param expression.matrix expression matrix, can be normalized or not
 #' @param method one of the correlation or distance metrics to be used,
 #' defaults to pearson correlation; list of all methods in
@@ -10,7 +10,7 @@
 #' default 10\% of the number of rows
 #' @param nstep step size to slide across, default 1\% of n.elements.per.window
 #' @param nstep.frac an alternative way to specify the step size, as a fraction of
-#' the window length; default is 5%
+#' the window length; default is 5\%
 #' @return A list with three elements: the first element is the expression matrix,
 #'         as supplied; the other two are the abundance and distance matrix;
 #'         they have the same # of columns as the expression matrix,
@@ -19,7 +19,8 @@
 #' @examples
 #' calculate_distance_matrices_counts(
 #'     expression.matrix = matrix(1:100, ncol=5),
-#'     method="correlation_pearson")
+#'     method="correlation_pearson",
+#'     n.elements.per.window=3)
 calculate_distance_matrices_counts = function(expression.matrix,
                                               method = "correlation_pearson",
                                               n.elements.per.window=NULL,

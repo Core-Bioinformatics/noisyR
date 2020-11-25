@@ -28,12 +28,6 @@ the most popular aligners, but an adjustment might be needed}
 
 \item{slack}{slack needs to be >=readLength, adjust for efficiency; the default is 200,
 as it is higher than most modern sequencing experiments}
-
-\item{make.index}{whether a BAM index should be generated; if this is FALSE and no index
-exists, the function will exit with an error}
-
-\item{makeplots}{a logical value of whether a plot with a vertical line on the minimum found
-should be printed for each column of the matrix.}
 }
 \value{
 The function outputs a list: the first element is a matrix of expression profiles.

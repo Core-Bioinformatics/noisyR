@@ -7,7 +7,7 @@
 calculate_distance_matrices_transcript(
   path.bams = ".",
   bams = NULL,
-  path.gtf = list.files(".", pattern = ".g.f$"),
+  path.gtf = list.files(".", pattern = "\\\\.g[tf]f$"),
   genes = NULL,
   expression.matrix = NULL,
   subsample.genes = FALSE,
