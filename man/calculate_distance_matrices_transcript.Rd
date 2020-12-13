@@ -75,3 +75,16 @@ for every exon present in the BAM files. This is done by calculating
 the point-to-point correlation/distance of the distribution of reads
 across the transcript of each exon and comparing it across samples.
 }
+\examples{
+bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
+genes <- data.frame("id" = 1:2,
+                    "gene_id" = c("gene1", "gene2"),
+                    "seqid" = c("seq1", "seq2"),
+                    "start" = 1,
+                    "end" = 1600)
+obj <- calculate_distance_matrices_transcript(
+  bams = bams,
+  genes = genes,
+  mapq.unique = 99
+)
+}

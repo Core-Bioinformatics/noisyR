@@ -35,9 +35,7 @@ calculate_distance_matrices_counts = function(expression.matrix,
   if(base::is.null(n.elements.per.window))
   {
     base::message("Calculating the number of elements per window")
-    n.elements.per.window = noisyr::optimise_window_length(expression.matrix,
-                                                           method = method,
-                                                           nstep.frac=nstep.frac)
+    n.elements.per.window = base::round(base::nrow(expression.matrix) / 10)
     nstep <- NULL
   }
   base::message("    the number of elements per window is ", n.elements.per.window)

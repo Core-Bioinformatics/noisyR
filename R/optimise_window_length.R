@@ -91,7 +91,7 @@ optimise_window_length = function(
         x <- c(x, stats::t.test(dists[[i]], dists[[j]])$p.value < 0.05)
       }
     }
-    if(base::sum(x)>1){
+    if(base::sum(!x)>1){
       break
     }
   }

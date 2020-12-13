@@ -7,6 +7,9 @@
 #' for the reading and is faster, otherwise the gtf is read manually with a warning
 #' @export
 #' @examples
+#' fl <- system.file("extdata", "example.gtf.gz", package="Rsamtools", mustWork=TRUE)
+#' genes <- cast_gtf_to_genes(fl)
+
 cast_gtf_to_genes = function(filename){
   genes <- tibble::as_tibble(utils::read.table(filename,
                                                  sep="\t",

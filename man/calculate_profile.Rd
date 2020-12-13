@@ -41,3 +41,16 @@ This function calculates the expression profile of an exon in a selection
 of BAM files. The expression profile is defined as the number of reads overlapping
 with each position of the exon's transcript.
 }
+\examples{
+bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
+genes <- data.frame("id" = 1:2,
+                    "gene_id" = c("gene1", "gene2"),
+                    "seqid" = c("seq1", "seq2"),
+                    "start" = 1,
+                    "end" = 1600)
+profile <- calculate_profile(
+  gene = genes[1,],
+  bams = bams,
+  mapq.unique = 99
+)
+}

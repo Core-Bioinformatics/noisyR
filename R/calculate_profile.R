@@ -20,6 +20,17 @@
 #' The second list element is a vector of raw expression of the gene in the different BAM files
 #' @export
 #' @examples
+#' bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
+#' genes <- data.frame("id" = 1:2,
+#'                     "gene_id" = c("gene1", "gene2"),
+#'                     "seqid" = c("seq1", "seq2"),
+#'                     "start" = 1,
+#'                     "end" = 1600)
+#' profile <- calculate_profile(
+#'   gene = genes[1,],
+#'   bams = bams,
+#'   mapq.unique = 99
+#' )
 calculate_profile = function(gene,
                              bams,
                              uniqueOnly=TRUE,
