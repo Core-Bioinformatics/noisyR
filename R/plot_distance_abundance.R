@@ -51,7 +51,7 @@ plot_distance_abundance <- function(abn.matrix, dist.matrix,
   if(!base::is.null(file.name)){grDevices::pdf(file.name, width=7, height=7)}
   all.plots <- list()
   plot.id <- 1
-  for(j in 1:base::ncol(abn.matrix))
+  for(j in base::seq_len(base::ncol(abn.matrix)))
   {
     base::message("Plotting ", sample.names[j])
     df <- tibble::tibble(x=abn.matrix[,j], y=dist.matrix[,j])
@@ -80,7 +80,7 @@ plot_distance_abundance <- function(abn.matrix, dist.matrix,
                                      (1:n.intervals)*binsize,
                                      base::ceiling(base::max(df$x))))
       x.binned <- base::cut(df$x, breaks, right=FALSE)
-      df %>% dplyr::mutate(x.binned=x.binned)
+      df <- df %>% dplyr::mutate(x.binned=x.binned)
       plot <- ggplot2::ggplot(df) +
         ggplot2::geom_boxplot(ggplot2::aes(x.binned, y)) +
         ggplot2::theme(axis.text.x=ggplot2::element_text(angle=90, hjust=1)) +

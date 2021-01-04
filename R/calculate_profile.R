@@ -46,7 +46,7 @@ calculate_profile = function(gene,
                                                          end=gene$end))
   params <- Rsamtools::ScanBamParam(which=gr, what=Rsamtools::scanBamWhat())
   expression.vector <- base::vector(mode="double", length=base::length(bams))
-  for(j in 1:base::length(bams)){
+  for(j in base::seq_len(base::length(bams))){
     bamIndex <- base::paste0(bams[j], ".bai")
     bamFile <- Rsamtools::BamFile(bams[j], bamIndex)
     aln <- Rsamtools::scanBam(bamFile, param = params)[[1]]
@@ -59,7 +59,7 @@ calculate_profile = function(gene,
     }
     expression.vector[j] <- base::nrow(reads)
     if(base::nrow(reads)>0){
-      for(r in 1:base::nrow(reads)){
+      for(r in base::seq_len(base::nrow(reads))){
         add <- base::seq(from=reads$pos[r], length.out=reads$qwidth[r])
         add <- add[add>0 & add<=base::nrow(profile)]
         profile[add, j] <- profile[add, j] + 1

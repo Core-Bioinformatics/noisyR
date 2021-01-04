@@ -14,11 +14,11 @@ cast_matrix_to_double <- function(expression.matrix){
   expr.mat.int = base::matrix(base::rep(0,
                                         base::ncol(expression.matrix)*
                                           base::nrow(expression.matrix)),
-                        ncol=base::ncol(expression.matrix))
-  for(i in 1:base::nrow(expression.matrix))
-  {
-    for(j in 1:base::ncol(expression.matrix)){
-      expr.mat.int[i,j] = base::as.numeric(base::as.character(expression.matrix[i,j]))}
+                              ncol=base::ncol(expression.matrix))
+  for(i in base::seq_len(base::nrow(expression.matrix))){
+    for(j in base::seq_len(base::ncol(expression.matrix))){
+      expr.mat.int[i,j] = base::as.numeric(base::as.character(expression.matrix[i,j]))
+    }
   }
 
   base::colnames(expr.mat.int) = base::colnames(expression.matrix)

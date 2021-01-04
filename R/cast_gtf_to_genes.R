@@ -2,6 +2,8 @@
 #' @description This function is used to extract all exons and their positions
 #' in the genome from an input gtf file.
 #' @param filename path to the gtf file
+#' @param feature the feature to extract from the last column of the gtf/gff file;
+#' default is exon
 #' @return Returns a tibble of the ids, names, chromosomes, start and end positions
 #' of each exon found in the gtf file. If refGenome is installed, that is used
 #' for the reading and is faster, otherwise the gtf is read manually with a warning
@@ -10,7 +12,8 @@
 #' fl <- system.file("extdata", "example.gtf.gz", package="Rsamtools", mustWork=TRUE)
 #' genes <- cast_gtf_to_genes(fl)
 
-cast_gtf_to_genes = function(filename){
+cast_gtf_to_genes = function(filename,
+                             feature="exon"){
   genes <- tibble::as_tibble(utils::read.table(filename,
                                                  sep="\t",
                                                  stringsAsFactors = FALSE)) %>%
@@ -29,8 +32,8 @@ cast_gtf_to_genes = function(filename){
       }else{
         return(NA)}
     }
-    feature=NULL; id=NULL; gene_id=NULL; seqid=NULL; start=NULL; end=NULL
-    genes <- genes %>% dplyr::filter(feature=="exon")
+    id=NULL; gene_id=NULL; seqid=NULL; start=NULL; end=NULL
+    genes <- genes %>% dplyr::filter(feature==feature)
     genes <- genes %>% dplyr::mutate(
       gene_id = base::unlist(base::lapply(genes$attributes,
                                           extract_attributes,

@@ -23,8 +23,10 @@
 #' @param uniqueOnly whether only uniquely mapped reads should contribute to the profile;
 #' default is TRUE
 #' @param mapq.unique The values of the mapping quality field in the BAM file that corresponds
-#' to uniquely mapped reads; by default, values of 50 and 255 are used as these correspond to
-#' the most popular aligners, but an adjustment might be needed
+#' to uniquely mapped reads; by default, values of 255 are used as these correspond to
+#' the most popular aligners, but an adjustment might be needed;
+#' the mapq scores should be as follows: 255 for STAR, 60 for hisat2,
+#' 255 for bowtie in -k mode, 40 for bowtie2 default, 50 for tophat
 #' @param slack slack needs to be >=readLength, adjust for efficiency; the default is 200,
 #' as it is higher than most modern sequencing experiments
 #' @param method one of the distance metrics to be used, defaults to pearson correlation
@@ -60,7 +62,7 @@ calculate_distance_matrices_transcript <- function(
   subsample.genes=FALSE,
   make.index=FALSE,
   uniqueOnly=TRUE,
-  mapq.unique=c(50,255),
+  mapq.unique=255,
   slack=200,
   method = "correlation_pearson",
   save.image.every.1000=FALSE,
@@ -69,7 +71,7 @@ calculate_distance_matrices_transcript <- function(
     bams <- base::list.files(path.bams, pattern=".bam$", full.names=TRUE)
   }
   if(base::length(bams)<2) base::stop("Please provide at least 2 BAM files")
-  for(j in 1:base::length(bams)){
+  for(j in base::seq_len(base::length(bams))){
     bamIndex <- base::paste0(bams[j], ".bai")
     if(!base::file.exists(bamIndex)){
       if(make.index){
@@ -110,6 +112,9 @@ calculate_distance_matrices_transcript <- function(
   }else calculate.matrix <- FALSE
 
   use.corr.dist <- base::strsplit(method, "_")[[1]][1]
+  if(use.corr.dist!="correlation")
+    stop(paste("Distance measures are currently not supported for transcript approach.",
+               "Please use a correlation measure instead."))
   base.method <- base::sub(paste0(use.corr.dist,"_"), "", method)
 
   dist.mat <- base::matrix(nrow=ngenes,
@@ -145,7 +150,7 @@ calculate_distance_matrices_transcript <- function(
       dist.exp.mats[, (base::length(bams)+1):(2*base::length(bams))]
 
   }else{
-    for(n in 1:ngenes){
+    for(n in base::seq_len(ngenes)){
       obj <- noisyr::calculate_profile(gene=genes.subset[n,],
                                        bams=bams,
                                        uniqueOnly=uniqueOnly,
@@ -185,7 +190,7 @@ calculate_distance_matrices_transcript <- function(
   abn.mat <- base::unname(abn.mat)
   abn.mat.sort <- abn.mat
   dist.mat.sort <- dist.mat
-  for(j in 1:base::ncol(abn.mat)){
+  for(j in base::seq_len(base::ncol(abn.mat))){
     ordering <- base::order(abn.mat[,j])
     abn.mat.sort[,j] <- abn.mat[ordering,j]
     dist.mat.sort[,j] <- dist.mat[ordering,j]

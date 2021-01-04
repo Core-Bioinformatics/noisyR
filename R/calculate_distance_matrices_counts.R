@@ -80,13 +80,13 @@ calculate_distance_matrices_counts = function(expression.matrix,
   abn.matrix = base::rep(0, base::ncol(expression.matrix)*base::length(nsequence))
   abn.matrix = base::matrix(abn.matrix, ncol=base::ncol(expression.matrix))
 
-  for(j in 1:base::ncol(expression.matrix)){
+  for(j in base::seq_len(base::ncol(expression.matrix))){
     base::message("Working with sample ",j)
     sorted.matrix = expression.matrix[base::order(expression.matrix[,j]),]
-    for(idx in 1:base::length(nsequence)){
+    for(idx in base::seq_len(base::length(nsequence))){
       #focus on a sliding window, initialize the distance vector
       distance.vector = base::vector(mode="numeric", length=base::ncol(expression.matrix))
-      for(k in 1:base::ncol(expression.matrix)){
+      for(k in base::seq_len(base::ncol(expression.matrix))){
         if(j != k){
           col.j = sorted.matrix[nsequence[idx]:(nsequence[idx]+n.elements.per.window-1), j];
           base::names(col.j)=base::rep("", base::length(col.j))

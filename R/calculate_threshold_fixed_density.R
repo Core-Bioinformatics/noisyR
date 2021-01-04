@@ -19,7 +19,7 @@
 calculate_threshold_fixed_density = function(mat, log.transform=TRUE, adjust=2, makeplots=FALSE){
   if(base::is.vector(mat)){mat <- base::as.matrix(mat, ncol=1)}
   thresh <- base::vector(length=base::ncol(mat))
-  for(j in 1:base::ncol(mat)){
+  for(j in base::seq_len(base::ncol(mat))){
     vec <- mat[,j]
     if(log.transform){vec = base::log2(vec+1)}
     dens <- stats::density(base::sort(vec), adjust=2)

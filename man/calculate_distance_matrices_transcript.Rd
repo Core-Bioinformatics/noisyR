@@ -13,7 +13,7 @@ calculate_distance_matrices_transcript(
   subsample.genes = FALSE,
   make.index = FALSE,
   uniqueOnly = TRUE,
-  mapq.unique = c(50, 255),
+  mapq.unique = 255,
   slack = 200,
   method = "correlation_pearson",
   save.image.every.1000 = FALSE,
@@ -48,8 +48,10 @@ the same name as each BAM file, but ending with .bam.bai}
 default is TRUE}
 
 \item{mapq.unique}{The values of the mapping quality field in the BAM file that corresponds
-to uniquely mapped reads; by default, values of 50 and 255 are used as these correspond to
-the most popular aligners, but an adjustment might be needed}
+to uniquely mapped reads; by default, values of 255 are used as these correspond to
+the most popular aligners, but an adjustment might be needed;
+the mapq scores should be as follows: 255 for STAR, 60 for hisat2,
+255 for bowtie in -k mode, 40 for bowtie2 default, 50 for tophat}
 
 \item{slack}{slack needs to be >=readLength, adjust for efficiency; the default is 200,
 as it is higher than most modern sequencing experiments}
