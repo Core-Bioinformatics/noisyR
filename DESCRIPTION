@@ -22,4 +22,6 @@ Suggests: testthat, roxygen2
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/Core-Bioinformatics/noisyR
+BugReports: https://github.com/Core-Bioinformatics/noisyR/issues
 RoxygenNote: 7.1.1
