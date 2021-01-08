@@ -4,13 +4,16 @@
 \alias{cast_gtf_to_genes}
 \title{Function to extract exon names and positions from a gtf file}
 \usage{
-cast_gtf_to_genes(filename, feature = "exon")
+cast_gtf_to_genes(filename, feature = "exon", att_of_interest = "gene_id")
 }
 \arguments{
 \item{filename}{path to the gtf file}
 
-\item{feature}{the feature to extract from the last column of the gtf/gff file;
+\item{feature}{the feature type name to filter the feature (3rd) column of the gtf/gff file;
 default is exon}
+
+\item{att_of_interest}{the attribute to extract from the last column of the gtf/gff file;
+default in gene_id}
 }
 \value{
 Returns a tibble of the ids, names, chromosomes, start and end positions

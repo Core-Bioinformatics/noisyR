@@ -10,6 +10,7 @@ calculate_threshold_noise(
   dist.matrix = NULL,
   dist.thresh = 0.25,
   binsize = 0.1,
+  min.pts.in.box = 20,
   dump.stats = NULL,
   method.chosen = NULL
 )
@@ -25,6 +26,9 @@ calculated based on the density}
 The default, 0.25 is usually suitable for the Pearson correlation (the default method)}
 
 \item{binsize}{size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)}
+
+\item{min.pts.in.box}{minumum number of points allowed in each box in the boxplot;
+if a box has fewer observations, it is merged with the one to its left; default is 20}
 
 \item{dump.stats}{name of csv to export different thresholds calculated (optional)}
 
