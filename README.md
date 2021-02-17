@@ -18,7 +18,7 @@ For the sample-similarity calculation, two approaches are available:
 The output formats for the two approaches are the same; the number of entries varies, since the count approach focuses on windows, whereas for the transcript approach we calculate a similarity measure for each transcript.
 
 Main functions: *calculate_distance_matrices_counts()*, *calculate_distance_matrices_transcript()* 
-Input preparation functions: *cast_matrix_to_double()*, *optimise_window_length()*, *cast_gtf_to_genes()*
+Input preparation functions: *cast_matrix_to_double()*, *optimise_window_length()*, *cast_gtf_to_genes()* 
 
 ## Noise quantification ##
 
@@ -29,7 +29,7 @@ The noise quantification step uses the abundance-correlation (or other similarit
 *Indicative plots of the Pearson correlation calculated on windows of increasing average abundance for the count matrix-based noise removal approach (left) and per exon for the transcript-based noise removal approach (right).*
 
 Main function: *calculate_threshold_noise()* 
-Visualisation function: *plot_distance_abundance()*
+Visualisation function: *plot_distance_abundance()* 
 
 ## Noise removal ##
 
