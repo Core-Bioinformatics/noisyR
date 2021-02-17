@@ -18,17 +18,19 @@ For the sample-similarity calculation, two approaches are available:
 The output formats for the two approaches are the same; the number of entries varies, since the count approach focuses on windows, whereas for the transcript approach we calculate a similarity measure for each transcript.
 
 Main functions: *calculate_distance_matrices_counts()*, *calculate_distance_matrices_transcript()* 
+
 Input preparation functions: *cast_matrix_to_double()*, *optimise_window_length()*, *cast_gtf_to_genes()* 
 
 ## Noise quantification ##
 
 The noise quantification step uses the abundance-correlation (or other similarity measure) relation calculated in step i to determine the noise threshold, representing the abundance level below which the gene expression is considered noisy e.g. if a correlation threshold is used as input then the corresponding abundance from a (smoothed) abundance-correlation line plot is selected as the noise threshold for each sample. The shape of the distribution can vary across experiments; we provide functionality for different thresholds and recommend the choice of the one that results in the lowest variance in the noise thresholds across samples. Options for smoothing, or summarising the observations in a box plot and selecting the minimum abundance for which the interquartile range (or median) is consistently above the correlation threshold are also available. Depending on the number of observations, we recommend using the smoothing with the count matrix approach, and the boxplot representation with the transcript option.
 
-<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/PCC_abn.png" width="500">
+<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/PCC_abn.png" width="900">
 
 *Indicative plots of the Pearson correlation calculated on windows of increasing average abundance for the count matrix-based noise removal approach (left) and per exon for the transcript-based noise removal approach (right).*
 
 Main function: *calculate_threshold_noise()* 
+
 Visualisation function: *plot_distance_abundance()* 
 
 ## Noise removal ##
