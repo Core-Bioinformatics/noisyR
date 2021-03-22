@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>noisyR count matrix approach workflow</title>
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">noisyR count matrix approach workflow</h1>
+
+
+
+<p>The <em>noisyR</em> package is an end-to-end pipeline for quantifying and removing technical noise from HTS datasets. The three main pipeline steps are:</p>
+<ol style="list-style-type: decimal">
+<li>similarity calculation<br />
+</li>
+<li>noise quantification<br />
+</li>
+<li>noise removal</li>
+</ol>
+<p>Each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined.</p>
+<p>The package and some applications are described in more detail in <a href="https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2">this paper</a> and is actively maintained on <a href="https://github.com/Core-Bioinformatics/noisyR" class="uri">https://github.com/Core-Bioinformatics/noisyR</a>.</p>
+<p>The <strong>count matrix approach</strong> uses the original, un-normalised count matrix, as provided after alignment and feature quantification; each sample is processed individually, only the relative expressions across samples are compared. Relying on the hypothesis that the majority of genes are not DE, most of the evaluations are expected to point towards a high similarity across samples.</p>
+<div id="installation" class="section level6">
+<h6>Installation</h6>
+<p>To install the package, first install all bioconductor dependencies:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1">packages.bioc &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;preprocessCore&quot;</span>,</a>
+<a class="sourceLine" id="cb1-2" title="2">                   <span class="st">&quot;IRanges&quot;</span>,</a>
+<a class="sourceLine" id="cb1-3" title="3">                   <span class="st">&quot;GenomicRanges&quot;</span>,</a>
+<a class="sourceLine" id="cb1-4" title="4">                   <span class="st">&quot;Rsamtools&quot;</span>)</a>
+<a class="sourceLine" id="cb1-5" title="5">new.packages.bioc &lt;-<span class="st"> </span>packages.bioc[<span class="op">!</span>(packages.bioc <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="st">&quot;Package&quot;</span>])]</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="cf">if</span>(<span class="kw">length</span>(new.packages.bioc)){</a>
+<a class="sourceLine" id="cb1-7" title="7">  <span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb1-8" title="8">    <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</a>
+<a class="sourceLine" id="cb1-9" title="9">  BiocManager<span class="op">::</span><span class="kw">install</span>(new.packages.bioc)</a>
+<a class="sourceLine" id="cb1-10" title="10">}</a></code></pre></div>
+<p>Then, you can install <em>noisyR</em> (and all its other dependencies) from CRAN:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">install.packages</span>(<span class="st">&quot;noisyr&quot;</span>)</a></code></pre></div>
+<p>To install the latest stable version from GitHub, first install CRAN dependencies:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">packages.cran &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;utils&quot;</span>,</a>
+<a class="sourceLine" id="cb3-2" title="2">                   <span class="st">&quot;grDevices&quot;</span>,</a>
+<a class="sourceLine" id="cb3-3" title="3">                   <span class="st">&quot;tibble&quot;</span>,</a>
+<a class="sourceLine" id="cb3-4" title="4">                   <span class="st">&quot;dplyr&quot;</span>,</a>
+<a class="sourceLine" id="cb3-5" title="5">                   <span class="st">&quot;magrittr&quot;</span>,</a>
+<a class="sourceLine" id="cb3-6" title="6">                   <span class="st">&quot;ggplot2&quot;</span>,</a>
+<a class="sourceLine" id="cb3-7" title="7">                   <span class="st">&quot;philentropy&quot;</span>,</a>
+<a class="sourceLine" id="cb3-8" title="8">                   <span class="st">&quot;doParallel&quot;</span>,</a>
+<a class="sourceLine" id="cb3-9" title="9">                   <span class="st">&quot;foreach&quot;</span>)</a>
+<a class="sourceLine" id="cb3-10" title="10">new.packages.cran &lt;-<span class="st"> </span>packages.cran[<span class="op">!</span>(packages.cran <span class="op">%in%</span><span class="st"> </span><span class="kw">installed.packages</span>()[,<span class="st">&quot;Package&quot;</span>])]</a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="cf">if</span>(<span class="kw">length</span>(new.packages.cran))</a>
+<a class="sourceLine" id="cb3-12" title="12">  <span class="kw">install.packages</span>(new.packages.cran)</a>
+<a class="sourceLine" id="cb3-13" title="13"></a>
+<a class="sourceLine" id="cb3-14" title="14"><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;devtools&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb3-15" title="15">  <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</a>
+<a class="sourceLine" id="cb3-16" title="16">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;Core-Bioinformatics/noisyR&quot;</span>)</a></code></pre></div>
+</div>
+<div id="similarity-calculation" class="section level6">
+<h6>Similarity calculation</h6>
+<p>First, load <em>noisyR</em>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(noisyr)</a></code></pre></div>
+<p>For this demonstration we will be using a subset of the count matrix for an experiment included in <a href="https://www.sciencedirect.com/science/article/pii/S2405471219301152">a 2019 paper by Yang et al</a>. Rows represent genes/features and columns represent samples:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">counts.in &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;counts_raw.csv&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;noisyr&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2">df &lt;-<span class="st"> </span><span class="kw">read.csv</span>(counts.in, <span class="dt">row.names =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="kw">str</span>(df)</a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt; &#39;data.frame&#39;:    55573 obs. of  4 variables:</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt;  $ SRR7624365: int  2 0 6 0 0 0 0 0 0 0 ...</span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt;  $ SRR7624366: int  0 0 4 0 0 0 0 0 0 0 ...</span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt;  $ SRR7624371: int  0 0 2 0 2 0 0 0 0 0 ...</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt;  $ SRR7624372: int  0 0 0 0 0 2 0 0 0 0 ...</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="kw">head</span>(df)</a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt;                    SRR7624365 SRR7624366 SRR7624371 SRR7624372</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt; ENSMUSG00000102693          2          0          0          0</span></a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="co">#&gt; ENSMUSG00000064842          0          0          0          0</span></a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="co">#&gt; ENSMUSG00000051951          6          4          2          0</span></a>
+<a class="sourceLine" id="cb5-14" title="14"><span class="co">#&gt; ENSMUSG00000102851          0          0          0          0</span></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="co">#&gt; ENSMUSG00000103377          0          0          2          0</span></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="co">#&gt; ENSMUSG00000104017          0          0          0          2</span></a></code></pre></div>
+<p>Note that when reading from a file R typically returns a data frame. To convert to a matrix we use the function <em>cast_matrix_to_double()</em>. This also converts values to numeric (in case they were read as characters). Any values that are not coercible to numeric are replaced by 0.</p>
+<p>We can then run the similarity calculation using <em>calculate_distance_matrices_counts</em>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">mat &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">cast_matrix_to_double</span>(df)</a>
+<a class="sourceLine" id="cb6-2" title="2">obj &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">calculate_distance_matrices_counts</span>(</a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="dt">expression.matrix =</span> mat, </a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="dt">method =</span> <span class="st">&quot;correlation_pearson&quot;</span>)</a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt; The input matrix has 55573 rows and 4 cols</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt;     number of genes: 55573</span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt;     number of samples: 4</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; Calculating the number of elements per window</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt;     the number of elements per window is 5557</span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt;     the step size is 277</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt; Method chosen: correlation_pearson</span></a>
+<a class="sourceLine" id="cb6-12" title="12"><span class="co">#&gt; Working with sample 1</span></a>
+<a class="sourceLine" id="cb6-13" title="13"><span class="co">#&gt; Working with sample 2</span></a>
+<a class="sourceLine" id="cb6-14" title="14"><span class="co">#&gt; Working with sample 3</span></a>
+<a class="sourceLine" id="cb6-15" title="15"><span class="co">#&gt; Working with sample 4</span></a></code></pre></div>
+<p>Users can select a similarity measure to assess the localised consistency in expression across samples (dissimilarity measures are inverted). See the <em>philentropy</em> package documentation for more information on the different distances. The full list of available metrics can be viewed by:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">noisyr<span class="op">::</span><span class="kw">get_methods_correlation_distance</span>()</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">#&gt;  [1] &quot;correlation_pearson&quot;        &quot;correlation_kendall&quot;       </span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">#&gt;  [3] &quot;correlation_spearman&quot;       &quot;distance_euclidean&quot;        </span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt;  [5] &quot;distance_manhattan&quot;         &quot;distance_minkowski&quot;        </span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt;  [7] &quot;distance_chebyshev&quot;         &quot;distance_sorensen&quot;         </span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt;  [9] &quot;distance_gower&quot;             &quot;distance_soergel&quot;          </span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; [11] &quot;distance_kulczynski_d&quot;      &quot;distance_canberra&quot;         </span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt; [13] &quot;distance_lorentzian&quot;        &quot;distance_intersection&quot;     </span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; [15] &quot;distance_non-intersection&quot;  &quot;distance_wavehedges&quot;       </span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; [17] &quot;distance_czekanowski&quot;       &quot;distance_motyka&quot;           </span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; [19] &quot;distance_kulczynski_s&quot;      &quot;distance_tanimoto&quot;         </span></a>
+<a class="sourceLine" id="cb7-12" title="12"><span class="co">#&gt; [21] &quot;distance_ruzicka&quot;           &quot;distance_inner_product&quot;    </span></a>
+<a class="sourceLine" id="cb7-13" title="13"><span class="co">#&gt; [23] &quot;distance_harmonic_mean&quot;     &quot;distance_cosine&quot;           </span></a>
+<a class="sourceLine" id="cb7-14" title="14"><span class="co">#&gt; [25] &quot;distance_hassebrook&quot;        &quot;distance_jaccard&quot;          </span></a>
+<a class="sourceLine" id="cb7-15" title="15"><span class="co">#&gt; [27] &quot;distance_dice&quot;              &quot;distance_fidelity&quot;         </span></a>
+<a class="sourceLine" id="cb7-16" title="16"><span class="co">#&gt; [29] &quot;distance_bhattacharyya&quot;     &quot;distance_hellinger&quot;        </span></a>
+<a class="sourceLine" id="cb7-17" title="17"><span class="co">#&gt; [31] &quot;distance_matusita&quot;          &quot;distance_squared_chord&quot;    </span></a>
+<a class="sourceLine" id="cb7-18" title="18"><span class="co">#&gt; [33] &quot;distance_squared_euclidean&quot; &quot;distance_pearson&quot;          </span></a>
+<a class="sourceLine" id="cb7-19" title="19"><span class="co">#&gt; [35] &quot;distance_neyman&quot;            &quot;distance_squared_chi&quot;      </span></a>
+<a class="sourceLine" id="cb7-20" title="20"><span class="co">#&gt; [37] &quot;distance_prob_symm&quot;         &quot;distance_divergence&quot;       </span></a>
+<a class="sourceLine" id="cb7-21" title="21"><span class="co">#&gt; [39] &quot;distance_clark&quot;             &quot;distance_additive_symm&quot;    </span></a>
+<a class="sourceLine" id="cb7-22" title="22"><span class="co">#&gt; [41] &quot;distance_kullback-leibler&quot;  &quot;distance_jeffreys&quot;         </span></a>
+<a class="sourceLine" id="cb7-23" title="23"><span class="co">#&gt; [43] &quot;distance_k_divergence&quot;      &quot;distance_topsoe&quot;           </span></a>
+<a class="sourceLine" id="cb7-24" title="24"><span class="co">#&gt; [45] &quot;distance_jensen-shannon&quot;    &quot;distance_jensen_difference&quot;</span></a>
+<a class="sourceLine" id="cb7-25" title="25"><span class="co">#&gt; [47] &quot;distance_taneja&quot;            &quot;distance_kumar-johnson&quot;    </span></a>
+<a class="sourceLine" id="cb7-26" title="26"><span class="co">#&gt; [49] &quot;distance_avg&quot;</span></a></code></pre></div>
+<p>By default, the window length is 10% of the number of rows in the matrix, as it has empirically effective. A different window can be specified by the <em>n.elements.per.window</em> parameter. The optimal window length can also be estimated by seeking stability of output (but this can be computationally intensive for large datasets):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">noisyr<span class="op">::</span><span class="kw">optimise_window_length</span>(</a>
+<a class="sourceLine" id="cb8-2" title="2">  <span class="dt">expression.matrix =</span> mat,</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="dt">method =</span> <span class="st">&quot;correlation_pearson&quot;</span></a>
+<a class="sourceLine" id="cb8-4" title="4">)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<pre><code>#&gt; [1] 13875</code></pre>
+<p>Plots of the abundance-correlation relation can be generated through the <em>plot_distance_abundance()</em> function:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">plotlist &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">plot_distance_abundance</span>(</a>
+<a class="sourceLine" id="cb10-2" title="2">  obj<span class="op">$</span>abn, </a>
+<a class="sourceLine" id="cb10-3" title="3">  obj<span class="op">$</span>dist,</a>
+<a class="sourceLine" id="cb10-4" title="4">  <span class="dt">sample.names=</span><span class="kw">colnames</span>(df),</a>
+<a class="sourceLine" id="cb10-5" title="5">  <span class="dt">binsize =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb10-6" title="6">  <span class="dt">last.together =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt; Plotting SRR7624365</span></a>
+<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt; Plotting SRR7624366</span></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt; Plotting SRR7624371</span></a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt; Plotting SRR7624372</span></a>
+<a class="sourceLine" id="cb10-11" title="11">plotlist[[<span class="dv">1</span>]]</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<blockquote>
+<p>As expected, we observe low correlation values for low abundances and a steady increase towards 1 as the abundance increases. This is based on the expectation that most genes are not differentially expressed and have consistent expression, but at low abundances the stochastic nature of transcription and sequencing gives rise to noise. The local maximum at very low abundances is due to strings of zeros driving the correlation higher than expected.</p>
+</blockquote>
+<p>These are ggplot objects, and can thus be modified and combined intuitively. For example, plotting all the line plots together:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">plotdf.line &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>()</a>
+<a class="sourceLine" id="cb11-2" title="2"><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>){</a>
+<a class="sourceLine" id="cb11-3" title="3">  lineid &lt;-<span class="st"> </span>i <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">-</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb11-4" title="4">  plotdf.line &lt;-<span class="st"> </span><span class="kw">rbind</span>(</a>
+<a class="sourceLine" id="cb11-5" title="5">    plotdf.line, </a>
+<a class="sourceLine" id="cb11-6" title="6">    dplyr<span class="op">::</span><span class="kw">mutate</span>(plotlist[[lineid]]<span class="op">$</span>data,</a>
+<a class="sourceLine" id="cb11-7" title="7">                  <span class="dt">Sample=</span><span class="kw">colnames</span>(mat)[i]))</a>
+<a class="sourceLine" id="cb11-8" title="8">}</a>
+<a class="sourceLine" id="cb11-9" title="9"></a>
+<a class="sourceLine" id="cb11-10" title="10">ggplot2<span class="op">::</span><span class="kw">ggplot</span>(plotdf.line) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-11" title="11"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">theme_minimal</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb11-12" title="12"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_line</span>(ggplot2<span class="op">::</span><span class="kw">aes</span>(<span class="dt">x=</span>x, <span class="dt">y=</span>y, <span class="dt">colour=</span>Sample)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-13" title="13"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_smooth</span>(ggplot2<span class="op">::</span><span class="kw">aes</span>(x,y,<span class="dt">colour=</span>Sample), <span class="dt">method=</span><span class="st">&quot;loess&quot;</span>,</a>
+<a class="sourceLine" id="cb11-14" title="14">                         <span class="dt">formula=</span> y <span class="op">~</span><span class="st"> </span>x, <span class="dt">span=</span><span class="fl">0.1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-15" title="15"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ylim</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-16" title="16"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">xlab</span>(<span class="st">&quot;log2(abn)&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-17" title="17"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">ylab</span>(<span class="st">&quot;Pearson correlation&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-18" title="18"><span class="st">    </span>ggplot2<span class="op">::</span><span class="kw">geom_hline</span>(<span class="dt">yintercept=</span><span class="fl">0.25</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="noise-quantification" class="section level6">
+<h6>Noise quantification</h6>
+<p>Using the output of the similarity calculation, we can compute the signal to noise threshold in each sample using different methods:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">res &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">calculate_threshold_noise</span>(<span class="dt">expression.matrix =</span> obj<span class="op">$</span>exp,</a>
+<a class="sourceLine" id="cb12-2" title="2">                                         <span class="dt">dist.matrix =</span> obj<span class="op">$</span>dist,</a>
+<a class="sourceLine" id="cb12-3" title="3">                                         <span class="dt">abn.matrix =</span> obj<span class="op">$</span>abn,</a>
+<a class="sourceLine" id="cb12-4" title="4">                                         <span class="dt">dist.thr =</span> <span class="fl">0.25</span>,</a>
+<a class="sourceLine" id="cb12-5" title="5">                                         <span class="dt">min.pts.in.box =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb12-6" title="6">res[,<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>]</a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="co">#&gt; # A tibble: 10 x 7</span></a>
+<a class="sourceLine" id="cb12-8" title="8"><span class="co">#&gt;    approach   method    dist.thr abn.thr.min abn.thr.mean abn.thr.cv abn.thr.max</span></a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="co">#&gt;    &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb12-10" title="10"><span class="co">#&gt;  1 Density_b~ No_norma~ N/A            308          308        0           308  </span></a>
+<a class="sourceLine" id="cb12-11" title="11"><span class="co">#&gt;  2 Density_b~ RPM_norm~ N/A            290          290        0           290  </span></a>
+<a class="sourceLine" id="cb12-12" title="12"><span class="co">#&gt;  3 Density_b~ Quantile~ N/A            304          304        0           304  </span></a>
+<a class="sourceLine" id="cb12-13" title="13"><span class="co">#&gt;  4 Line_plot  No_smoot~ 0.25            11.1         16.1      0.387        24.3</span></a>
+<a class="sourceLine" id="cb12-14" title="14"><span class="co">#&gt;  5 Line_plot  loess10_~ 0.25            10.6         16.1      0.388        24.3</span></a>
+<a class="sourceLine" id="cb12-15" title="15"><span class="co">#&gt;  6 Line_plot  loess25_~ 0.25            10.6         15.8      0.392        24.3</span></a>
+<a class="sourceLine" id="cb12-16" title="16"><span class="co">#&gt;  7 Line_plot  loess50_~ 0.25            11.1         16.8      0.411        26.3</span></a>
+<a class="sourceLine" id="cb12-17" title="17"><span class="co">#&gt;  8 Boxplot    Median    0.25            12.1         17.7      0.366        26.0</span></a>
+<a class="sourceLine" id="cb12-18" title="18"><span class="co">#&gt;  9 Boxplot    IQR       0.25            12.1         17.7      0.366        26.0</span></a>
+<a class="sourceLine" id="cb12-19" title="19"><span class="co">#&gt; 10 Boxplot    Quant5    0.25            12.1         17.7      0.366        26.0</span></a></code></pre></div>
+<p>The first three methods are just calculating the minimum of the density plot for all genes (a common, fast approach). This usually provides a rough, overestimated signal to noise threshold.</p>
+<p>The rest of the methods use either the (smoothed) line plot or the boxplot to find the noise threshold given a correlation/distance threshold.</p>
+<p>To run with a specific method (for example to reproduce a previous result), you can specify the <em>method.chosen</em> parameter, using a method from the list of all available methods. This will produce a numeric vector of thresholds:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">noisyr<span class="op">::</span><span class="kw">get_methods_calculate_noise_threshold</span>()</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="co">#&gt;  [1] &quot;Density_based-No_normalisation&quot;      </span></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="co">#&gt;  [2] &quot;Density_based-RPM_normalisation&quot;     </span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="co">#&gt;  [3] &quot;Density_based-Quantile_normalisation&quot;</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="co">#&gt;  [4] &quot;Line_plot-No_smoothing&quot;              </span></a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="co">#&gt;  [5] &quot;Line_plot-loess10_smoothing&quot;         </span></a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="co">#&gt;  [6] &quot;Line_plot-loess25_smoothing&quot;         </span></a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="co">#&gt;  [7] &quot;Line_plot-loess50_smoothing&quot;         </span></a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="co">#&gt;  [8] &quot;Boxplot-Median&quot;                      </span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="co">#&gt;  [9] &quot;Boxplot-IQR&quot;                         </span></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="co">#&gt; [10] &quot;Boxplot-Quant5&quot;</span></a>
+<a class="sourceLine" id="cb13-12" title="12">noisyr<span class="op">::</span><span class="kw">calculate_threshold_noise</span>(</a>
+<a class="sourceLine" id="cb13-13" title="13">  <span class="dt">expression.matrix =</span> obj<span class="op">$</span>exp,</a>
+<a class="sourceLine" id="cb13-14" title="14">  <span class="dt">dist.matrix =</span> obj<span class="op">$</span>dist,</a>
+<a class="sourceLine" id="cb13-15" title="15">  <span class="dt">abn.matrix =</span> obj<span class="op">$</span>abn,</a>
+<a class="sourceLine" id="cb13-16" title="16">  <span class="dt">dist.thr =</span> <span class="fl">0.25</span>,</a>
+<a class="sourceLine" id="cb13-17" title="17">  <span class="dt">min.pts.in.box =</span> <span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb13-18" title="18">  <span class="dt">method.chosen =</span> noisyr<span class="op">::</span><span class="kw">get_methods_calculate_noise_threshold</span>()[<span class="dv">5</span>])</a>
+<a class="sourceLine" id="cb13-19" title="19"><span class="co">#&gt; [1] 17.61256 24.29728 11.90732 10.60284</span></a></code></pre></div>
+<p>It is recommended that the method with the least coefficient of variation across all samples is chosen for noise removal. This can also be applied to compute the correlation/distance threshold instead of supplying it manually, which is especially useful for non-correlation measures which don’t have a standard range.</p>
+<p>For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">thresholds &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="dt">by=</span><span class="fl">0.01</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2">tbl &lt;-<span class="st"> </span>tibble<span class="op">::</span><span class="kw">tibble</span>()</a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="cf">for</span>(cc <span class="cf">in</span> thresholds){</a>
+<a class="sourceLine" id="cb14-4" title="4">  res &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">calculate_threshold_noise</span>(<span class="dt">expression.matrix =</span> obj<span class="op">$</span>exp,</a>
+<a class="sourceLine" id="cb14-5" title="5">                                           <span class="dt">dist.matrix =</span> obj<span class="op">$</span>dist,</a>
+<a class="sourceLine" id="cb14-6" title="6">                                           <span class="dt">abn.matrix =</span> obj<span class="op">$</span>abn,</a>
+<a class="sourceLine" id="cb14-7" title="7">                                           <span class="dt">dist.thr =</span> cc,</a>
+<a class="sourceLine" id="cb14-8" title="8">                                           <span class="dt">min.pts.in.box =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-9" title="9">  tbl &lt;-<span class="st"> </span><span class="kw">rbind</span>(tbl, res)</a>
+<a class="sourceLine" id="cb14-10" title="10">}</a>
+<a class="sourceLine" id="cb14-11" title="11">tbl &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(tbl, abn.thr.cv<span class="op">&gt;</span><span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb14-12" title="12">row.min.coef.var &lt;-<span class="st"> </span><span class="kw">which.min</span>(tbl<span class="op">$</span>abn.thr.cv)</a>
+<a class="sourceLine" id="cb14-13" title="13">tbl[row.min.coef.var,<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>]</a>
+<a class="sourceLine" id="cb14-14" title="14"><span class="co">#&gt; # A tibble: 1 x 7</span></a>
+<a class="sourceLine" id="cb14-15" title="15"><span class="co">#&gt;   approach  method      dist.thr abn.thr.min abn.thr.mean abn.thr.cv abn.thr.max</span></a>
+<a class="sourceLine" id="cb14-16" title="16"><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb14-17" title="17"><span class="co">#&gt; 1 Line_plot loess10_sm~ 0.21            7.37         9.88      0.253        13.3</span></a>
+<a class="sourceLine" id="cb14-18" title="18"><span class="kw">print</span>(dplyr<span class="op">::</span><span class="kw">filter</span>(tbl, method<span class="op">==</span><span class="st">&quot;loess10_smoothing&quot;</span>)[,<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>], <span class="dt">n=</span><span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb14-19" title="19"><span class="co">#&gt; # A tibble: 11 x 7</span></a>
+<a class="sourceLine" id="cb14-20" title="20"><span class="co">#&gt;    approach  method     dist.thr abn.thr.min abn.thr.mean abn.thr.cv abn.thr.max</span></a>
+<a class="sourceLine" id="cb14-21" title="21"><span class="co">#&gt;    &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;</span></a>
+<a class="sourceLine" id="cb14-22" title="22"><span class="co">#&gt;  1 Line_plot loess10_s~ 0.2             3.72         8.42      0.425        12.4</span></a>
+<a class="sourceLine" id="cb14-23" title="23"><span class="co">#&gt;  2 Line_plot loess10_s~ 0.21            7.37         9.88      0.253        13.3</span></a>
+<a class="sourceLine" id="cb14-24" title="24"><span class="co">#&gt;  3 Line_plot loess10_s~ 0.22            8.42        11.3       0.321        16.6</span></a>
+<a class="sourceLine" id="cb14-25" title="25"><span class="co">#&gt;  4 Line_plot loess10_s~ 0.23            9.02        12.7       0.358        19.3</span></a>
+<a class="sourceLine" id="cb14-26" title="26"><span class="co">#&gt;  5 Line_plot loess10_s~ 0.24           10.4         14.3       0.395        22.5</span></a>
+<a class="sourceLine" id="cb14-27" title="27"><span class="co">#&gt;  6 Line_plot loess10_s~ 0.25           10.6         16.1       0.388        24.3</span></a>
+<a class="sourceLine" id="cb14-28" title="28"><span class="co">#&gt;  7 Line_plot loess10_s~ 0.26           11.4         17.9       0.433        28.4</span></a>
+<a class="sourceLine" id="cb14-29" title="29"><span class="co">#&gt;  8 Line_plot loess10_s~ 0.27           11.4         19.4       0.439        30.8</span></a>
+<a class="sourceLine" id="cb14-30" title="30"><span class="co">#&gt;  9 Line_plot loess10_s~ 0.28           12.2         24.0       0.578        43.3</span></a>
+<a class="sourceLine" id="cb14-31" title="31"><span class="co">#&gt; 10 Line_plot loess10_s~ 0.29           15.9         28.0       0.505        47.4</span></a>
+<a class="sourceLine" id="cb14-32" title="32"><span class="co">#&gt; 11 Line_plot loess10_s~ 0.3            17.1         35.4       0.486        52.0</span></a></code></pre></div>
+</div>
+<div id="noise-removal" class="section level6">
+<h6>Noise removal</h6>
+<p>To produce the denoised count matrix, the function <em>remove_noise_matrix()</em> can be used with a specified <em>method.chosen</em> and <em>dist.thr</em>.</p>
+<p>A data frame of results from <em>calculate_threshold_noise()</em> can also be supplied. If it contains the chosen combination of method and threshold, that row is used:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">mat.rm<span class="fl">.1</span> &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">remove_noise_method</span>(</a>
+<a class="sourceLine" id="cb15-2" title="2">  <span class="dt">expression.matrix =</span> mat, </a>
+<a class="sourceLine" id="cb15-3" title="3">  <span class="dt">method.chosen =</span> <span class="st">&quot;Line_plot-loess10_smoothing&quot;</span>,</a>
+<a class="sourceLine" id="cb15-4" title="4">  <span class="dt">dist.thr =</span> <span class="fl">0.21</span>,</a>
+<a class="sourceLine" id="cb15-5" title="5">  <span class="dt">stats.df =</span> tbl)</a></code></pre></div>
+<p>If not specifying a <em>stats.df</em>, or if it does not contain the requested row, parameters for <em>calculate_threshold_noise()</em> also need to be specified:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">mat.rm<span class="fl">.2</span> &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">remove_noise_method</span>(</a>
+<a class="sourceLine" id="cb16-2" title="2">  <span class="dt">expression.matrix =</span> mat, </a>
+<a class="sourceLine" id="cb16-3" title="3">  <span class="dt">method.chosen =</span> <span class="st">&quot;Line_plot-loess10_smoothing&quot;</span>,</a>
+<a class="sourceLine" id="cb16-4" title="4">  <span class="dt">dist.thr =</span> <span class="fl">0.21</span>,</a>
+<a class="sourceLine" id="cb16-5" title="5">  <span class="dt">dist.matrix =</span> obj<span class="op">$</span>dist,</a>
+<a class="sourceLine" id="cb16-6" title="6">  <span class="dt">abn.matrix =</span> obj<span class="op">$</span>abn,</a>
+<a class="sourceLine" id="cb16-7" title="7">  <span class="dt">min.pts.in.box =</span> <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb16-8" title="8"></a>
+<a class="sourceLine" id="cb16-9" title="9"><span class="kw">sum</span>(<span class="kw">abs</span>(mat.rm<span class="fl">.1</span> <span class="op">-</span><span class="st"> </span>mat.rm<span class="fl">.2</span>)) <span class="co"># differences come from string conversion</span></a>
+<a class="sourceLine" id="cb16-10" title="10"><span class="co">#&gt; [1] 5.182859e-10</span></a></code></pre></div>
+<p>If the user needs to supply a vector of noise thresholds directly, it can be achieved by using <em>remove_noise_matrix</em> instead:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">thr.vec &lt;-<span class="st"> </span><span class="kw">as.double</span>(<span class="kw">strsplit</span>(tbl<span class="op">$</span>abn.thr.all[row.min.coef.var], <span class="st">&quot;,&quot;</span>)[[<span class="dv">1</span>]])</a>
+<a class="sourceLine" id="cb17-2" title="2">mat.rm<span class="fl">.3</span> &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">remove_noise_matrix</span>(mat, <span class="dt">abn.thr=</span>thr.vec)</a>
+<a class="sourceLine" id="cb17-3" title="3"><span class="kw">identical</span>(mat.rm<span class="fl">.1</span>, mat.rm<span class="fl">.3</span>)</a>
+<a class="sourceLine" id="cb17-4" title="4"><span class="co">#&gt; [1] TRUE</span></a></code></pre></div>
+<p>The behaviour of <em>remove_noise_method()</em> and <em>remove_noise_matrix()</em> can be further modified:</p>
+<ul>
+<li><em>add.thr</em> whether to add the noise threshold to each entry (default) or set each entry under the noise threshold to the noise threshold<br />
+</li>
+<li><em>average.thr</em> whether the noise thresholds for the different samples are averaged (default) or used individually. The latter should be especially avoided if the thresholds have high variance, as it could intoduce artificial differences in the data.<br />
+</li>
+<li><em>remove.noisy.features</em> whether genes/features whose expression is under the noise threshold in every sample should be removed from the matrix (default) or not</li>
+</ul>
+<p>Because of these defaults, passing the mean of the thresholds gives a slightly different result (different # of genes fully under the noise threshold.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1">mat.rm<span class="fl">.4</span> &lt;-<span class="st"> </span>noisyr<span class="op">::</span><span class="kw">remove_noise_matrix</span>(mat, <span class="dt">abn.thr=</span><span class="kw">mean</span>(thr.vec))</a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="kw">nrow</span>(mat.rm<span class="fl">.2</span>); <span class="kw">nrow</span>(mat.rm<span class="fl">.4</span>)</a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co">#&gt; [1] 24341</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co">#&gt; [1] 24309</span></a></code></pre></div>
+<p>The output of the noise removal is a denoised matrix that can be passed on to other methods for downstream analysis.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">head</span>(mat.rm<span class="fl">.1</span>)</a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="co">#&gt;                     SRR7624365 SRR7624366  SRR7624371  SRR7624372</span></a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="co">#&gt; ENSMUSG00000102343    16.88227   26.88227    21.88227    15.88227</span></a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="co">#&gt; ENSMUSG00000025902    85.88227   65.88227    23.88227    35.88227</span></a>
+<a class="sourceLine" id="cb19-5" title="5"><span class="co">#&gt; ENSMUSG00000102269    15.88227   39.88227    11.88227    17.88227</span></a>
+<a class="sourceLine" id="cb19-6" title="6"><span class="co">#&gt; ENSMUSG00000098104    67.88227   59.88227    53.88227    51.88227</span></a>
+<a class="sourceLine" id="cb19-7" title="7"><span class="co">#&gt; ENSMUSG00000103922   317.88227  264.88227   309.88227   356.88227</span></a>
+<a class="sourceLine" id="cb19-8" title="8"><span class="co">#&gt; ENSMUSG00000033845 14442.88227 9916.88227 14693.88227 14540.88227</span></a>
+<a class="sourceLine" id="cb19-9" title="9"><span class="kw">apply</span>(mat.rm<span class="fl">.1</span>, <span class="dv">2</span>, min)</a>
+<a class="sourceLine" id="cb19-10" title="10"><span class="co">#&gt; SRR7624365 SRR7624366 SRR7624371 SRR7624372 </span></a>
+<a class="sourceLine" id="cb19-11" title="11"><span class="co">#&gt;   9.882266   9.882266   9.882266   9.882266</span></a></code></pre></div>
+</div>
+<div id="downstream-analysis" class="section level6">
+<h6>Downstream analysis</h6>
+<p>The denoised matrix can be used instead of the raw count matrix for downstream analysis. Here we present a simple example of a differential expression (DE) analysis and compare the two.</p>
+<p>We create a function to perform the same DE pipeline on both matrices, using <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/">the edgeR package</a>.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">DE_edgeR =<span class="st"> </span><span class="cf">function</span>(mat, metadata){</a>
+<a class="sourceLine" id="cb20-2" title="2">  <span class="co"># load or install edgeR</span></a>
+<a class="sourceLine" id="cb20-3" title="3">  <span class="cf">if</span>(<span class="op">!</span><span class="kw">require</span>(edgeR)){</a>
+<a class="sourceLine" id="cb20-4" title="4">    <span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb20-5" title="5">      <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)</a>
+<a class="sourceLine" id="cb20-6" title="6">    BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;edgeR&quot;</span>)</a>
+<a class="sourceLine" id="cb20-7" title="7">  }</a>
+<a class="sourceLine" id="cb20-8" title="8">  </a>
+<a class="sourceLine" id="cb20-9" title="9">  <span class="co"># create metadata</span></a>
+<a class="sourceLine" id="cb20-10" title="10">  metadata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">colnames</span>(mat),</a>
+<a class="sourceLine" id="cb20-11" title="11">                           <span class="dt">timepoint =</span> <span class="kw">c</span>(<span class="st">&quot;0h&quot;</span>, <span class="st">&quot;0h&quot;</span>, <span class="st">&quot;12h&quot;</span>, <span class="st">&quot;12h&quot;</span>))</a>
+<a class="sourceLine" id="cb20-12" title="12">  </a>
+<a class="sourceLine" id="cb20-13" title="13">  <span class="co"># process using edgeR</span></a>
+<a class="sourceLine" id="cb20-14" title="14">  mat &lt;-<span class="st"> </span><span class="kw">round</span>(mat)</a>
+<a class="sourceLine" id="cb20-15" title="15">  mat &lt;-<span class="st"> </span>mat[<span class="kw">apply</span>(mat, <span class="dv">1</span>, sum) <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, ]</a>
+<a class="sourceLine" id="cb20-16" title="16">  design &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span><span class="dv">0</span> <span class="op">+</span><span class="st"> </span>metadata<span class="op">$</span>timepoint)</a>
+<a class="sourceLine" id="cb20-17" title="17">  edger &lt;-<span class="st"> </span><span class="kw">DGEList</span>(<span class="dt">counts =</span> mat)</a>
+<a class="sourceLine" id="cb20-18" title="18">  edger &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(edger, design)</a>
+<a class="sourceLine" id="cb20-19" title="19">  edger.fit &lt;-<span class="st"> </span><span class="kw">glmFit</span>(edger, design)</a>
+<a class="sourceLine" id="cb20-20" title="20">  edger.lrt &lt;-<span class="st"> </span><span class="kw">glmLRT</span>(edger.fit, <span class="dt">contrast=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb20-21" title="21">  </a>
+<a class="sourceLine" id="cb20-22" title="22">  <span class="co"># extract results</span></a>
+<a class="sourceLine" id="cb20-23" title="23">  res &lt;-<span class="st"> </span><span class="kw">topTags</span>(edger.lrt, <span class="dt">n =</span> <span class="ot">Inf</span>)<span class="op">$</span>table</a>
+<a class="sourceLine" id="cb20-24" title="24">  res<span class="op">$</span>DE &lt;-<span class="st"> </span>res<span class="op">$</span>FDR <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span> <span class="op">&amp;</span><span class="st"> </span><span class="kw">abs</span>(res<span class="op">$</span>logFC) <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb20-25" title="25">  </a>
+<a class="sourceLine" id="cb20-26" title="26">  <span class="co"># make volcano plot</span></a>
+<a class="sourceLine" id="cb20-27" title="27">  <span class="kw">print</span>(ggplot2<span class="op">::</span><span class="kw">ggplot</span>(res) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb20-28" title="28"><span class="st">          </span>ggplot2<span class="op">::</span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-29" title="29"><span class="st">          </span>ggplot2<span class="op">::</span><span class="kw">geom_point</span>(ggplot2<span class="op">::</span><span class="kw">aes</span>(<span class="dt">x=</span>logFC, <span class="dt">y=</span><span class="op">-</span><span class="kw">log10</span>(FDR), <span class="dt">color=</span>DE), <span class="dt">show.legend=</span><span class="ot">FALSE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-30" title="30"><span class="st">          </span>ggplot2<span class="op">::</span><span class="kw">scale_color_manual</span>(<span class="dt">values=</span><span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-31" title="31"><span class="st">          </span>ggplot2<span class="op">::</span><span class="kw">lims</span>(<span class="dt">x=</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">12</span>, <span class="dv">12</span>), <span class="dt">y=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)))</a>
+<a class="sourceLine" id="cb20-32" title="32">  </a>
+<a class="sourceLine" id="cb20-33" title="33">  <span class="kw">return</span>(res)</a>
+<a class="sourceLine" id="cb20-34" title="34">  </a>
+<a class="sourceLine" id="cb20-35" title="35">}</a>
+<a class="sourceLine" id="cb20-36" title="36"></a>
+<a class="sourceLine" id="cb20-37" title="37">res.raw &lt;-<span class="st"> </span><span class="kw">DE_edgeR</span>(mat)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1">res.denoised &lt;-<span class="st"> </span><span class="kw">DE_edgeR</span>(mat.rm<span class="fl">.1</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<blockquote>
+<p>We observe the distribution of genes in the volcano plots becoming a lot tighter for the denoised matrix. For the raw matrix, there are a lot of genes with low p-values and high log-fold changes that are barely called DE. Those “whiskers” are corrected for the denoised matrix.</p>
+</blockquote>
+<p>We can also see the number of differentially expressed genes has been reduced:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="kw">sum</span>(res.raw<span class="op">$</span>DE)</a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="co">#&gt; [1] 3276</span></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="kw">sum</span>(res.denoised<span class="op">$</span>DE)</a>
+<a class="sourceLine" id="cb22-4" title="4"><span class="co">#&gt; [1] 3010</span></a></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
