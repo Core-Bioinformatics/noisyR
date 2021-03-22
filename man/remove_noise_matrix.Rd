@@ -6,9 +6,9 @@
 \usage{
 remove_noise_matrix(
   expression.matrix,
-  abn.thresh,
-  add.thresh = TRUE,
-  average.thresh = TRUE,
+  abn.thr,
+  add.thr = TRUE,
+  average.thr = TRUE,
   remove.noisy.features = TRUE,
   export.csv = NULL
 )
@@ -16,13 +16,13 @@ remove_noise_matrix(
 \arguments{
 \item{expression.matrix}{the expression matrix}
 
-\item{abn.thresh}{a vector of abundance thresholds; must be the same length
+\item{abn.thr}{a vector of abundance thresholds; must be the same length
 as the number of columns of the expression matrix}
 
-\item{add.thresh}{whether to add the noise threshold to all values in the expression matrix
+\item{add.thr}{whether to add the noise threshold to all values in the expression matrix
 (default), or set entries below the threshold to the threshold}
 
-\item{average.thresh}{if TRUE (default), uses tthe average of the vector of thresholds across all samples;
+\item{average.thr}{if TRUE (default), uses tthe average of the vector of thresholds across all samples;
 if FALSE, uses the thresholds as supplied}
 
 \item{remove.noisy.features}{logical, whether rows of the expression matrix that are
@@ -43,5 +43,5 @@ all entries below the noise threshold are replaced with the noise threshold.
 \examples{
 remove_noise_matrix(
     expression.matrix = matrix(1:100, ncol=5),
-    abn.thresh=c(5,30,45,62,83))
+    abn.thr=c(5,30,45,62,83))
 }

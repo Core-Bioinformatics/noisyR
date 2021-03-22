@@ -15,13 +15,18 @@ Description: Quantifies and removes technical noise from high-throughput
         Contains several options for every step of the process, as well
         as tools to quality check and assess the stability of output.
 Depends: R (>= 3.1.2)
-Imports: utils, grDevices, tibble, dplyr,magrittr, ggplot2,
+Imports: utils, grDevices, tibble, dplyr, magrittr, ggplot2,
         preprocessCore, IRanges, GenomicRanges, Rsamtools,
         philentropy, doParallel, foreach
-Suggests: testthat, roxygen2
+Suggests: 
+    testthat,
+    roxygen2,
+    knitr,
+    rmarkdown
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/Core-Bioinformatics/noisyR
 BugReports: https://github.com/Core-Bioinformatics/noisyR/issues
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr

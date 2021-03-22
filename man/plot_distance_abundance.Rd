@@ -47,11 +47,10 @@ and lines are too erratic); sets log.transform to TRUE}
 
 \item{add.threshold}{adds a horizontal line at this value}
 
-\item{file.name}{name of pdf to output the plots (console by default)}
+\item{file.name}{name of pdf to output the plots; if not provided (default), no printing is done}
 }
 \value{
-A list of all the plots (returned silently), which are also plotted to the console,
-        or specified pdf file
+A list of all the plots (returned silently)
 }
 \description{
 Creates the abundance-distance line and box plots for each sample.

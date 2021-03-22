@@ -6,7 +6,7 @@
 #' @param abn.matrix,dist.matrix the input distance and abundance matrices as calculated by
 #' calculate_distance_matrices(); if either is not supplied, only a fixed threshold is
 #' calculated based on the density
-#' @param dist.thresh correlation threshold to be used to find corresponding abundance threshold.
+#' @param dist.thr correlation threshold to be used to find corresponding abundance threshold.
 #' The default, 0.25 is usually suitable for the Pearson correlation (the default method)
 #' @param binsize size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)
 #' @param min.pts.in.box minumum number of points allowed in each box in the boxplot;
@@ -30,13 +30,13 @@
 #'     method.chosen="Boxplot-IQR")
 calculate_threshold_noise <- function(
   expression.matrix, abn.matrix=NULL, dist.matrix=NULL,
-  dist.thresh=0.25, binsize=0.1, min.pts.in.box=20,
+  dist.thr=0.25, binsize=0.1, min.pts.in.box=20,
   dump.stats=NULL, method.chosen=NULL)
 {
   stats.df <- tibble::tibble()
 
   # Using the density to obtain a fixed threshold
-  approach <- "Density_based_fixed_threshold"
+  approach <- "Density_based"
 
   # No normalisation
   method <- "No_normalisation"
@@ -47,13 +47,13 @@ calculate_threshold_noise <- function(
                                 base::ncol(expression.matrix))
     stats.vec <- tibble::tibble(approach=approach,
                                 method=method,
-                                dist.thresh="N/A",
-                                abn.thresh.min=base::min(thresholds.vec),
-                                abn.thresh.mean=base::mean(thresholds.vec),
-                                abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                dist.thr="N/A",
+                                abn.thr.min=base::min(thresholds.vec),
+                                abn.thr.mean=base::mean(thresholds.vec),
+                                abn.thr.cv=stats::sd(thresholds.vec)/
                                   base::mean(thresholds.vec),
-                                abn.thresh.max=base::max(thresholds.vec),
-                                abn.thresh.all=base::paste(thresholds.vec,
+                                abn.thr.max=base::max(thresholds.vec),
+                                abn.thr.all=base::paste(thresholds.vec,
                                                            collapse=","))
     stats.df <- base::rbind(stats.df, stats.vec)
   }
@@ -69,13 +69,13 @@ calculate_threshold_noise <- function(
                                 base::ncol(expression.matrix))
     stats.vec <- tibble::tibble(approach=approach,
                                 method=method,
-                                dist.thresh="N/A",
-                                abn.thresh.min=base::min(thresholds.vec),
-                                abn.thresh.mean=base::mean(thresholds.vec),
-                                abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                dist.thr="N/A",
+                                abn.thr.min=base::min(thresholds.vec),
+                                abn.thr.mean=base::mean(thresholds.vec),
+                                abn.thr.cv=stats::sd(thresholds.vec)/
                                   base::mean(thresholds.vec),
-                                abn.thresh.max=base::max(thresholds.vec),
-                                abn.thresh.all=base::paste(thresholds.vec,
+                                abn.thr.max=base::max(thresholds.vec),
+                                abn.thr.all=base::paste(thresholds.vec,
                                                            collapse=","))
     stats.df <- base::rbind(stats.df, stats.vec)
   }
@@ -91,13 +91,13 @@ calculate_threshold_noise <- function(
                                 base::ncol(expression.matrix))
     stats.vec <- tibble::tibble(approach=approach,
                                 method=method,
-                                dist.thresh="N/A",
-                                abn.thresh.min=base::min(thresholds.vec),
-                                abn.thresh.mean=base::mean(thresholds.vec),
-                                abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                dist.thr="N/A",
+                                abn.thr.min=base::min(thresholds.vec),
+                                abn.thr.mean=base::mean(thresholds.vec),
+                                abn.thr.cv=stats::sd(thresholds.vec)/
                                   base::mean(thresholds.vec),
-                                abn.thresh.max=base::max(thresholds.vec),
-                                abn.thresh.all=base::paste(thresholds.vec,
+                                abn.thr.max=base::max(thresholds.vec),
+                                abn.thr.all=base::paste(thresholds.vec,
                                                            collapse=","))
     stats.df <- base::rbind(stats.df, stats.vec)
   }
@@ -111,23 +111,23 @@ calculate_threshold_noise <- function(
     method <- "No_smoothing"
     if(base::is.null(method.chosen) ||
        method.chosen==base::paste(approach, method, sep="-")){
-      dist.thr  = base::rep(0,base::ncol(expression.matrix))
+      dist.vec  = base::rep(0,base::ncol(expression.matrix))
       abn.thr = base::rep(0,base::ncol(expression.matrix))
       for(j in 1:base::ncol(expression.matrix)){
-        dist.thr.raw = dist.matrix[,j] > dist.thresh
-        dist.thr[j] = base::max(base::which(dist.thr.raw == FALSE))
-        abn.thr[j] = abn.matrix[dist.thr[j],j]
+        dist.thr.raw = dist.matrix[,j] > dist.thr
+        dist.vec[j] = base::max(base::which(!dist.thr.raw))
+        abn.thr[j] = abn.matrix[dist.vec[j],j]
       }
       thresholds.vec <- abn.thr
       stats.vec <- tibble::tibble(approach=approach,
                                   method=method,
-                                  dist.thresh=dist.thresh,
-                                  abn.thresh.min=base::min(thresholds.vec),
-                                  abn.thresh.mean=base::mean(thresholds.vec),
-                                  abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                  dist.thr=dist.thr,
+                                  abn.thr.min=base::min(thresholds.vec),
+                                  abn.thr.mean=base::mean(thresholds.vec),
+                                  abn.thr.cv=stats::sd(thresholds.vec)/
                                     base::mean(thresholds.vec),
-                                  abn.thresh.max=base::max(thresholds.vec),
-                                  abn.thresh.all=base::paste(thresholds.vec,
+                                  abn.thr.max=base::max(thresholds.vec),
+                                  abn.thr.all=base::paste(thresholds.vec,
                                                              collapse=","))
       stats.df <- base::rbind(stats.df, stats.vec)
     }
@@ -136,26 +136,26 @@ calculate_threshold_noise <- function(
     method <- "loess10_smoothing"
     if(base::is.null(method.chosen) ||
        method.chosen==base::paste(approach, method, sep="-")){
-      dist.thr  = base::rep(0,base::ncol(expression.matrix))
+      dist.vec  = base::rep(0,base::ncol(expression.matrix))
       abn.thr = base::rep(0,base::ncol(expression.matrix))
       for(j in 1:base::ncol(expression.matrix)){
         loessMod10 <- stats::loess(dist.matrix[,j] ~ log2(abn.matrix[,j]+1), span=0.10)
         smoothedx10 <- 2^loessMod10$x-1
         smoothedy10 <- stats::predict(loessMod10)
-        dist.thr.10  = smoothedy10 > dist.thresh
-        dist.thr[j] = base::max(base::which(dist.thr.10  == FALSE))
-        abn.thr[j] = smoothedx10[dist.thr[j]]
+        dist.thr.10  = smoothedy10 > dist.thr
+        dist.vec[j] = base::max(base::which(dist.thr.10  == FALSE))
+        abn.thr[j] = smoothedx10[dist.vec[j]]
       }
       thresholds.vec <- abn.thr
       stats.vec <- tibble::tibble(approach=approach,
                                   method=method,
-                                  dist.thresh=dist.thresh,
-                                  abn.thresh.min=base::min(thresholds.vec),
-                                  abn.thresh.mean=base::mean(thresholds.vec),
-                                  abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                  dist.thr=dist.thr,
+                                  abn.thr.min=base::min(thresholds.vec),
+                                  abn.thr.mean=base::mean(thresholds.vec),
+                                  abn.thr.cv=stats::sd(thresholds.vec)/
                                     base::mean(thresholds.vec),
-                                  abn.thresh.max=base::max(thresholds.vec),
-                                  abn.thresh.all=base::paste(thresholds.vec,
+                                  abn.thr.max=base::max(thresholds.vec),
+                                  abn.thr.all=base::paste(thresholds.vec,
                                                              collapse=","))
       stats.df <- base::rbind(stats.df, stats.vec)
     }
@@ -164,26 +164,26 @@ calculate_threshold_noise <- function(
     method <- "loess25_smoothing"
     if(base::is.null(method.chosen) ||
        method.chosen==base::paste(approach, method, sep="-")){
-      dist.thr  = base::rep(0,base::ncol(expression.matrix))
+      dist.vec  = base::rep(0,base::ncol(expression.matrix))
       abn.thr = base::rep(0,base::ncol(expression.matrix))
       for(j in 1:base::ncol(expression.matrix)){
         loessMod25 <- stats::loess(dist.matrix[,j] ~ log2(abn.matrix[,j]+1), span=0.25)
         smoothedx25 <- 2^loessMod25$x-1
         smoothedy25 <- stats::predict(loessMod25)
-        dist.thr.25  = smoothedy25 > dist.thresh
-        dist.thr[j] = base::max(base::which(dist.thr.25  == FALSE))
-        abn.thr[j] = smoothedx25[dist.thr[j]]
+        dist.thr.25  = smoothedy25 > dist.thr
+        dist.vec[j] = base::max(base::which(dist.thr.25  == FALSE))
+        abn.thr[j] = smoothedx25[dist.vec[j]]
       }
       thresholds.vec <- abn.thr
       stats.vec <- tibble::tibble(approach=approach,
                                   method=method,
-                                  dist.thresh=dist.thresh,
-                                  abn.thresh.min=base::min(thresholds.vec),
-                                  abn.thresh.mean=base::mean(thresholds.vec),
-                                  abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                  dist.thr=dist.thr,
+                                  abn.thr.min=base::min(thresholds.vec),
+                                  abn.thr.mean=base::mean(thresholds.vec),
+                                  abn.thr.cv=stats::sd(thresholds.vec)/
                                     base::mean(thresholds.vec),
-                                  abn.thresh.max=base::max(thresholds.vec),
-                                  abn.thresh.all=base::paste(thresholds.vec,
+                                  abn.thr.max=base::max(thresholds.vec),
+                                  abn.thr.all=base::paste(thresholds.vec,
                                                              collapse=","))
       stats.df <- base::rbind(stats.df, stats.vec)
     }
@@ -192,26 +192,26 @@ calculate_threshold_noise <- function(
     method <- "loess50_smoothing"
     if(base::is.null(method.chosen) ||
        method.chosen==base::paste(approach, method, sep="-")){
-      dist.thr  = base::rep(0,base::ncol(expression.matrix))
+      dist.vec  = base::rep(0,base::ncol(expression.matrix))
       abn.thr = base::rep(0,base::ncol(expression.matrix))
       for(j in 1:base::ncol(expression.matrix)){
         loessMod50 <- stats::loess(dist.matrix[,j] ~ log2(abn.matrix[,j]+1), span=0.50)
         smoothedx50 <- 2^loessMod50$x-1
         smoothedy50 <- stats::predict(loessMod50)
-        dist.thr.50  = smoothedy50 > dist.thresh
-        dist.thr[j] = base::max(base::which(dist.thr.50 == FALSE))
-        abn.thr[j] = smoothedx50[dist.thr[j]]
+        dist.thr.50  = smoothedy50 > dist.thr
+        dist.vec[j] = base::max(base::which(dist.thr.50 == FALSE))
+        abn.thr[j] = smoothedx50[dist.vec[j]]
       }
       thresholds.vec <- abn.thr
       stats.vec <- tibble::tibble(approach=approach,
                                   method=method,
-                                  dist.thresh=dist.thresh,
-                                  abn.thresh.min=base::min(thresholds.vec),
-                                  abn.thresh.mean=base::mean(thresholds.vec),
-                                  abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                  dist.thr=dist.thr,
+                                  abn.thr.min=base::min(thresholds.vec),
+                                  abn.thr.mean=base::mean(thresholds.vec),
+                                  abn.thr.cv=stats::sd(thresholds.vec)/
                                     base::mean(thresholds.vec),
-                                  abn.thresh.max=base::max(thresholds.vec),
-                                  abn.thresh.all=base::paste(thresholds.vec,
+                                  abn.thr.max=base::max(thresholds.vec),
+                                  abn.thr.all=base::paste(thresholds.vec,
                                                              collapse=","))
       stats.df <- base::rbind(stats.df, stats.vec)
     }
@@ -222,6 +222,7 @@ calculate_threshold_noise <- function(
        base::substr(method.chosen,1,base::nchar(approach))==approach){
       abn.thr.med = base::rep(0,base::ncol(expression.matrix))
       abn.thr.iqr = base::rep(0,base::ncol(expression.matrix))
+      abn.thr.quant = base::rep(0,base::ncol(expression.matrix))
       for(j in base::seq_len(base::ncol(expression.matrix))){
         df <- tibble::tibble(x=base::log2(abn.matrix[,j]+1),
                              y=dist.matrix[,j])
@@ -238,18 +239,23 @@ calculate_threshold_noise <- function(
         df <-dplyr::mutate(df, x.binned=x.binned)
         medians <- base::rep(0, base::length(base::levels(df$x.binned)))
         iqrs25 <- base::rep(0, base::length(base::levels(df$x.binned)))
+        quant5 <- base::rep(0, base::length(base::levels(df$x.binned)))
         for(l in base::seq_len(base::length(base::levels(df$x.binned)))){
           df.sub <- dplyr::filter(df, df$x.binned==base::levels(df$x.binned)[l])
           medians[l] = stats::quantile(df.sub$y, 1/2, na.rm=TRUE)
           iqrs25[l] = stats::quantile(df.sub$y, 1/4, na.rm=TRUE)
+          quant5[l] = stats::quantile(df.sub$y, 1/20, na.rm=TRUE)
         }
         medians[base::is.na(medians)] <- 1
         iqrs25[base::is.na(iqrs25)] <- 1
+        quant5[base::is.na(quant5)] <- 1
 
         abn.thr.med[j] = 2^breaks[base::max(base::match(
-          medians[medians<dist.thresh][base::sum(medians<dist.thresh)],medians) + 1, 1)]
+          medians[medians<dist.thr][base::sum(medians<dist.thr)],medians) + 1, 1)]
         abn.thr.iqr[j] = 2^breaks[base::max(base::match(
-          iqrs25[iqrs25<dist.thresh][base::sum(iqrs25<dist.thresh)],iqrs25) + 1, 1)]
+          iqrs25[iqrs25<dist.thr][base::sum(iqrs25<dist.thr)],iqrs25) + 1, 1)]
+        abn.thr.quant[j] = 2^breaks[base::max(base::match(
+          quant5[quant5<dist.thr][base::sum(quant5<dist.thr)],quant5) + 1, 1)]
       }
 
       # Using the median
@@ -259,13 +265,13 @@ calculate_threshold_noise <- function(
         thresholds.vec <- abn.thr.med
         stats.vec <- tibble::tibble(approach=approach,
                                     method=method,
-                                    dist.thresh=dist.thresh,
-                                    abn.thresh.min=base::min(thresholds.vec),
-                                    abn.thresh.mean=base::mean(thresholds.vec),
-                                    abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                    dist.thr=dist.thr,
+                                    abn.thr.min=base::min(thresholds.vec),
+                                    abn.thr.mean=base::mean(thresholds.vec),
+                                    abn.thr.cv=stats::sd(thresholds.vec)/
                                       base::mean(thresholds.vec),
-                                    abn.thresh.max=base::max(thresholds.vec),
-                                    abn.thresh.all=base::paste(thresholds.vec,
+                                    abn.thr.max=base::max(thresholds.vec),
+                                    abn.thr.all=base::paste(thresholds.vec,
                                                                collapse=","))
         stats.df <- base::rbind(stats.df, stats.vec)
       }
@@ -277,14 +283,32 @@ calculate_threshold_noise <- function(
         thresholds.vec <- abn.thr.iqr
         stats.vec <- tibble::tibble(approach=approach,
                                     method=method,
-                                    dist.thresh=dist.thresh,
-                                    abn.thresh.min=base::min(thresholds.vec),
-                                    abn.thresh.mean=base::mean(thresholds.vec),
-                                    abn.thresh.coef.var=stats::sd(thresholds.vec)/
+                                    dist.thr=dist.thr,
+                                    abn.thr.min=base::min(thresholds.vec),
+                                    abn.thr.mean=base::mean(thresholds.vec),
+                                    abn.thr.cv=stats::sd(thresholds.vec)/
                                       base::mean(thresholds.vec),
-                                    abn.thresh.max=base::max(thresholds.vec),
-                                    abn.thresh.all=base::paste(thresholds.vec,
+                                    abn.thr.max=base::max(thresholds.vec),
+                                    abn.thr.all=base::paste(thresholds.vec,
                                                                collapse=","))
+        stats.df <- base::rbind(stats.df, stats.vec)
+      }
+
+      # Using the 5& - 95% quantile range
+      method <- "Quant5"
+      if(base::is.null(method.chosen) ||
+         method.chosen==base::paste(approach, method, sep="-")){
+        thresholds.vec <- abn.thr.quant
+        stats.vec <- tibble::tibble(approach=approach,
+                                    method=method,
+                                    dist.thr=dist.thr,
+                                    abn.thr.min=base::min(thresholds.vec),
+                                    abn.thr.mean=base::mean(thresholds.vec),
+                                    abn.thr.cv=stats::sd(thresholds.vec)/
+                                      base::mean(thresholds.vec),
+                                    abn.thr.max=base::max(thresholds.vec),
+                                    abn.thr.all=base::paste(thresholds.vec,
+                                                            collapse=","))
         stats.df <- base::rbind(stats.df, stats.vec)
       }
     }

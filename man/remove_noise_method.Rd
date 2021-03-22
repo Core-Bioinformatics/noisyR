@@ -10,10 +10,11 @@ remove_noise_method(
   stats.df = NULL,
   abn.matrix = NULL,
   dist.matrix = NULL,
-  dist.thresh = 0.25,
+  dist.thr = 0.25,
   binsize = 0.1,
-  add.thresh = TRUE,
-  average.thresh = TRUE,
+  min.pts.in.box = 20,
+  add.thr = TRUE,
+  average.thr = TRUE,
   remove.noisy.features = TRUE,
   export.csv = NULL
 )
@@ -32,15 +33,18 @@ calculate_distance_matrices(); only needed if stats.df is not supplied;
 if either is not supplied, only a fixed threshold is
 calculated based on the density}
 
-\item{dist.thresh}{a distance threshold to be used if the noise thresholds are not
+\item{dist.thr}{a distance threshold to be used if the noise thresholds are not
 pre-calculated; the default 0.25 is suitable for correlation measures}
 
 \item{binsize}{size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)}
 
-\item{add.thresh}{whether to add the noise threshold to all values in the expression matrix
+\item{min.pts.in.box}{minumum number of points allowed in each box in the boxplot;
+if a box has fewer observations, it is merged with the one to its left; default is 20}
+
+\item{add.thr}{whether to add the noise threshold to all values in the expression matrix
 (default), or set entries below the threshold to the threshold}
 
-\item{average.thresh}{if TRUE (default), uses tthe average of the vector of thresholds across all samples;
+\item{average.thr}{if TRUE (default), uses tthe average of the vector of thresholds across all samples;
 if FALSE, uses the thresholds as supplied}
 
 \item{remove.noisy.features}{logical, whether rows of the expression matrix that are

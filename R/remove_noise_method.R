@@ -11,12 +11,14 @@
 #' calculate_distance_matrices(); only needed if stats.df is not supplied;
 #' if either is not supplied, only a fixed threshold is
 #' calculated based on the density
-#' @param dist.thresh a distance threshold to be used if the noise thresholds are not
+#' @param dist.thr a distance threshold to be used if the noise thresholds are not
 #' pre-calculated; the default 0.25 is suitable for correlation measures
 #' @param binsize size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)
-#' @param add.thresh whether to add the noise threshold to all values in the expression matrix
+#' @param min.pts.in.box minumum number of points allowed in each box in the boxplot;
+#' if a box has fewer observations, it is merged with the one to its left; default is 20
+#' @param add.thr whether to add the noise threshold to all values in the expression matrix
 #' (default), or set entries below the threshold to the threshold
-#' @param average.thresh if TRUE (default), uses tthe average of the vector of thresholds across all samples;
+#' @param average.thr if TRUE (default), uses tthe average of the vector of thresholds across all samples;
 #' if FALSE, uses the thresholds as supplied
 #' @param remove.noisy.features logical, whether rows of the expression matrix that are
 #' fully under the noise threshold should be removed (default TRUE)
@@ -38,40 +40,42 @@ remove_noise_method = function(expression.matrix,
                                method.chosen="Boxplot-IQR",
                                stats.df=NULL,
                                abn.matrix=NULL, dist.matrix=NULL,
-                               dist.thresh=0.25, binsize=0.1,
-                               add.thresh=TRUE, average.thresh=TRUE,
+                               dist.thr=0.25, binsize=0.1, min.pts.in.box=20,
+                               add.thr=TRUE, average.thr=TRUE,
                                remove.noisy.features=TRUE, export.csv=NULL){
   approach <- base::strsplit(method.chosen, split="-")[[1]][1]
   method <- base::strsplit(method.chosen, split="-")[[1]][2]
-  abn.thresh <- NULL
+  abn.thr <- NULL
   if(!base::is.null(stats.df)){
-    methods.preran <- base::paste(stats.df$approach, stats.df$method, sep="-")
-    if(method.chosen %in% methods.preran){
-      abn.thresh <- base::as.numeric(base::strsplit(
-        stats.df$abn.thresh.all[match(method.chosen, methods.preran)],
+    stats.df.filt <- dplyr::filter(stats.df,
+                                   approach == !!approach,
+                                   method == !!method,
+                                   is.na(dist.thr) | dist.thr == !!dist.thr)
+    if(base::nrow(stats.df.filt) == 1){
+      abn.thr <- base::as.numeric(base::strsplit(
+        stats.df.filt$abn.thr.all,
         split=",")[[1]])
-
     }
   }
-  if(base::is.null(abn.thresh)){
+  if(base::is.null(abn.thr)){
     if(approach!="Density_based_fixed_threshold" &
        (base::is.null(dist.matrix) | base::is.null(abn.matrix))){
       stop(base::message("Method", method.chosen, "requires a distance and abundance matrix"))
     }
-    abn.thresh <- noisyr::calculate_threshold_noise(
+    abn.thr <- noisyr::calculate_threshold_noise(
       expression.matrix=expression.matrix,
       dist.matrix=dist.matrix,
       abn.matrix=abn.matrix,
-      dist.thresh=dist.thresh,
+      dist.thr=dist.thr,
       binsize=binsize,
       dump.stats=NULL,
       method.chosen=method.chosen)
   }
   expression.matrix.noNoise <- noisyr::remove_noise_matrix(
     expression.matrix=expression.matrix,
-    abn.thresh=abn.thresh,
-    add.thresh = add.thresh,
-    average.thresh = average.thresh,
+    abn.thr=abn.thr,
+    add.thr = add.thr,
+    average.thr = average.thr,
     remove.noisy.features=remove.noisy.features,
     export.csv=export.csv)
   return(expression.matrix.noNoise)

@@ -93,7 +93,7 @@ calculate_distance_matrices_counts = function(expression.matrix,
           col.k = sorted.matrix[nsequence[idx]:(nsequence[idx]+n.elements.per.window-1), k];
           base::names(col.k)=base::rep("", base::length(col.k))
           cols.in = base::cbind(col.j, col.k)
-          distance.vector[k] = fun_corr_dist(cols.in)
+          distance.vector[k] = base::suppressWarnings(fun_corr_dist(cols.in))
         }#end if
       }#end for k
       dist.matrix[idx,j] = base::mean(distance.vector[distance.vector != 0])

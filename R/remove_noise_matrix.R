@@ -3,11 +3,11 @@
 #' It uses as input a vector of abundance thresholds;
 #' all entries below the noise threshold are replaced with the noise threshold.
 #' @param expression.matrix the expression matrix
-#' @param abn.thresh a vector of abundance thresholds; must be the same length
+#' @param abn.thr a vector of abundance thresholds; must be the same length
 #' as the number of columns of the expression matrix
-#' @param add.thresh whether to add the noise threshold to all values in the expression matrix
+#' @param add.thr whether to add the noise threshold to all values in the expression matrix
 #' (default), or set entries below the threshold to the threshold
-#' @param average.thresh if TRUE (default), uses tthe average of the vector of thresholds across all samples;
+#' @param average.thr if TRUE (default), uses tthe average of the vector of thresholds across all samples;
 #' if FALSE, uses the thresholds as supplied
 #' @param remove.noisy.features logical, whether rows of the expression matrix that are
 #' fully under the noise threshold should be removed (default TRUE)
@@ -18,27 +18,33 @@
 #' @export
 #' @examples remove_noise_matrix(
 #'     expression.matrix = matrix(1:100, ncol=5),
-#'     abn.thresh=c(5,30,45,62,83))
-remove_noise_matrix <- function(expression.matrix, abn.thresh,
-                                add.thresh=TRUE, average.thresh=TRUE,
+#'     abn.thr=c(5,30,45,62,83))
+remove_noise_matrix <- function(expression.matrix, abn.thr,
+                                add.thr=TRUE, average.thr=TRUE,
                                 remove.noisy.features=TRUE, export.csv=NULL){
+    if(base::length(abn.thr) == 1)
+    abn.thr <- base::rep(abn.thr, base::ncol(expression.matrix))
+  if(base::length(abn.thr) != base::ncol(expression.matrix)){
+    base::message("abn.thr needs to be length 1 or ncol(expression.matrix)")
+    break
+  }
   expression.matrix.noNoise <- expression.matrix
-  thresh.mat <- base::matrix(base::rep(abn.thresh, base::nrow(expression.matrix)),
+  thr.mat <- base::matrix(base::rep(abn.thr, base::nrow(expression.matrix)),
                              ncol=base::ncol(expression.matrix), byrow = TRUE)
   if(remove.noisy.features){
     above.noise.threshold <- base::as.vector(
-      base::rowSums(expression.matrix >= thresh.mat) > 0)
+      base::rowSums(expression.matrix >= thr.mat) > 0)
     expression.matrix.noNoise <- expression.matrix.noNoise[above.noise.threshold,]
-    thresh.mat <- thresh.mat[above.noise.threshold,]
+    thr.mat <- thr.mat[above.noise.threshold,]
   }
-  if(average.thresh){
-    abn.thresh.mean <- base::mean(abn.thresh)
-    thresh.mat[] <- abn.thresh.mean
+  if(average.thr){
+    abn.thr.mean <- base::mean(abn.thr)
+    thr.mat[] <- abn.thr.mean
   }
-  if(!add.thresh){
-    expression.matrix.noNoise <- base::pmax(expression.matrix.noNoise, thresh.mat)
+  if(!add.thr){
+    expression.matrix.noNoise <- base::pmax(expression.matrix.noNoise, thr.mat)
   }else{
-    expression.matrix.noNoise <- expression.matrix.noNoise + thresh.mat
+    expression.matrix.noNoise <- expression.matrix.noNoise + thr.mat
 
   }
   if(!base::is.null(export.csv)){

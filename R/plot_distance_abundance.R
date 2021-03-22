@@ -14,9 +14,8 @@
 #' @param last.together groups observations so the highest abundance bin has at least this many
 #' @param show.counts whether to show how many observations are in each bin
 #' @param add.threshold adds a horizontal line at this value
-#' @param file.name name of pdf to output the plots (console by default)
-#' @return A list of all the plots (returned silently), which are also plotted to the console,
-#'         or specified pdf file
+#' @param file.name name of pdf to output the plots; if not provided (default), no printing is done
+#' @return A list of all the plots (returned silently)
 #' @export
 #' @examples plot_distance_abundance(
 #'   abn.matrix=matrix(2^(10*seq(0,1,length.out=100))),
@@ -67,7 +66,7 @@ plot_distance_abundance <- function(abn.matrix, dist.matrix,
       if(!base::is.null(add.threshold)){
         plot = plot + ggplot2::geom_hline(yintercept=add.threshold, color="green")
       }
-      base::print(plot)
+      if(!base::is.null(file.name)){base::print(plot)}
       all.plots[[plot.id]] <- plot
       plot.id = plot.id + 1
     }
@@ -98,7 +97,7 @@ plot_distance_abundance <- function(abn.matrix, dist.matrix,
       if(!base::is.null(add.threshold)){
         plot = plot + ggplot2::geom_hline(yintercept=add.threshold, color="green")
       }
-      base::print(plot)
+      if(!base::is.null(file.name)){base::print(plot)}
       all.plots[[plot.id]] <- plot
       plot.id = plot.id + 1
     }

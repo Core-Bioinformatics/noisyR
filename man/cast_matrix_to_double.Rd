@@ -10,7 +10,8 @@ cast_matrix_to_double(expression.matrix)
 \item{expression.matrix}{The expression matrix (usually read from a file)}
 }
 \value{
-The expression matrix transformed to double, preserving row and column names
+The expression matrix transformed to double, preserving row and column names.
+Any values that are not coercible to numeric are replaced by 0.
 }
 \description{
 Transforms values in the expression matrix to double,

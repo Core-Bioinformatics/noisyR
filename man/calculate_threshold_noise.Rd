@@ -8,7 +8,7 @@ calculate_threshold_noise(
   expression.matrix,
   abn.matrix = NULL,
   dist.matrix = NULL,
-  dist.thresh = 0.25,
+  dist.thr = 0.25,
   binsize = 0.1,
   min.pts.in.box = 20,
   dump.stats = NULL,
@@ -22,7 +22,7 @@ calculate_threshold_noise(
 calculate_distance_matrices(); if either is not supplied, only a fixed threshold is
 calculated based on the density}
 
-\item{dist.thresh}{correlation threshold to be used to find corresponding abundance threshold.
+\item{dist.thr}{correlation threshold to be used to find corresponding abundance threshold.
 The default, 0.25 is usually suitable for the Pearson correlation (the default method)}
 
 \item{binsize}{size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)}
