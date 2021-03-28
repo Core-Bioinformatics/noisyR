@@ -130,7 +130,7 @@ calculate_expression_similarity_transcript <- function(
     ncores <- base::min(ncores, parallel::detectCores())
     base::message("    ncores=", ncores)
 
-    cl <- parallel::makePSOCKcluster(ngenes)
+    cl <- parallel::makePSOCKcluster(ncores)
     doParallel::registerDoParallel(cl = cl,
                                    cores = ncores)
     concatenated.matrices <- foreach::foreach(
@@ -200,7 +200,7 @@ calculate_expression_similarity_transcript <- function(
     base::save.image()
   }
   end_time <- base::Sys.time()
-  base::message("Finished ", ngenes, " genes")
+  base::message("Finished!")
   time_elapsed <- end_time - start_time
   base::message(" Time elapsed: ", base::round(time_elapsed, 2),
                 " ", base::units(time_elapsed))
@@ -224,7 +224,6 @@ calculate_expression_similarity_transcript <- function(
     expression.levels.similarity <- 1/expression.levels.similarity
   }
 
-  base::message("Finished!")
   expression.summary <- base::list("expression.matrix" = expression.matrix,
                                    "expression.levels" = expression.levels.sorted,
                                    "expression.levels.similarity" = expression.levels.similarity.sorted)

@@ -7,7 +7,7 @@
 calculate_expression_profile(
   gene,
   bams,
-  uniqueOnly = TRUE,
+  unique.only = TRUE,
   mapq.unique = c(50, 255),
   slack = 200
 )
@@ -19,7 +19,7 @@ row and named columns (seqid, start, end) would be needed}
 
 \item{bams}{a vector of paths to the BAM files from which the profile is extracted}
 
-\item{uniqueOnly}{whether only uniquely mapped reads should contribute to the profile;
+\item{unique.only}{whether only uniquely mapped reads should contribute to the profile;
 default is TRUE}
 
 \item{mapq.unique}{The values of the mapping quality field in the BAM file that corresponds
