@@ -7,11 +7,12 @@
 optimise_window_length(
   expression.matrix,
   method = "correlation_pearson",
-  winlen.min = NULL,
-  winlen.max = NULL,
-  winlen.by = NULL,
-  nstep.frac = 0.05,
-  iternum = 1000,
+  window.length.min = NULL,
+  window.length.max = NULL,
+  window.length.by = NULL,
+  n.step.fraction = 0.05,
+  iteration.number = 50,
+  minimum.similar.windows = 3,
   save.plot = NULL
 )
 }
@@ -22,23 +23,29 @@ optimise_window_length(
 defaults to pearson correlation; list of all methods in
 get_methods_correlation_distance()}
 
-\item{winlen.min, winlen.max, winlen.by}{definition of the parameter search space}
+\item{window.length.min, window.length.max, window.length.by}{definition of the parameter search space;
+default is between 1\% and 33\% of the number of rows in the expression matrix,
+incremented by 1\%}
 
-\item{nstep.frac}{an alternative way to specify the step size, as a fraction of
+\item{n.step.fraction}{step size to slide across, as a fraction of
 the window length; default is 5\%}
 
-\item{iternum}{number of iterations for the subsampling and calculation of JSE;
-subsampling is needed because shorter windows have fewer points}
+\item{iteration.number}{number of iterations for the subsampling and calculation of JSE;
+subsampling is needed because shorter windows have fewer points; default is 100}
+
+\item{minimum.similar.windows}{number of windows that a window needs to be similar to (including itself)
+in order to be accepted as optimal; default is 3, but can be reduced to 2 if no optimum is found}
 
 \item{save.plot}{name of the pdf in which to print the output plot
-showing the distribution of JSE by window}
+showing the distribution of JSE by window; output to the console by default}
 }
 \value{
-A single value of the optimal number of elements per window
+A single value of the optimal number of elements per window.
+If no optimal value was found, this function returns NULL.
 }
 \description{
 This function optimises the number of elements per window
-that is used in calculate_distance_matrices_counts(), by requiring
+that is used in calculate_expression_similarity_counts(), by requiring
 the distribution of correlations/distances to stabilise to a
 uniform distribution. The Jensen-Shannon divergence is used to assess
 the stability.
@@ -46,5 +53,5 @@ the stability.
 \examples{
 optimise_window_length(
 matrix(1:100+runif(100), ncol=5, byrow=TRUE),
-  winlen.min=3, winlen.max=5, iternum=5)
+  window.length.min=3, window.length.max=5, iteration.number=5)
 }

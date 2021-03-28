@@ -16,9 +16,8 @@ default is exon}
 default in gene_id}
 }
 \value{
-Returns a tibble of the ids, names, chromosomes, start and end positions
-of each exon found in the gtf file. If refGenome is installed, that is used
-for the reading and is faster, otherwise the gtf is read manually with a warning
+A tibble of the ids, gene names, chromosomes, start and end positions
+of each exon found in the gtf file.
 }
 \description{
 This function is used to extract all exons and their positions

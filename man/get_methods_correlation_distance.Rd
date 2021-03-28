@@ -11,14 +11,14 @@ get_methods_correlation_distance(names = TRUE)
 as similarity or dissimilarity (used internally to invert dissimilarity measures)}
 }
 \value{
-A character vector of options for the method arguement of calculate_distance_matrices_*();
+A character vector of options for the method arguement of calculate_expression_similarity_*();
 if names=FALSE, a vector of types (similarity/dissimilarity measure) of the same length
 }
 \description{
 This function outputs the methods available for the calculation of
 the correlation or distance. The standard correlation methods use stats::cor and
 a wide variety of distance methods are available using the philentropy package.
-To be used as input in calculate_distance_matrices_*().
+To be used as input in calculate_expression_similarity_*().
 }
 \examples{
 get_methods_correlation_distance()

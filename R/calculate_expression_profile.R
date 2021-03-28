@@ -26,19 +26,23 @@
 #'                     "seqid" = c("seq1", "seq2"),
 #'                     "start" = 1,
 #'                     "end" = 1600)
-#' profile <- calculate_profile(
+#' profile <- calculate_expression_profile(
 #'   gene = genes[1,],
 #'   bams = bams,
 #'   mapq.unique = 99
 #' )
-calculate_profile = function(gene,
-                             bams,
-                             uniqueOnly=TRUE,
-                             mapq.unique=c(50,255),
-                             slack=200){
-  profile=base::matrix(0,
-                       nrow=gene$end-gene$start+1,
-                       ncol=base::length(bams))
+#'
+#' ggplot2::ggplot(tibble::tibble(y = profile$profile[,1],
+#'                                x = seq_along(y))) +
+#' ggplot2::geom_bar(ggplot2::aes(x, y), stat = "identity")
+calculate_expression_profile = function(gene,
+                                        bams,
+                                        uniqueOnly=TRUE,
+                                        mapq.unique=c(50,255),
+                                        slack=200){
+  profile <- base::matrix(0,
+                          nrow=gene$end-gene$start+1,
+                          ncol=base::length(bams))
   base::colnames(profile) <- bams
 
   gr <- GenomicRanges::GRanges(seqnames = gene$seqid,
@@ -67,5 +71,5 @@ calculate_profile = function(gene,
       }
     }
   }
-  return(base::list("profile"=profile, "exp"=expression.vector))
+  return(base::list("profile"=profile, "expression"=expression.vector))
 }
