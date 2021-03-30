@@ -1,3 +1,5 @@
 url: core-bioinformatics.github.io/noisyr/
 template:
   package: preferably
+  params:
+    toggle: manual

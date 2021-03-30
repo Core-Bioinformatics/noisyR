@@ -3,5 +3,8 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   vignette_noisyr_counts: vignette_noisyr_counts.html
-last_built: 2021-03-30T11:20Z
+last_built: 2021-03-30T14:15Z
+urls:
+  reference: core-bioinformatics.github.io/noisyr//reference
+  article: core-bioinformatics.github.io/noisyr//articles
 

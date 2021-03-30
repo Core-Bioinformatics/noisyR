@@ -132,7 +132,7 @@ noisyr::get_methods_correlation_distance()
 
 By default, the window length is 10% of the number of rows in the matrix, as it has proven effective empirically. A different window can be specified by the *n.elements.per.window* parameter. The optimal window length can also be estimated by seeking stability of output (but this can be computationally intensive for large datasets):
 
-```{r window_opt, fig.width = 5}
+```{r window_opt}
 noisyr::optimise_window_length(
   expression.matrix = expression.matrix,
   similarity.measure = "correlation_pearson"
@@ -153,7 +153,7 @@ plotlist[[1]]
 
 These are ggplot objects, and can thus be modified and combined intuitively. For example, plotting all the line plots together:
 
-```{r combined_plot, warning = FALSE, fig.width = 5}
+```{r combined_plot, warning = FALSE}
 plotdf.line <- tibble::tibble()
 for(i in 1:4){
   lineid <- i * 2 - 1
