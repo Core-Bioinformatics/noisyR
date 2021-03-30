@@ -6,8 +6,8 @@
 \usage{
 calculate_noise_threshold_method_statistics(
   expression,
-  similarity.thresholds = 0.25,
-  methods.chosen = noisyr::get_methods_calculate_noise_threshold(),
+  similarity.threshold.sequence = 0.25,
+  method.chosen.sequence = noisyr::get_methods_calculate_noise_threshold(),
   dump.stats = NULL,
   ...
 )
@@ -17,11 +17,11 @@ calculate_noise_threshold_method_statistics(
 which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 alternatively, just an expression matrix; only density based methods are available for the latter case}
 
-\item{similarity.thresholds}{similarity (correlation or inverse distance) threshold(s) to be used
+\item{similarity.threshold.sequence}{similarity (correlation or inverse distance) threshold(s) to be used
 to find corresponding noise threshold; can be a single value or a numeric vector;
  the default, 0.25 is usually suitable for the Pearson correlation (the default similarity measure)}
 
-\item{methods.chosen}{methods to use to calculate the noise thresholds,
+\item{method.chosen.sequence}{methods to use to calculate the noise thresholds,
 must be a subset of get_methods_calculate_noise_threshold(); defaults to all}
 
 \item{dump.stats}{name of csv to export different thresholds calculated (optional)}

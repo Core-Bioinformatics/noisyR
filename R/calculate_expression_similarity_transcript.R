@@ -27,8 +27,8 @@
 #' @param make.index whether a BAM index should be generated; if this is FALSE (the default)
 #' and no index exists, the function will exit with an error; the index needs to have
 #' the same name as each BAM file, but ending with .bam.bai
-#' @param unique.only whether only uniquely mapped reads should contribute to the profile;
-#' default is TRUE
+#' @param unique.only whether only uniquely mapped reads should contribute to the expression
+#' of a gene/exon; default is TRUE
 #' @param mapq.unique The values of the mapping quality field in the BAM file that corresponds
 #' to uniquely mapped reads; by default, values of 255 are used as these correspond to
 #' the most popular aligners, but an adjustment might be needed;
@@ -36,12 +36,13 @@
 #' 255 for bowtie in -k mode, 40 for bowtie2 default, 50 for tophat
 #' @param slack slack needs to be >=readLength, adjust for efficiency; the default is 200,
 #' as it is higher than most modern sequencing experiments
-#' @param method one of the distance metrics to be used, defaults to pearson correlation;
+#' @param similarity.measure one of the similarity metrics to be used, defaults to pearson correlation;
 #' currently, only correlation is supported
 #' @param save.image.every.1000 whether to save a workspace image after every 1000 exons
 #' are processed; default is FALSE
 #' @param ncores Number of cores for parallel computation; defaults to sequential computation,
 #' but parallelisation is highly encouraged; it is set to detectCores() if higher
+#' @param ... arguments passed on to other methods
 #' @return A list with three elements: the first element is the expression matrix,
 #'         as supplied or calculated; the other two are the expression levels matrix and
 #'         expression levels similarity matrix;
@@ -72,9 +73,11 @@ calculate_expression_similarity_transcript <- function(
   unique.only=TRUE,
   mapq.unique=255,
   slack=200,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   save.image.every.1000=FALSE,
-  ncores=1){
+  ncores=1,
+  ...
+){
   if(base::is.null(bams)){
     bams <- base::list.files(path.bams, pattern="\\.bam$", full.names=TRUE)
   }
@@ -83,6 +86,7 @@ calculate_expression_similarity_transcript <- function(
     bam.index <- base::paste0(bams[j], ".bai")
     if(!base::file.exists(bam.index)){
       if(make.index){
+        base::message("Creating BAM index for ", bams[j])
         bams[j] <- Rsamtools::sortBam(bams[j], destination=base::paste0(bams[j], ".sorted"))
         bam.index <- Rsamtools::indexBam(bams[j])
       }else{
@@ -92,8 +96,7 @@ calculate_expression_similarity_transcript <- function(
   }
   if(base::is.null(genes)){
     base::message("Creating gene table from gtf file...")
-    genes <- noisyr::cast_gtf_to_genes(path.gtf)
-    base::message("Done")
+    genes <- noisyr::cast_gtf_to_genes(path.gtf, ...)
   }
   if(base::nrow(genes)<2) base::stop("Please provide at least 2 genes")
   if(!base::is.null(expression.matrix)){
@@ -113,11 +116,11 @@ calculate_expression_similarity_transcript <- function(
 
   ngenes <- base::nrow(genes.subset)
 
-  use.corr.dist <- base::strsplit(method, "_")[[1]][1]
+  use.corr.dist <- base::strsplit(similarity.measure, "_")[[1]][1]
   if(use.corr.dist!="correlation")
     stop(paste("Distance measures are currently not supported for transcript approach.",
                "Please use a correlation measure instead."))
-  base.method <- base::sub(paste0(use.corr.dist,"_"), "", method)
+  base.method <- base::sub(paste0(use.corr.dist,"_"), "", similarity.measure)
 
   expression.levels <- base::matrix(nrow=ngenes, ncol=base::length(bams))
   base::rownames(expression.levels) <- genes.subset$gene_id
@@ -125,6 +128,7 @@ calculate_expression_similarity_transcript <- function(
                                                ncol=base::length(bams))
 
   base::message("Calculating expression similarity for ", ngenes, " genes...")
+  base::message("    this process may take a long time...")
   start_time <- base::Sys.time()
   if(ncores>1){
     ncores <- base::min(ncores, parallel::detectCores())
@@ -165,8 +169,8 @@ calculate_expression_similarity_transcript <- function(
   }else{
     base::message("    ncores=1, running sequentially...")
     if(ngenes > 5000){
-      base::message("    Consider increasing ncores for more than a few thousand exons")
-      base::message("    This process may take a long time...")
+      base::message("    consider increasing ncores for more than a few thousand exons")
+      base::message("    this process may take a long time...")
     }
     for(n in base::seq_len(ngenes)){
       profile_expression_list <-
@@ -200,9 +204,8 @@ calculate_expression_similarity_transcript <- function(
     base::save.image()
   }
   end_time <- base::Sys.time()
-  base::message("Finished!")
   time_elapsed <- end_time - start_time
-  base::message(" Time elapsed: ", base::round(time_elapsed, 2),
+  base::message("Finished! Time elapsed: ", base::round(time_elapsed, 2),
                 " ", base::units(time_elapsed))
 
   if(base::is.null(expression.matrix)){
@@ -219,8 +222,8 @@ calculate_expression_similarity_transcript <- function(
   }
 
   if(noisyr::get_methods_correlation_distance(names=FALSE)[
-    base::match(method, noisyr::get_methods_correlation_distance())] == "d"){
-    base::message("Chosen method ", method, " is a dissimilarity measure, outputting inverse...")
+    base::match(similarity.measure, noisyr::get_methods_correlation_distance())] == "d"){
+    base::message("Chosen similarity metric ", similarity.measure, " is a dissimilarity, outputting inverse...")
     expression.levels.similarity <- 1/expression.levels.similarity
   }
 

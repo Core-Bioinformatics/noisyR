@@ -31,6 +31,7 @@ plot_expression_similarity <- function(expression.summary,
                                        only.boxplot=FALSE, binsize=1, last.together=0,
                                        show.counts=TRUE, add.threshold=NULL, file.name=NULL)
 {
+  expression.matrix <- expression.summary$expression.matrix
   expression.levels <- expression.summary$expression.levels
   expression.levels.similarity <- expression.summary$expression.levels.similarity
 

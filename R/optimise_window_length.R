@@ -5,7 +5,7 @@
 #' uniform distribution. The Jensen-Shannon divergence is used to assess
 #' the stability.
 #' @param expression.matrix expression matrix, can be normalized or not
-#' @param method one of the correlation or distance metrics to be used,
+#' @param similarity.measure one of the correlation or distance metrics to be used,
 #' defaults to pearson correlation; list of all methods in
 #' get_methods_correlation_distance()
 #' @param window.length.min,window.length.max,window.length.by definition of the parameter search space;
@@ -27,7 +27,7 @@
 #'   window.length.min=3, window.length.max=5, iteration.number=5)
 optimise_window_length = function(
   expression.matrix,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   window.length.min=NULL,
   window.length.max=NULL,
   window.length.by=NULL,
@@ -68,7 +68,7 @@ optimise_window_length = function(
         expression.matrix=expression.matrix,
         n.elements.per.window=window.length,
         n.step.fraction=n.step.fraction,
-        method=method)
+        similarity.measure=similarity.measure)
     )
     row.means <- base::rowMeans(expression.summary$expression.levels.similarity, na.rm=TRUE)
     x=base::abs(row.means[!base::is.na(row.means)])

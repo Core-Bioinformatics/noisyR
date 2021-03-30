@@ -9,7 +9,8 @@ calculate_noise_threshold_base(
   similarity.threshold = 0.25,
   method.chosen = "Boxplot-IQR",
   binsize = 0.1,
-  minimum.observations.per.bin = NULL
+  minimum.observations.per.bin = NULL,
+  ...
 )
 }
 \arguments{
@@ -29,6 +30,8 @@ must be one of get_methods_calculate_noise_threshold(); defaults to Boxplot-IQR}
 \item{minimum.observations.per.bin}{minumum number of observations allowed in each bin of the boxplot;
 if a bin has fewer observations, it is merged with the one to its left; default is calculated as:
 ceiling(number of observations / number of bins / 10)}
+
+\item{...}{arguments passed on to other methods}
 }
 \value{
 The output is a vector of noise thresholds, the same length as the number of columns in

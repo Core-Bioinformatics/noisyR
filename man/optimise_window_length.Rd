@@ -6,7 +6,7 @@
 \usage{
 optimise_window_length(
   expression.matrix,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   window.length.min = NULL,
   window.length.max = NULL,
   window.length.by = NULL,
@@ -19,7 +19,7 @@ optimise_window_length(
 \arguments{
 \item{expression.matrix}{expression matrix, can be normalized or not}
 
-\item{method}{one of the correlation or distance metrics to be used,
+\item{similarity.measure}{one of the correlation or distance metrics to be used,
 defaults to pearson correlation; list of all methods in
 get_methods_correlation_distance()}
 

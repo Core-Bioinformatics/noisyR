@@ -13,7 +13,8 @@
 #' @param remove.noisy.features logical, whether rows of the expression matrix that are
 #' fully under the noise threshold should be removed (default TRUE)
 #' @param export.csv option to write the matrix into a csv after the noise removal;
-#' should be NULL or the name of the output file.
+#' should be NULL or the name of the output file
+#' @param ... arguments passed on to other methods
 #' @return Returns a matrix of the same dims as the expression matrix, with the noise removed.
 #' This matrix has no entries remaining below the noise threshold.
 #' @export
@@ -25,19 +26,28 @@
 #'     noise.thresholds = noise.thresholds
 #' )
 #'
-remove_noise_from_matrix <- function(expression.matrix, noise.thresholds,
-                                     add.threshold=TRUE, average.threshold=TRUE,
-                                     remove.noisy.features=TRUE, export.csv=NULL){
+remove_noise_from_matrix <- function(
+  expression.matrix,
+  noise.thresholds,
+  add.threshold=TRUE,
+  average.threshold=TRUE,
+  remove.noisy.features=TRUE,
+  export.csv=NULL,
+  ...
+){
   if(base::length(noise.thresholds) == 1){
     base::message("noise.thresholds only has 1 value, using a fixed threshold...")
     noise.thresholds <- base::rep(noise.thresholds, base::ncol(expression.matrix))
   }else if(base::length(noise.thresholds) != base::ncol(expression.matrix)){
     base::stop("noise.thresholds needs to be length 1 or ncol(expression.matrix)")
   }
+
+  base::message("Denoising expression matrix...")
   expression.matrix.denoised <- expression.matrix
   threshold.matrix <- base::matrix(base::rep(noise.thresholds, base::nrow(expression.matrix)),
                                    ncol=base::ncol(expression.matrix), byrow = TRUE)
   if(remove.noisy.features){
+    base::message("    removing noisy genes")
     above.noise.threshold <- base::as.vector(
       base::rowSums(expression.matrix >= threshold.matrix) > 0)
     expression.matrix.denoised <- expression.matrix.denoised[above.noise.threshold,]
@@ -49,7 +59,7 @@ remove_noise_from_matrix <- function(expression.matrix, noise.thresholds,
   }
 
   threshold.matrix <- base::round(threshold.matrix)
-
+  base::message("    adjusting matrix")
   if(!add.threshold){
     expression.matrix.denoised <- base::pmax(expression.matrix.denoised, threshold.matrix)
   }else{

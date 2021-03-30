@@ -1,6 +1,9 @@
 ---
 title: "noisyR count matrix approach workflow"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{noisyR count matrix approach workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,7 +28,7 @@ The package and some applications are described in more detail in [this paper](h
 
 The **count matrix approach** uses the original, un-normalised count matrix, as provided after alignment and feature quantification; each sample is processed individually, only the relative expressions across samples are compared. Relying on the hypothesis that the majority of genes are not DE, most of the evaluations are expected to point towards a high similarity across samples. 
 
-###### Installation
+# Installation
 
 To install the package, first install all bioconductor dependencies:
 ```{r bioc_install, eval = FALSE}
@@ -64,7 +67,7 @@ if (!requireNamespace("devtools", quietly = TRUE))
 devtools::install_github("Core-Bioinformatics/noisyR")
 ```
 
-###### Similarity calculation
+# Preprocessing
 
 First, load *noisyR*:
 
@@ -81,15 +84,43 @@ str(df)
 head(df)
 ```
 
-Note that when reading from a file R typically returns a data frame. To convert to a matrix we use the function *cast_matrix_to_double()*. This also converts values to numeric (in case they were read as characters). Any values that are not coercible to numeric are replaced by 0.
+Note that when reading from a file R typically returns a data frame. To convert to a matrix we use the function *cast_matrix_to_numeric()*. This also converts values to numeric (in case they were read as characters). Any values that are not coercible to numeric are replaced by 0.
 
-We can then run the similarity calculation using *calculate_distance_matrices_counts*:
+```{r convert}
+expression.matrix <- noisyr::cast_matrix_to_numeric(df)
+```
+
+# Running *noisyR*
+
+The full *noisyR* pipeline can be run through *noisyr()*, choosing "counts" for the count matrix approach (internally calls *noisyr_counts()*). The user can pass many arguments to this function, which alter the behaviour of the different pipeline steps, as discussed in the breakdown below.
+
+```{r noisyr_counts}
+expression.matrix.denoised.standard <- noisyr::noisyr(
+  approach_for_similarity_calculation = "counts", 
+  expression.matrix = df
+)
+```
+
+The output of the noise removal is a denoised matrix that can be passed on to other methods for downstream analysis.
+
+```{r rm_noise_out}
+head(expression.matrix.denoised.standard)
+apply(expression.matrix.denoised.standard, 2, min)
+```
+
+# Pipeline breakdown
+
+While for most applications, running *noisyr()* is sufficient, it may be useful to run individual pipeline steps manually. For example, the user may want to create summary figures for the denoising, store the noise thresholds obtained or other intermediary outputs, or try out different options without rerunning all steps. In this section, we look deeper into *noisyr()* and break down the three main steps that are performed.
+
+## Similarity calculation
+
+We can then run the similarity calculation using *calculate_expression_similarity_counts()*:
 
 ```{r runCM}
-expression.matrix <- noisyr::cast_matrix_to_numeric(df)
 expression.summary <- noisyr::calculate_expression_similarity_counts(
   expression.matrix = expression.matrix, 
-  method = "correlation_pearson")
+  similarity.measure = "correlation_pearson"
+)
 str(expression.summary)
 ```
 
@@ -104,11 +135,13 @@ By default, the window length is 10% of the number of rows in the matrix, as it 
 ```{r window_opt, fig.width = 5}
 noisyr::optimise_window_length(
   expression.matrix = expression.matrix,
-  method = "correlation_pearson"
+  similarity.measure = "correlation_pearson"
 )
 ```
 
-Plots of the abundance-correlation relation can be generated through the *plot_distance_abundance()* function:
+Window length optimisation can be turned on using the *optimise.window.length.logical* parameter in *noisyr()* or *noisyr_counts()*.
+
+Plots of the abundance-correlation relation can be generated through the *plot_expression_similarity()* function:
 
 ```{r simple_plot, warning = FALSE}
 plotlist <- noisyr::plot_expression_similarity(
@@ -141,7 +174,7 @@ ggplot2::ggplot(plotdf.line) +
     ggplot2::geom_hline(yintercept=0.25, color="black")
 ```
 
-###### Noise quantification
+## Noise quantification
 
 Using the output of the similarity calculation, we can compute the signal to noise threshold in each sample:
 
@@ -165,10 +198,10 @@ It is recommended that the method with the least coefficient of variation across
 For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset:
 
 ```{r calc_thr_range}
-similarity.thresholds <- seq(0.2, 0.3, by=0.01)
+similarity.threshold.sequence <- seq(0.2, 0.3, by=0.01)
 stats.table <- noisyr::calculate_noise_threshold_method_statistics(
   expression = expression.summary,
-  similarity.thresholds = similarity.thresholds
+  similarity.threshold.sequence = similarity.threshold.sequence
 )
 row.min.coef.var <- which.min(stats.table$noise.threshold.coefficient.of.variation)
 # adjust column names for printing
@@ -189,7 +222,9 @@ noise.thresholds <- noisyr::calculate_noise_threshold_base(
 noise.thresholds
 ```
 
-###### Noise removal
+Noise removal parameter optimisation can be turned on using the *minimise.coefficient.of.variation* parameter in *noisyr()* or *noisyr_counts()* and passing further parameters for *similarity.threshold.sequence* and/or *method.chosen.sequence*.
+
+## Noise removal
 
 To produce the denoised count matrix, the function *remove_noise_from_matrix()* is used with a specified vector of noise thresholds (usually calculated by *calculate_noise_threshold_base()*).
 
@@ -206,7 +241,8 @@ The behaviour of *remove_noise_from_matrix()* can be further modified:
 * __*average.threshold*__ whether the noise thresholds for the different samples are averaged (default) or used individually. The latter should be especially avoided if the thresholds have high variance, as it could intoduce artificial differences in the data.  
 * __*remove.noisy.features*__ whether genes/features whose expression is under the noise threshold in every sample should be removed from the matrix (default) or not  
 
-Because of these defaults, passing the mean of the thresholds gives a slightly different result (different # of genes fully under the noise threshold.
+Because of these defaults, passing the mean of the thresholds gives a slightly different result (different # of genes fully under the noise threshold:
+
 ```{r rm_noise_param}
 expression.matrix.denoised.fixed <- noisyr::remove_noise_from_matrix(
   expression.matrix = expression.matrix, 
@@ -214,14 +250,22 @@ expression.matrix.denoised.fixed <- noisyr::remove_noise_from_matrix(
 nrow(expression.matrix.denoised); nrow(expression.matrix.denoised.fixed)
 ```
 
-The output of the noise removal is a denoised matrix that can be passed on to other methods for downstream analysis.
+By supplying the corresponding parameters to *noisyr()*, we obtain the same final result from the full pipeline:
 
-```{r rm_noise_out}
-head(expression.matrix.denoised)
-apply(expression.matrix.denoised, 2, min)
+```{r pipeline_comparison}
+expression.matrix.denoised.full_pipeline <- noisyr::noisyr(
+  approach_for_similarity_calculation = "counts", 
+  expression.matrix = expression.matrix,
+  similarity.measure = "correlation_pearson",
+  optimise.window.length.logical = FALSE,
+  minimise.coefficient.of.variation = TRUE,
+  similarity.threshold.sequence = seq(0.2, 0.3, by=0.01)
+)
+identical(expression.matrix.denoised,
+          expression.matrix.denoised.full_pipeline)
 ```
 
-###### Downstream analysis
+# Downstream analysis
 
 The denoised matrix can be used instead of the raw count matrix for downstream analysis. Here we present a simple example of a differential expression (DE) analysis and compare the two.
 
@@ -260,11 +304,13 @@ DE_edgeR = function(expression.matrix, metadata){
   res$DE <- res$FDR < 0.05 & abs(res$logFC) > 1
   
   # make volcano plot
-  print(ggplot2::ggplot(res) + 
-          ggplot2::theme_minimal() +
-          ggplot2::geom_point(ggplot2::aes(x=logFC, y=-log10(FDR), color=DE), show.legend=FALSE) +
-          ggplot2::scale_color_manual(values=c("black", "red")) +
-          ggplot2::lims(x=c(-12, 12), y=c(0, 100)))
+  print(
+    ggplot2::ggplot(res) + 
+      ggplot2::theme_minimal() +
+      ggplot2::geom_point(ggplot2::aes(x=logFC, y=-log10(FDR), color=DE), show.legend=FALSE) +
+      ggplot2::scale_color_manual(values=c("black", "red")) +
+      ggplot2::lims(x=c(-12, 12), y=c(0, 120))
+  )
   
   return(res)
   

@@ -4,10 +4,10 @@
 #' @param expression either an expression summary (as calculated by calculate_expression_similarity_*()),
 #' which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 #' alternatively, just an expression matrix; only density based methods are available for the latter case
-#' @param similarity.thresholds similarity (correlation or inverse distance) threshold(s) to be used
+#' @param similarity.threshold.sequence similarity (correlation or inverse distance) threshold(s) to be used
 #' to find corresponding noise threshold; can be a single value or a numeric vector;
 #'  the default, 0.25 is usually suitable for the Pearson correlation (the default similarity measure)
-#' @param methods.chosen methods to use to calculate the noise thresholds,
+#' @param method.chosen.sequence methods to use to calculate the noise thresholds,
 #' must be a subset of get_methods_calculate_noise_threshold(); defaults to all
 #' @param dump.stats name of csv to export different thresholds calculated (optional)
 #' @param ... other arguments (for the boxplot methods) passed to calculate_noise_threshold_base()
@@ -17,15 +17,16 @@
 #' coefficient of variation, and maximum of the noise thresholds, and all the noise thresholds
 #' concatenated as a string.
 #' @export
-#' @examples expression.summary <- calculate_expression_similarity_counts(
+#' @examples
+#' expression.summary <- calculate_expression_similarity_counts(
 #'     expression.matrix = matrix(1:100, ncol=5),
 #'     method = "correlation_pearson",
 #'     n.elements.per.window = 3)
 #' calculate_noise_threshold_method_statistics(expression.summary)
 calculate_noise_threshold_method_statistics <- function(
   expression,
-  similarity.thresholds = 0.25,
-  methods.chosen = noisyr::get_methods_calculate_noise_threshold(),
+  similarity.threshold.sequence = 0.25,
+  method.chosen.sequence = noisyr::get_methods_calculate_noise_threshold(),
   dump.stats=NULL,
   ...
 )
@@ -46,28 +47,28 @@ calculate_noise_threshold_method_statistics <- function(
     stop("Please provide an expression.matrix or an expression.summary list")
   }
 
-  if(!base::any(methods.chosen %in% noisyr::get_methods_calculate_noise_threshold())){
+  if(!base::any(method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold())){
     stop("Please provide a valid method from get_methods_calculate_noise_threshold()")
-  }else if(!base::all(methods.chosen %in% noisyr::get_methods_calculate_noise_threshold())){
-    methods.chosen <-
-      methods.chosen[methods.chosen %in% noisyr::get_methods_calculate_noise_threshold()]
+  }else if(!base::all(method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold())){
+    method.chosen.sequence <-
+      method.chosen.sequence[method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold()]
     base::warning("Dropped invalid method(s)")
   }
 
   if(base::is.null(expression.levels)){
-    if(!base::any(methods.chosen %in% noisyr::get_methods_calculate_noise_threshold()[1:3])){
+    if(!base::any(method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold()[1:3])){
       stop("Only density based methods are available for a simple matrix input")
-    }else if(!base::all(methods.chosen %in% noisyr::get_methods_calculate_noise_threshold()[1:3])){
-      methods.chosen <-
-        methods.chosen[methods.chosen %in% noisyr::get_methods_calculate_noise_threshold()[1:3]]
+    }else if(!base::all(method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold()[1:3])){
+      method.chosen.sequence <-
+        method.chosen.sequence[method.chosen.sequence %in% noisyr::get_methods_calculate_noise_threshold()[1:3]]
       base::warning("Only density based methods are available for a simple matrix input - dropped invalid method(s)")
     }
   }
 
   stats.table <- tibble::tibble()
 
-  for(similarity.threshold in similarity.thresholds){
-    for(method.chosen in methods.chosen){
+  for(similarity.threshold in similarity.threshold.sequence){
+    for(method.chosen in method.chosen.sequence){
       noise.thresholds <- base::suppressMessages(
         noisyr::calculate_noise_threshold_base(
           expression = expression,

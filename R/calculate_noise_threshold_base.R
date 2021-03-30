@@ -15,6 +15,7 @@
 #' @param minimum.observations.per.bin minumum number of observations allowed in each bin of the boxplot;
 #' if a bin has fewer observations, it is merged with the one to its left; default is calculated as:
 #' ceiling(number of observations / number of bins / 10)
+#' @param ... arguments passed on to other methods
 #' @return The output is a vector of noise thresholds, the same length as the number of columns in
 #' the expression matrix, or a single value in the case of density based methods.
 #' @export
@@ -29,7 +30,8 @@ calculate_noise_threshold_base <- function(
   similarity.threshold=0.25,
   method.chosen="Boxplot-IQR",
   binsize=0.1,
-  minimum.observations.per.bin=NULL
+  minimum.observations.per.bin=NULL,
+  ...
 ){
   if(base::is.matrix(expression)){
     expression.matrix <- expression
@@ -43,6 +45,11 @@ calculate_noise_threshold_base <- function(
     expression.matrix <- expression$expression.matrix
     expression.levels <- expression$expression.levels
     expression.levels.similarity <- expression$expression.levels.similarity
+    if(base::all(base::is.na(base::rowSums(expression.levels.similarity)))){
+      base::message("Similarity calculation produced too many NAs, returning zero...")
+      noise.thresholds = base::rep(0, base::ncol(expression.matrix))
+      return(noise.thresholds)
+    }
   }else{
     stop("Please provide an expression.matrix or an expression.summary list")
   }
@@ -96,7 +103,11 @@ calculate_noise_threshold_base <- function(
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
       similarity.threshold.raw = expression.levels.similarity[,j] > similarity.threshold
-      similarity.vector[j] = base::max(base::which(!similarity.threshold.raw))
+      if(base::any(base::is.na(similarity.threshold.raw)) | base::all(similarity.threshold.raw)){
+        similarity.vector[j] <- 1
+      }else{
+        similarity.vector[j] = base::max(base::which(!similarity.threshold.raw))
+      }
       noise.thresholds[j] = expression.levels[similarity.vector[j],j]
     }
   }
@@ -107,12 +118,18 @@ calculate_noise_threshold_base <- function(
     similarity.vector  = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
-      loessMod10 <- stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.10)
+      loessMod10 <- base::suppressWarnings(
+        stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.10)
+      )
       smoothedx10 <- 2^loessMod10$x-1
       smoothedy10 <- stats::predict(loessMod10)
-      similarity.threshold.10  = smoothedy10 > similarity.threshold
-      similarity.vector[j] = base::max(base::which(similarity.threshold.10  == FALSE))
-      noise.thresholds[j] = smoothedx10[similarity.vector[j]]
+      similarity.threshold.10 <- smoothedy10 > similarity.threshold
+      if(base::any(base::is.na(similarity.threshold.10)) | base::all(similarity.threshold.10)){
+        similarity.vector[j] <- 1
+      }else{
+        similarity.vector[j] <- base::max(base::which(similarity.threshold.10  == FALSE))
+      }
+      noise.thresholds[j] <- smoothedx10[similarity.vector[j]]
     }
   }
 
@@ -122,12 +139,18 @@ calculate_noise_threshold_base <- function(
     similarity.vector  = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
-      loessMod25 <- stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.25)
+      loessMod25 <- base::suppressWarnings(
+        stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.25)
+      )
       smoothedx25 <- 2^loessMod25$x-1
       smoothedy25 <- stats::predict(loessMod25)
-      similarity.threshold.25  = smoothedy25 > similarity.threshold
-      similarity.vector[j] = base::max(base::which(similarity.threshold.25  == FALSE))
-      noise.thresholds[j] = smoothedx25[similarity.vector[j]]
+      similarity.threshold.25 <- smoothedy25 > similarity.threshold
+      if(base::any(base::is.na(similarity.threshold.25)) | base::all(similarity.threshold.25)){
+        similarity.vector[j] <- 1
+      }else{
+        similarity.vector[j] <- base::max(base::which(similarity.threshold.25  == FALSE))
+      }
+      noise.thresholds[j] <- smoothedx25[similarity.vector[j]]
     }
   }
 
@@ -137,12 +160,18 @@ calculate_noise_threshold_base <- function(
     similarity.vector  = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
-      loessMod50 <- stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.50)
+      loessMod50 <- base::suppressWarnings(
+        stats::loess(expression.levels.similarity[,j] ~ log2(expression.levels[,j]+1), span=0.50)
+      )
       smoothedx50 <- 2^loessMod50$x-1
       smoothedy50 <- stats::predict(loessMod50)
-      similarity.threshold.50  = smoothedy50 > similarity.threshold
-      similarity.vector[j] = base::max(base::which(similarity.threshold.50 == FALSE))
-      noise.thresholds[j] = smoothedx50[similarity.vector[j]]
+      similarity.threshold.50 <- smoothedy50 > similarity.threshold
+      if(base::any(base::is.na(similarity.threshold.50)) | base::all(similarity.threshold.50)){
+        similarity.vector[j] <- 1
+      }else{
+        similarity.vector[j] <- base::max(base::which(similarity.threshold.50 == FALSE))
+      }
+      noise.thresholds[j] <- smoothedx50[similarity.vector[j]]
     }
   }
 
@@ -155,13 +184,13 @@ calculate_noise_threshold_base <- function(
           (base::log2(base::max(expression.levels+1)) / binsize) / 10
       )
     }
-    noise.thresholds.median = base::rep(0,base::ncol(expression.matrix))
-    noise.thresholds.iqrs25 = base::rep(0,base::ncol(expression.matrix))
-    noise.thresholds.quant5 = base::rep(0,base::ncol(expression.matrix))
+    noise.thresholds.median <- base::rep(0,base::ncol(expression.matrix))
+    noise.thresholds.iqrs25 <- base::rep(0,base::ncol(expression.matrix))
+    noise.thresholds.quant5 <- base::rep(0,base::ncol(expression.matrix))
     for(j in base::seq_len(base::ncol(expression.matrix))){
       df <- tibble::tibble(x=base::log2(expression.levels[,j]+1),
                            y=expression.levels.similarity[,j])
-      breaks <- base::seq(0, base::ceiling(base::max(df$x)), binsize)
+      breaks <- base::seq(0, base::max(base::ceiling(base::max(df$x)), 1), binsize)
       brk <- 2
       while(brk < base::length(breaks)){
         if(base::sum(df$x>=breaks[brk] & df$x<breaks[brk+1]) < minimum.observations.per.bin){

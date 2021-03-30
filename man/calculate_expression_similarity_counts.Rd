@@ -6,16 +6,17 @@
 \usage{
 calculate_expression_similarity_counts(
   expression.matrix,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   n.elements.per.window = NULL,
   n.step = NULL,
-  n.step.fraction = 0.05
+  n.step.fraction = 0.05,
+  ...
 )
 }
 \arguments{
-\item{expression.matrix}{expression matrix, can be normalized or not}
+\item{expression.matrix}{the expression matrix, can be normalized or not}
 
-\item{method}{one of the correlation or distance metrics to be used,
+\item{similarity.measure}{one of the correlation or distance metrics to be used,
 defaults to pearson correlation; list of all methods in
 get_methods_correlation_distance()}
 
@@ -26,6 +27,8 @@ default 10\% of the number of rows}
 
 \item{n.step.fraction}{an alternative way to specify the step size, as a fraction of
 the window length; default is 5\%}
+
+\item{...}{arguments passed on to other methods}
 }
 \value{
 A list with three elements: the first element is the expression matrix,
@@ -42,6 +45,6 @@ That is done by comparing the distribution of genes in each window across sample
 \examples{
 calculate_expression_similarity_counts(
     expression.matrix = matrix(1:100, ncol = 5),
-    method = "correlation_pearson",
+    similarity.measure = "correlation_pearson",
     n.elements.per.window = 3)
 }

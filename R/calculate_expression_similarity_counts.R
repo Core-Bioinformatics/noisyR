@@ -2,8 +2,8 @@
 #' @description This function generates an average similarity (correlation/inverse distance) coefficient
 #' for every sliding window, for each sample in the expression matrix.
 #' That is done by comparing the distribution of genes in each window across samples.
-#' @param expression.matrix expression matrix, can be normalized or not
-#' @param method one of the correlation or distance metrics to be used,
+#' @param expression.matrix the expression matrix, can be normalized or not
+#' @param similarity.measure one of the correlation or distance metrics to be used,
 #' defaults to pearson correlation; list of all methods in
 #' get_methods_correlation_distance()
 #' @param n.elements.per.window number of elements to have in a window,
@@ -11,6 +11,7 @@
 #' @param n.step step size to slide across, default 1\% of n.elements.per.window
 #' @param n.step.fraction an alternative way to specify the step size, as a fraction of
 #' the window length; default is 5\%
+#' @param ... arguments passed on to other methods
 #' @return A list with three elements: the first element is the expression matrix,
 #'         as supplied; the other two are the expression levels matrix and
 #'         expression levels similarity matrix;
@@ -20,14 +21,15 @@
 #' @examples
 #' calculate_expression_similarity_counts(
 #'     expression.matrix = matrix(1:100, ncol = 5),
-#'     method = "correlation_pearson",
+#'     similarity.measure = "correlation_pearson",
 #'     n.elements.per.window = 3)
 calculate_expression_similarity_counts = function(
   expression.matrix,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   n.elements.per.window=NULL,
   n.step=NULL,
-  n.step.fraction=0.05
+  n.step.fraction=0.05,
+  ...
 ){
   base::message("The input matrix has ", base::nrow(expression.matrix), " rows and ",
                 base::ncol(expression.matrix), " cols")
@@ -49,14 +51,14 @@ calculate_expression_similarity_counts = function(
   }
   base::message("    the step size is ", n.step)
 
-  if(method %in% noisyr::get_methods_correlation_distance()){
-    base::message("Method chosen: ", method)
+  if(similarity.measure %in% noisyr::get_methods_correlation_distance()){
+    base::message("    the selected similarity metric is ", similarity.measure)
   }else{
-    base::message("Invalid method, reverting to Pearson correlation")
-    method <- "correlation_pearson"
+    base::message("Invalid similarity metric, reverting to Pearson correlation")
+    similarity.measure <- "correlation_pearson"
   }
-  use.corr.dist <- base::strsplit(method, "_")[[1]][1]
-  base.method <- base::sub(paste0(use.corr.dist,"_"), "", method)
+  use.corr.dist <- base::strsplit(similarity.measure, "_")[[1]][1]
+  base.method <- base::sub(paste0(use.corr.dist,"_"), "", similarity.measure)
   if(use.corr.dist=="correlation"){
     fun_corr_dist = function(cols.in){
       stats::cor(cols.in, method=base.method)[1,2]
@@ -84,7 +86,7 @@ calculate_expression_similarity_counts = function(
   expression.levels.similarity = base::matrix(expression.levels.similarity, ncol=base::ncol(expression.matrix))
 
   for(j in base::seq_len(base::ncol(expression.matrix))){
-    base::message("Working with sample ",j)
+    base::message("  Working with sample ",j)
     expression.matrix.sorted = expression.matrix[base::order(expression.matrix[,j]),]
     for(idx in base::seq_len(base::length(nsequence))){
       #focus on a sliding window, initialize the similarity vector
@@ -106,8 +108,8 @@ calculate_expression_similarity_counts = function(
   }
 
   if(noisyr::get_methods_correlation_distance(names=FALSE)[
-    base::match(method, noisyr::get_methods_correlation_distance())] == "d"){
-    base::message("Chosen method ", method, " is a dissimilarity measure, outputting inverse...")
+    base::match(similarity.measure, noisyr::get_methods_correlation_distance())] == "d"){
+    base::message("Chosen similarity metric ", similarity.measure, " is a dissimilarity, outputting inverse...")
     expression.levels.similarity <- 1/expression.levels.similarity
   }
 

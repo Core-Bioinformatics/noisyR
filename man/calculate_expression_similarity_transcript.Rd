@@ -15,9 +15,10 @@ calculate_expression_similarity_transcript(
   unique.only = TRUE,
   mapq.unique = 255,
   slack = 200,
-  method = "correlation_pearson",
+  similarity.measure = "correlation_pearson",
   save.image.every.1000 = FALSE,
-  ncores = 1
+  ncores = 1,
+  ...
 )
 }
 \arguments{
@@ -46,8 +47,8 @@ a plot is generated to show that minimum}
 and no index exists, the function will exit with an error; the index needs to have
 the same name as each BAM file, but ending with .bam.bai}
 
-\item{unique.only}{whether only uniquely mapped reads should contribute to the profile;
-default is TRUE}
+\item{unique.only}{whether only uniquely mapped reads should contribute to the expression
+of a gene/exon; default is TRUE}
 
 \item{mapq.unique}{The values of the mapping quality field in the BAM file that corresponds
 to uniquely mapped reads; by default, values of 255 are used as these correspond to
@@ -58,7 +59,7 @@ the mapq scores should be as follows: 255 for STAR, 60 for hisat2,
 \item{slack}{slack needs to be >=readLength, adjust for efficiency; the default is 200,
 as it is higher than most modern sequencing experiments}
 
-\item{method}{one of the distance metrics to be used, defaults to pearson correlation;
+\item{similarity.measure}{one of the similarity metrics to be used, defaults to pearson correlation;
 currently, only correlation is supported}
 
 \item{save.image.every.1000}{whether to save a workspace image after every 1000 exons
@@ -66,6 +67,8 @@ are processed; default is FALSE}
 
 \item{ncores}{Number of cores for parallel computation; defaults to sequential computation,
 but parallelisation is highly encouraged; it is set to detectCores() if higher}
+
+\item{...}{arguments passed on to other methods}
 }
 \value{
 A list with three elements: the first element is the expression matrix,

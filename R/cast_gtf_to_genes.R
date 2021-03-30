@@ -6,6 +6,7 @@
 #' default is exon
 #' @param att_of_interest the attribute to extract from the last column of the gtf/gff file;
 #' default in gene_id
+#' @param ... arguments passed on to other methods
 #' @return A tibble of the ids, gene names, chromosomes, start and end positions
 #' of each exon found in the gtf file.
 #' @export
@@ -13,9 +14,12 @@
 #' fl <- system.file("extdata", "example.gtf.gz", package="Rsamtools", mustWork=TRUE)
 #' genes <- cast_gtf_to_genes(fl)
 
-cast_gtf_to_genes = function(filename,
-                             feature="exon",
-                             att_of_interest="gene_id"){
+cast_gtf_to_genes = function(
+  filename,
+  feature="exon",
+  att_of_interest="gene_id",
+  ...
+){
   genes <- tibble::as_tibble(utils::read.table(filename,
                                                sep="\t",
                                                stringsAsFactors = FALSE)) %>%

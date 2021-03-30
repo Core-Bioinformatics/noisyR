@@ -10,7 +10,8 @@ remove_noise_from_matrix(
   add.threshold = TRUE,
   average.threshold = TRUE,
   remove.noisy.features = TRUE,
-  export.csv = NULL
+  export.csv = NULL,
+  ...
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ if FALSE, uses the thresholds as supplied}
 fully under the noise threshold should be removed (default TRUE)}
 
 \item{export.csv}{option to write the matrix into a csv after the noise removal;
-should be NULL or the name of the output file.}
+should be NULL or the name of the output file}
+
+\item{...}{arguments passed on to other methods}
 }
 \value{
 Returns a matrix of the same dims as the expression matrix, with the noise removed.
