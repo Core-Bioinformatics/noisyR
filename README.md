@@ -3,13 +3,15 @@
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/noisyr)](https://github.com/metacran/cranlogs.app)
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/noisyr)](https://github.com/metacran/cranlogs.app)
 
+<div style="text-align: justify"> 
+
 High-throughput sequencing enables an unprecedented resolution in transcript quantification, at the cost of magnifying the impact of technical noise. The consistent reduction of random background noise to capture functionally meaningful biological signals is still challenging. Intrinsic sequencing variability introducing low-level expression variations can obscure patterns in downstream analyses.
 
 The noisyR package comprises an end-to-end pipeline for quantifying and removing technical noise from HTS datasets. The three main pipeline steps are [i] similarity calculation across samples, [ii] noise quantification, and [iii] noise removal; each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined.
 
 Preprint: https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2
 
-<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/workflow.png?raw=true" width="400">
+<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/workflow.png?raw=true" width="900">
 
 *Workflow diagram of the **noisyr** pipeline*
 
@@ -73,3 +75,5 @@ Main function: *remove_noise_from_matrix()*, *remove_noise_from_bams()*
 * IRanges
 * GenomicRanges
 * Rsamtools
+
+</div>

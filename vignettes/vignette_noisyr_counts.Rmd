@@ -9,7 +9,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-  
+<div style="text-align: justify"> 
+
 ```{r options, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -329,6 +330,4 @@ sum(results.raw$DE)
 sum(results.denoised$DE)
 ```
 
-
-
-
+</div>
