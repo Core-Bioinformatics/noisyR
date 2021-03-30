@@ -9,7 +9,7 @@ The noisyR package comprises an end-to-end pipeline for quantifying and removing
 
 Preprint: https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2
 
-<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/workflow.png" width="400">
+<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/workflow.png?raw=true" width="400">
 
 *Workflow diagram of the **noisyr** pipeline*
 
@@ -36,7 +36,7 @@ For example, if a similarity threshold is used as input then the corresponding e
 
 Options for smoothing, or summarising the observations in a box plot and selecting the minimum abundance for which the interquartile range (or median, or 5-95% range) is consistently above the similarity threshold are also available. As a general rule (due to the number of observations), we recommend using the smoothing with the count matrix approach, and the boxplot representation with the transcript option.
 
-<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/PCC_abn.png" width="900">
+<img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/PCC_abn.png?raw=true" width="900">
 
 *Indicative plots of the Pearson correlation calculated on windows of increasing average abundance for the count matrix-based noise removal approach (left) and per exon for the transcript-based noise removal approach (right).*
 
