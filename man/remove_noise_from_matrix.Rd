@@ -47,7 +47,7 @@ all entries below the noise threshold are replaced with the noise threshold.
 \examples{
 expression.matrix <- matrix(1:100, ncol=5)
 noise.thresholds <- c(5,30,45,62,83)
-expression.matrix.denoised <- remove_noise_from_matrix(
+remove_noise_from_matrix(
     expression.matrix = expression.matrix,
     noise.thresholds = noise.thresholds
 )

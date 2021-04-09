@@ -64,11 +64,24 @@ made using cast_gtf_to_genes()), an expression matrix for each of these genes an
 a vector of abundance thresholds.
 }
 \examples{
-expression.matrix <- matrix(1:100, ncol=5)
-noise.thresholds <- c(5,30,45,62,83)
-expression.matrix.denoised <- remove_noise_from_matrix(
-    expression.matrix = expression.matrix,
-    noise.thresholds = noise.thresholds
+bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
+genes <- data.frame("id" = 1:2,
+                    "gene_id" = c("gene1", "gene2"),
+                    "seqid" = c("seq1", "seq2"),
+                    "start" = 1,
+                    "end" = 1600)
+noise.thresholds <- c(0, 1)
+expression.summary = calculate_expression_similarity_transcript(
+  bams = bams,
+  genes = genes,
+  mapq.unique = 99
+)
+remove_noise_from_bams(
+    bams = bams,
+    genes = genes,
+    expression = expression.summary,
+    noise.thresholds = noise.thresholds,
+    mapq.unique = 99
 )
 
 }

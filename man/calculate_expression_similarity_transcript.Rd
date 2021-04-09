@@ -95,7 +95,7 @@ genes <- data.frame("id" = 1:2,
                     "seqid" = c("seq1", "seq2"),
                     "start" = 1,
                     "end" = 1600)
-profile_expression_list <- calculate_expression_similarity_transcript(
+expression.summary <- calculate_expression_similarity_transcript(
   bams = bams,
   genes = genes,
   mapq.unique = 99

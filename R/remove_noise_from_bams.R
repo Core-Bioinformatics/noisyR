@@ -32,11 +32,24 @@
 #' This matrix has no entries remaining below the noise threshold.
 #' @export
 #' @examples
-#' expression.matrix <- matrix(1:100, ncol=5)
-#' noise.thresholds <- c(5,30,45,62,83)
-#' expression.matrix.denoised <- remove_noise_from_matrix(
-#'     expression.matrix = expression.matrix,
-#'     noise.thresholds = noise.thresholds
+#' bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
+#' genes <- data.frame("id" = 1:2,
+#'                     "gene_id" = c("gene1", "gene2"),
+#'                     "seqid" = c("seq1", "seq2"),
+#'                     "start" = 1,
+#'                     "end" = 1600)
+#' noise.thresholds <- c(0, 1)
+#' expression.summary = calculate_expression_similarity_transcript(
+#'   bams = bams,
+#'   genes = genes,
+#'   mapq.unique = 99
+#' )
+#' remove_noise_from_bams(
+#'     bams = bams,
+#'     genes = genes,
+#'     expression = expression.summary,
+#'     noise.thresholds = noise.thresholds,
+#'     mapq.unique = 99
 #' )
 #'
 remove_noise_from_bams = function(
@@ -69,25 +82,12 @@ remove_noise_from_bams = function(
 
   base::message("Denoising ", base::length(bams), " BAM files...")
 
-  base::message("  filtering genes using the noise thresholds")
-  ngenes <- base::nrow(genes)
-  threshold.matrix <- base::matrix(base::rep(noise.thresholds, base::nrow(expression.matrix)),
-                                   ncol=base::ncol(expression.matrix), byrow = TRUE)
-  above.noise.threshold <- base::as.vector(
-    base::rowSums(expression.matrix >= threshold.matrix) > 0)
-  if(filter.by[1] == "gene"){
-    base::message("    doing filtering by gene")
-    all.unique.ensids <- base::unique(genes$gene_id)
-    all.unique.ensids.above.noise <-
-      sapply(X = all.unique.ensids, USE.NAMES = FALSE, FUN = function(gene){
-        base::any(above.noise.threshold[genes$gene_id == gene])
-      })
-    genes <- genes[genes$gene_id %in% all.unique.ensids[all.unique.ensids.above.noise], ]
-  }else if(filter.by[1] == "exon"){
-    base::message("    doing filtering by exon")
-    genes <- genes[above.noise.threshold, ]
-  }else stop("filter.by must be either gene or exon")
-  base::message("Kept ", base::nrow(genes), " entries out of ", ngenes)
+  genes.sub <- filter_genes_transcript(
+    genes = genes,
+    expression.matrix = expression.matrix,
+    noise.thresholds = noise.thresholds,
+    filter.by = filter.by
+  )
 
   bam.indexes <- base::paste(bams, ".bai", sep="")
   for(j in base::seq_len(base::length(bam.indexes))){
@@ -102,9 +102,9 @@ remove_noise_from_bams = function(
       }
     }
   }
-  gr <- GenomicRanges::GRanges(seqnames = genes$seqid,
-                               ranges = IRanges::IRanges(start=genes$start,
-                                                               end=genes$end))
+  gr <- GenomicRanges::GRanges(seqnames = genes.sub$seqid,
+                               ranges = IRanges::IRanges(start=genes.sub$start,
+                                                               end=genes.sub$end))
   params <- Rsamtools::ScanBamParam(which = gr,
                                     what = Rsamtools::scanBamWhat(),
                                     mapqFilter = ifelse(unique.only, mapq.unique, 0))

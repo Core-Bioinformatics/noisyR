@@ -53,6 +53,7 @@ calculate_first_minimum_density = function(mat, log.transform=TRUE, adjust=2, ma
       if(makeplots){
         x=NULL; y=NULL
         print(ggplot2::ggplot(data=base::data.frame("x"=dens$x, "y"=dens$y)) +
+                ggplot2::theme_minimal() +
                 ggplot2::geom_line(mapping=ggplot2::aes(x=x, y=y)) +
                 ggplot2::geom_vline(xintercept=firstmin, color="blue"))
       }

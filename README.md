@@ -44,9 +44,9 @@ Options for smoothing, or summarising the observations in a box plot and selecti
 
 Main function: *calculate_noise_threshold_base()* 
 
-Supporting functions: *get_methods_calculate_noise_threshold()*, *calculate_noise_threshold_method_statistics()*, *calculate_first_minimum_density()*
+Supporting functions: *get_methods_calculate_noise_threshold()*, *calculate_first_minimum_density()*
 
-Visualisation function: *plot_expression_similarity()* 
+Visualisation functions: *plot_expression_similarity()*, *calculate_noise_threshold_method_statistics()* 
 
 ## Noise removal ##
 
@@ -55,7 +55,7 @@ The third step uses the noise threshold calculated in step ii to remove noise fr
 * For the count matrix approach, genes whose expression is below the noise thresholds for every sample are removed and the average noise threshold is calculated and added to every entry. This ensures that the fold-changes observed by downstream analyses are not biased by low expression, while still preserving the structure and relative expression levels in the data. 
 * For the transcript approach, genes are removed from the BAM files if the expression of all their exons is below the noise thresholds for every sample. The removal is done at gene level to avoid scenarios that are not biologically possible.
 
-Main function: *remove_noise_from_matrix()*, *remove_noise_from_bams()*
+Main functions: *remove_noise_from_matrix()*, *remove_noise_from_bams()*
 
 ## Required packages ##
 

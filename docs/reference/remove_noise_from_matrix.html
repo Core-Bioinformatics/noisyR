@@ -231,11 +231,30 @@ This matrix has no entries remaining below the noise threshold.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>expression.matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, ncol<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>
 <span class='va'>noise.thresholds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>30</span>,<span class='fl'>45</span>,<span class='fl'>62</span>,<span class='fl'>83</span><span class='op'>)</span>
-<span class='va'>expression.matrix.denoised</span> <span class='op'>&lt;-</span> <span class='fu'>remove_noise_from_matrix</span><span class='op'>(</span>
+<span class='fu'>remove_noise_from_matrix</span><span class='op'>(</span>
     expression.matrix <span class='op'>=</span> <span class='va'>expression.matrix</span>,
     noise.thresholds <span class='op'>=</span> <span class='va'>noise.thresholds</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Denoising expression matrix...</span></div><div class='output co'>#&gt; <span class='message'>    removing noisy genes</span></div><div class='output co'>#&gt; <span class='message'>    adjusting matrix</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Denoising expression matrix...</span></div><div class='output co'>#&gt; <span class='message'>    removing noisy genes</span></div><div class='output co'>#&gt; <span class='message'>    adjusting matrix</span></div><div class='output co'>#&gt;       [,1] [,2] [,3] [,4] [,5]
+#&gt;  [1,]   47   67   87  107  127
+#&gt;  [2,]   48   68   88  108  128
+#&gt;  [3,]   49   69   89  109  129
+#&gt;  [4,]   50   70   90  110  130
+#&gt;  [5,]   51   71   91  111  131
+#&gt;  [6,]   52   72   92  112  132
+#&gt;  [7,]   53   73   93  113  133
+#&gt;  [8,]   54   74   94  114  134
+#&gt;  [9,]   55   75   95  115  135
+#&gt; [10,]   56   76   96  116  136
+#&gt; [11,]   57   77   97  117  137
+#&gt; [12,]   58   78   98  118  138
+#&gt; [13,]   59   79   99  119  139
+#&gt; [14,]   60   80  100  120  140
+#&gt; [15,]   61   81  101  121  141
+#&gt; [16,]   62   82  102  122  142
+#&gt; [17,]   63   83  103  123  143
+#&gt; [18,]   64   84  104  124  144
+#&gt; [19,]   65   85  105  125  145</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

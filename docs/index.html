@@ -141,8 +141,8 @@
 <p><img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/PCC_abn.png?raw=true" width="900"></p>
 <p><em>Indicative plots of the Pearson correlation calculated on windows of increasing average abundance for the count matrix-based noise removal approach (left) and per exon for the transcript-based noise removal approach (right).</em></p>
 <p>Main function: <em>calculate_noise_threshold_base()</em></p>
-<p>Supporting functions: <em>get_methods_calculate_noise_threshold()</em>, <em>calculate_noise_threshold_method_statistics()</em>, <em>calculate_first_minimum_density()</em></p>
-<p>Visualisation function: <em>plot_expression_similarity()</em></p>
+<p>Supporting functions: <em>get_methods_calculate_noise_threshold()</em>, <em>calculate_first_minimum_density()</em></p>
+<p>Visualisation functions: <em>plot_expression_similarity()</em>, <em>calculate_noise_threshold_method_statistics()</em></p>
 </div>
 <div id="noise-removal" class="section level2">
 <h2 class="hasAnchor">
@@ -152,7 +152,7 @@
 <li>For the count matrix approach, genes whose expression is below the noise thresholds for every sample are removed and the average noise threshold is calculated and added to every entry. This ensures that the fold-changes observed by downstream analyses are not biased by low expression, while still preserving the structure and relative expression levels in the data.</li>
 <li>For the transcript approach, genes are removed from the BAM files if the expression of all their exons is below the noise thresholds for every sample. The removal is done at gene level to avoid scenarios that are not biologically possible.</li>
 </ul>
-<p>Main function: <em>remove_noise_from_matrix()</em>, <em>remove_noise_from_bams()</em></p>
+<p>Main functions: <em>remove_noise_from_matrix()</em>, <em>remove_noise_from_bams()</em></p>
 </div>
 <div id="required-packages" class="section level2">
 <h2 class="hasAnchor">

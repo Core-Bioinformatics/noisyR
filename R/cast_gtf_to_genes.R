@@ -12,7 +12,7 @@
 #' @export
 #' @examples
 #' fl <- system.file("extdata", "example.gtf.gz", package="Rsamtools", mustWork=TRUE)
-#' genes <- cast_gtf_to_genes(fl)
+#' cast_gtf_to_genes(fl)
 
 cast_gtf_to_genes = function(
   filename,

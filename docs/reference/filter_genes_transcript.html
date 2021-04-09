@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Function to extract exon names and positions from a gtf file — cast_gtf_to_genes • noisyr</title>
+<title>Function to filter the gene table for the transcript approach — filter_genes_transcript • noisyr</title>
 
 
 <!-- jquery -->
@@ -66,9 +66,13 @@
 
 
 
-<meta property="og:title" content="Function to extract exon names and positions from a gtf file — cast_gtf_to_genes" />
-<meta property="og:description" content="This function is used to extract all exons and their positions
-in the genome from an input gtf file." />
+<meta property="og:title" content="Function to filter the gene table for the transcript approach — filter_genes_transcript" />
+<meta property="og:description" content="This function is used to filter the gene table (usually created with
+cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+It uses as input the gene table (usually containing individual exons),
+an expression matrix for each of these and a vector of abundance thresholds.
+This function is used internally by remove_noise_from_bams() to determine
+which genes to retain." />
 
 
 
@@ -162,34 +166,52 @@ in the genome from an input gtf file." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to extract exon names and positions from a gtf file</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Core-Bioinformatics/noisyR/blob/master/R/cast_gtf_to_genes.R'><code>R/cast_gtf_to_genes.R</code></a></small>
-    <div class="hidden name"><code>cast_gtf_to_genes.Rd</code></div>
+    <h1>Function to filter the gene table for the transcript approach</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Core-Bioinformatics/noisyR/blob/master/R/filter_genes_transcript.R'><code>R/filter_genes_transcript.R</code></a></small>
+    <div class="hidden name"><code>filter_genes_transcript.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is used to extract all exons and their positions
-in the genome from an input gtf file.</p>
+    <p>This function is used to filter the gene table (usually created with
+cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+It uses as input the gene table (usually containing individual exons),
+an expression matrix for each of these and a vector of abundance thresholds.
+This function is used internally by remove_noise_from_bams() to determine
+which genes to retain.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cast_gtf_to_genes</span><span class='op'>(</span><span class='va'>filename</span>, feature <span class='op'>=</span> <span class='st'>"exon"</span>, att_of_interest <span class='op'>=</span> <span class='st'>"gene_id"</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>filter_genes_transcript</span><span class='op'>(</span>
+  <span class='va'>genes</span>,
+  <span class='va'>expression.matrix</span>,
+  <span class='va'>noise.thresholds</span>,
+  filter.by <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gene"</span>, <span class='st'>"exon"</span><span class='op'>)</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>filename</th>
-      <td><p>path to the gtf file</p></td>
+      <th>genes</th>
+      <td><p>a tibble of the exons extracted from the gtf file;
+(usually the the output of cast_gtf_to_genes())</p></td>
     </tr>
     <tr>
-      <th>feature</th>
-      <td><p>the feature type name to filter the feature (3rd) column of the gtf/gff file;
-default is exon</p></td>
+      <th>expression.matrix</th>
+      <td><p>the expression matrix, usually
+calculated by calculate_expression_similarity_transcript()</p></td>
     </tr>
     <tr>
-      <th>att_of_interest</th>
-      <td><p>the attribute to extract from the last column of the gtf/gff file;
-default in gene_id</p></td>
+      <th>noise.thresholds</th>
+      <td><p>a vector of expression thresholds by sample</p></td>
+    </tr>
+    <tr>
+      <th>filter.by</th>
+      <td><p>Either "gene" (default) or "exon"; if filter.by="gene", a gene
+(as determined by its ENSEMBL id) is removed
+if and only if all of its exons are below the corresponding noise thresholds;
+if filter.by="exon", then each exon is individually removed
+if it is below the corresponding noise thresholds.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -199,26 +221,30 @@ default in gene_id</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tibble of the ids, gene names, chromosomes, start and end positions
-of each exon found in the gtf file.</p>
+    <p>Returns a filtered tibble of exons, with the noise removed.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>fl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"example.gtf.gz"</span>, package<span class='op'>=</span><span class='st'>"Rsamtools"</span>, mustWork<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>
-<span class='fu'>cast_gtf_to_genes</span><span class='op'>(</span><span class='va'>fl</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 91 x 4</span><span>
-#&gt;    gene_id         seqid start   end
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>           </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #949494;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>1</span><span>737  </span><span style='text-decoration: underline;'>2</span><span>090
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>1</span><span>873  </span><span style='text-decoration: underline;'>1</span><span>920
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>2</span><span>042  </span><span style='text-decoration: underline;'>2</span><span>090
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>2</span><span>476  </span><span style='text-decoration: underline;'>2</span><span>560
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>2</span><span>476  </span><span style='text-decoration: underline;'>2</span><span>584
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>2</span><span>838  </span><span style='text-decoration: underline;'>2</span><span>915
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>3</span><span>084  </span><span style='text-decoration: underline;'>3</span><span>237
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>3</span><span>084  </span><span style='text-decoration: underline;'>4</span><span>275
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> ENSG00000223972 chr1   </span><span style='text-decoration: underline;'>3</span><span>316  </span><span style='text-decoration: underline;'>3</span><span>533
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> ENSG00000227232 chr1   </span><span style='text-decoration: underline;'>4</span><span>226  </span><span style='text-decoration: underline;'>4</span><span>692
-#&gt; </span><span style='color: #949494;'># ... with 81 more rows</span><span></div></span></pre>
+    <pre class="examples"><div class='input'><span class='va'>bams</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex1.bam"</span>, package<span class='op'>=</span><span class='st'>"Rsamtools"</span>, mustWork<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>genes</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='st'>"id"</span> <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>,
+                    <span class='st'>"gene_id"</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"gene1"</span>, <span class='st'>"gene2"</span><span class='op'>)</span>,
+                    <span class='st'>"seqid"</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"seq1"</span>, <span class='st'>"seq2"</span><span class='op'>)</span>,
+                    <span class='st'>"start"</span> <span class='op'>=</span> <span class='fl'>1</span>,
+                    <span class='st'>"end"</span> <span class='op'>=</span> <span class='fl'>1600</span><span class='op'>)</span>
+<span class='va'>noise.thresholds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>
+<span class='va'>expression.summary</span> <span class='op'>=</span> <span class='fu'><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></span><span class='op'>(</span>
+  bams <span class='op'>=</span> <span class='va'>bams</span>,
+  genes <span class='op'>=</span> <span class='va'>genes</span>,
+  mapq.unique <span class='op'>=</span> <span class='fl'>99</span>
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.85 secs</span></div><div class='input'><span class='fu'>filter_genes_transcript</span><span class='op'>(</span>
+    genes <span class='op'>=</span> <span class='va'>genes</span>,
+    expression.matrix <span class='op'>=</span> <span class='va'>expression.summary</span><span class='op'>$</span><span class='va'>expression.matrix</span>,
+    noise.thresholds <span class='op'>=</span> <span class='va'>noise.thresholds</span>,
+<span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>  filtering genes using the noise thresholds</span></div><div class='output co'>#&gt; <span class='message'>    doing filtering by gene</span></div><div class='output co'>#&gt; <span class='message'>  kept 2 entries out of 2</span></div><div class='output co'>#&gt;   id gene_id seqid start  end
+#&gt; 1  1   gene1  seq1     1 1600
+#&gt; 2  2   gene2  seq2     1 1600</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

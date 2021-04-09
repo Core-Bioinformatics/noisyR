@@ -56,5 +56,6 @@ profile <- calculate_expression_profile(
 
 ggplot2::ggplot(tibble::tibble(y = profile$profile[,1],
                                x = seq_along(y))) +
-ggplot2::geom_bar(ggplot2::aes(x, y), stat = "identity")
+ggplot2::geom_bar(ggplot2::aes(x, y), stat = "identity") +
+ggplot2::theme_minimal()
 }
