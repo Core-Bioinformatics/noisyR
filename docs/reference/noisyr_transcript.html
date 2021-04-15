@@ -68,7 +68,11 @@
 
 <meta property="og:title" content="Run the noisyR pipeline for the transcript approach — noisyr_transcript" />
 <meta property="og:description" content="Calls the functions to run each of the three steps of the pipeline
-(similarity calculation, noise quantification, noise removal), with the specified parameters." />
+(similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: calculate_expression_similarity_transcript,
+calculate_noise_threshold. remove_noise_from_bams.
+Optional steps: calculate_noise_threshold_method_statistics" />
 
 
 
@@ -169,7 +173,11 @@
 
     <div class="ref-description">
     <p>Calls the functions to run each of the three steps of the pipeline
-(similarity calculation, noise quantification, noise removal), with the specified parameters.</p>
+(similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: <code><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></code>,
+<code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code>. <code><a href='remove_noise_from_bams.html'>remove_noise_from_bams</a></code>.
+Optional steps: <code><a href='calculate_noise_threshold_method_statistics.html'>calculate_noise_threshold_method_statistics</a></code></p>
     </div>
 
     <pre class="usage"><span class='fu'>noisyr_transcript</span><span class='op'>(</span>
@@ -180,7 +188,6 @@
   ncores <span class='op'>=</span> <span class='fl'>1</span>,
   similarity.threshold <span class='op'>=</span> <span class='fl'>0.25</span>,
   method.chosen <span class='op'>=</span> <span class='st'>"Boxplot-IQR"</span>,
-  minimise.coefficient.of.variation <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -196,7 +203,7 @@ it extracts all files that end in .bam; looks in the working directory by defaul
     <tr>
       <th>genes</th>
       <td><p>a tibble of the exons extracted from the gtf file;
-this is meant for speed if the output of cast_gtf_to_genes() is already generated,
+this is meant for speed if the output of <code><a href='cast_gtf_to_genes.html'>cast_gtf_to_genes</a></code> is already generated,
 or if the user wants to only calculate similarity for a subset of exons</p></td>
     </tr>
     <tr>
@@ -211,14 +218,14 @@ but parallelisation is highly encouraged; it is set to detectCores() if higher</
     </tr>
     <tr>
       <th>similarity.threshold, method.chosen</th>
-      <td><p>parameters passed on to calculate_noise_threshold_base();
+      <td><p>parameters passed on to
+<code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code>; they can be single values or vectors;
+if they are vectors optimal values are computed by calling
+<code><a href='calculate_noise_threshold_method_statistics.html'>calculate_noise_threshold_method_statistics</a></code> and
+minimising the coefficient of variation across samples; all possible values for
+method.chosen can be viewed by <code><a href='get_methods_calculate_noise_threshold.html'>get_methods_calculate_noise_threshold</a></code>;
 only boxplot based methods are accepted for the transcript approach due to the number of observations
 and high variance</p></td>
-    </tr>
-    <tr>
-      <th>minimise.coefficient.of.variation</th>
-      <td><p>whether to compute optimal values for similarity.threshold
-and method.chosen by minimising the coefficient of variation across samples</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -233,7 +240,7 @@ for more details and required arguments</p></td>
 of remove_noise_from_bams()</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>[noisyr()], [noisyr_counts()]</p></div>
+    <div class='dont-index'><p><code><a href='noisyr.html'>noisyr</a></code>, <code><a href='noisyr_counts.html'>noisyr_counts</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>bams</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex1.bam"</span>, package<span class='op'>=</span><span class='st'>"Rsamtools"</span>, mustWork<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>2</span><span class='op'>)</span>
@@ -244,9 +251,10 @@ of remove_noise_from_bams()</p>
                     <span class='st'>"end"</span> <span class='op'>=</span> <span class='fl'>1600</span><span class='op'>)</span>
 <span class='fu'>noisyr_transcript</span><span class='op'>(</span>
   bams <span class='op'>=</span> <span class='va'>bams</span>,
-  genes <span class='op'>=</span> <span class='va'>genes</span>
+  genes <span class='op'>=</span> <span class='va'>genes</span>,
+  destination.files <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/tempfile.html'>tempdir</a></span><span class='op'>(</span><span class='op'>)</span>, <span class='st'>"/"</span>, <span class='fu'><a href='https://rdrr.io/r/base/basename.html'>basename</a></span><span class='op'>(</span><span class='va'>bams</span><span class='op'>)</span>, <span class='st'>".noisefiltered.bam"</span><span class='op'>)</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>&gt;&gt;&gt; noisyR transcript approach pipeline &lt;&lt;&lt;</span></div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: the standard deviation is zero</span></div><div class='output co'>#&gt; <span class='warning'>Warning: the standard deviation is zero</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.13 secs</span></div><div class='output co'>#&gt; <span class='message'>Similarity calculation produced too many NAs, returning zero...</span></div><div class='output co'>#&gt; <span class='message'>Denoising 2 BAM files...</span></div><div class='output co'>#&gt; <span class='message'>  filtering genes using the noise thresholds</span></div><div class='output co'>#&gt; <span class='message'>    doing filtering by gene</span></div><div class='output co'>#&gt; <span class='message'>  kept 2 entries out of 2</span></div><div class='output co'>#&gt; <span class='message'>  denoising BAM file 1 of 2</span></div><div class='output co'>#&gt; <span class='message'>  denoising BAM file 2 of 2</span></div><div class='output co'>#&gt; <span class='message'>&gt;&gt;&gt; Done! &lt;&lt;&lt;</span></div></pre>
+</div><div class='output co'>#&gt; <span class='message'>&gt;&gt;&gt; noisyR transcript approach pipeline &lt;&lt;&lt;</span></div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='warning'>Warning: the standard deviation is zero</span></div><div class='output co'>#&gt; <span class='warning'>Warning: the standard deviation is zero</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.12 secs</span></div><div class='output co'>#&gt; <span class='message'>Similarity calculation produced too many NAs, returning zero...</span></div><div class='output co'>#&gt; <span class='message'>Denoising 2 BAM files...</span></div><div class='output co'>#&gt; <span class='message'>  filtering genes using the noise thresholds</span></div><div class='output co'>#&gt; <span class='message'>    doing filtering by gene</span></div><div class='output co'>#&gt; <span class='message'>  kept 2 entries out of 2</span></div><div class='output co'>#&gt; <span class='message'>  denoising BAM file 1 of 2</span></div><div class='output co'>#&gt; <span class='message'>  denoising BAM file 2 of 2</span></div><div class='output co'>#&gt; <span class='message'>&gt;&gt;&gt; Done! &lt;&lt;&lt;</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

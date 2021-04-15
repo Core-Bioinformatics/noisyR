@@ -2,14 +2,14 @@
 #' @description This function outputs the methods available for the calculation of
 #' the correlation or distance. The standard correlation methods use stats::cor and
 #' a wide variety of distance methods are available using the philentropy package.
-#' To be used as input in calculate_expression_similarity_*().
+#' To be used as input in \code{\link{calculate_expression_similarity_counts}} or
+#' \code{\link{calculate_expression_similarity_transcript}}.
 #' @param names whether to output names (default) or characterisation
 #' as similarity or dissimilarity (used internally to invert dissimilarity measures)
-#' @return A character vector of options for the method arguement of calculate_expression_similarity_*();
+#' @return A character vector of options for the method arguement of the similarity calculation;
 #' if names=FALSE, a vector of types (similarity/dissimilarity measure) of the same length
 #' @export
 #' @examples get_methods_correlation_distance()
-
 get_methods_correlation_distance = function(names=TRUE){
   if(names){
     methods.correlation <- base::c("pearson", "kendall", "spearman")

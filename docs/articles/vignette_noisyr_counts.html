@@ -126,7 +126,7 @@
 <li>noise removal</li>
 </ol>
 <p>Each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined.</p>
-<p>The package and some applications are described in more detail in <a href="https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2">this paper</a> and is actively maintained on <a href="https://github.com/Core-Bioinformatics/noisyR" class="uri">https://github.com/Core-Bioinformatics/noisyR</a>.</p>
+<p>The package and some applications are described in more detail in <a href="https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2">this preprint</a> and is actively maintained on <a href="https://github.com/Core-Bioinformatics/noisyR" class="uri">https://github.com/Core-Bioinformatics/noisyR</a>.</p>
 <p>The <strong>count matrix approach</strong> uses the original, un-normalised count matrix, as provided after alignment and feature quantification; each sample is processed individually, only the relative expressions across samples are compared. Relying on the hypothesis that the majority of genes are not DE, most of the evaluations are expected to point towards a high similarity across samples.</p>
 <h1 id="installation">Installation</h1>
 <p>To install the package, first install all bioconductor dependencies:</p>
@@ -299,10 +299,10 @@
 <span class="co">#&gt; Calculating expression summary and JSE for each window...</span>
 <span class="co">#&gt; Performing t-tests...</span>
 <span class="co">#&gt; The number of similar windows found for each window (including itself) were:</span>
-<span class="co">#&gt;     1 1 1 2 2 1 3 3 3 4 4 5 5 3 2 2 5 4 5 6 5 5 3 7 1 3 3 3 4 4 4 1 4</span>
+<span class="co">#&gt;     1 1 1 1 1 1 1 2 2 2 2 2 3 3 4 3 4 4 6 7 5 4 3 4 4 4 4 3 1 3 3 1 3</span>
 <span class="co">#&gt; Optimal window found!</span></code></pre></div>
 <p><img src="vignette_noisyr_counts_files/figure-html/window_opt-1.png" width="700"></p>
-<pre><code>#&gt; [1] 3885</code></pre>
+<pre><code>#&gt; [1] 7215</code></pre>
 <p>Window length optimisation can be turned on using the <em>optimise.window.length.logical</em> parameter in <em>noisyr()</em> or <em>noisyr_counts()</em>.</p>
 <p>Plots of the abundance-correlation relation can be generated through the <em>plot_expression_similarity()</em> function:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -337,7 +337,7 @@
 <h2 id="noise-quantification">Noise quantification</h2>
 <p>Using the output of the similarity calculation, we can compute the signal to noise threshold in each sample:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">noise.thresholds</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold_base.html">calculate_noise_threshold_base</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="va">expression.summary</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">noise.thresholds</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold.html">calculate_noise_threshold</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="va">expression.summary</span><span class="op">)</span>
 <span class="co">#&gt; Calculating noise thresholds for 4 samples...</span>
 <span class="co">#&gt;     similarity.threshold = 0.25</span>
 <span class="co">#&gt;     method.chosen = Boxplot-IQR</span>
@@ -359,7 +359,7 @@
 <p>The first three methods are just calculating the minimum of the density plot for all genes (a common, fast approach). This usually provides a rough, overestimated signal to noise threshold.</p>
 <p>The rest of the methods use either the (smoothed) line plot or the boxplot to find the noise threshold given a similarity (correlation/distance) threshold.</p>
 <p>It is recommended that the method with the least coefficient of variation across all samples is chosen for noise removal. This can also be applied to compute the correlation/distance threshold instead of supplying it manually, which is especially useful for non-correlation measures which don’t have a standard range.</p>
-<p>For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset:</p>
+<p>For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset (by default all methods from <em>get_methods_calculate_noise_threshold()</em> are used:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">similarity.threshold.sequence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, by<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span>
 <span class="va">stats.table</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold_method_statistics.html">calculate_noise_threshold_method_statistics</a></span><span class="op">(</span>
@@ -403,9 +403,9 @@
 <span class="co">#&gt;  9 Line_plot loess10_smoothing     0.28 12.2  24.0     0.578  43.3</span>
 <span class="co">#&gt; 10 Line_plot loess10_smoothing     0.29 15.9  28.0     0.505  47.4</span>
 <span class="co">#&gt; 11 Line_plot loess10_smoothing     0.3  17.1  35.4     0.486  52.0</span></code></pre></div>
-<p>We can then call <em>calculate_noise_threshold_base()</em> with our optimised parameters:</p>
+<p>We can then call <em>calculate_noise_threshold()</em> with our optimised parameters:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">noise.thresholds</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold_base.html">calculate_noise_threshold_base</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">noise.thresholds</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold.html">calculate_noise_threshold</a></span><span class="op">(</span>
   expression <span class="op">=</span> <span class="va">expression.summary</span>,
   similarity.threshold <span class="op">=</span> <span class="fl">0.21</span>,
   method.chosen <span class="op">=</span> <span class="st">"Line_plot-loess10_smoothing"</span>
@@ -415,9 +415,9 @@
 <span class="co">#&gt;     method.chosen = Line_plot-loess10_smoothing</span>
 <span class="va">noise.thresholds</span>
 <span class="co">#&gt; [1]  9.664027 13.325175  7.368364  9.171495</span></code></pre></div>
-<p>Noise removal parameter optimisation can be turned on using the <em>minimise.coefficient.of.variation</em> parameter in <em>noisyr()</em> or <em>noisyr_counts()</em> and passing further parameters for <em>similarity.threshold.sequence</em> and/or <em>method.chosen.sequence</em>.</p>
+<p>Parameter optimisation can be turned on by specifying vectors of values for <em>similarity.threshold</em> and/or <em>method.chosen</em> (a subset of <em>get_methods_calculate_noise_threshold()</em>) when calling <em>noisyr()</em> or <em>noisyr_counts()</em>.</p>
 <h2 id="noise-removal">Noise removal</h2>
-<p>To produce the denoised count matrix, the function <em>remove_noise_from_matrix()</em> is used with a specified vector of noise thresholds (usually calculated by <em>calculate_noise_threshold_base()</em>).</p>
+<p>To produce the denoised count matrix, the function <em>remove_noise_from_matrix()</em> is used with a specified vector of noise thresholds (usually calculated by <em>calculate_noise_threshold()</em>).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">expression.matrix.denoised</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/remove_noise_from_matrix.html">remove_noise_from_matrix</a></span><span class="op">(</span>
   expression.matrix <span class="op">=</span> <span class="va">expression.matrix</span>,
@@ -454,13 +454,13 @@
 <span class="co">#&gt; [1] 24309</span></code></pre></div>
 <p>By supplying the corresponding parameters to <em>noisyr()</em>, we obtain the same final result from the full pipeline:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">expression.matrix.denoised.full_pipeline</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/noisyr.html">noisyr</a></span><span class="op">(</span>
-  approach_for_similarity_calculation <span class="op">=</span> <span class="st">"counts"</span>, 
+<code class="sourceCode R"><span class="va">expression.matrix.denoised.full.pipeline</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/noisyr.html">noisyr</a></span><span class="op">(</span>
+  approach.for.similarity.calculation <span class="op">=</span> <span class="st">"counts"</span>, 
   expression.matrix <span class="op">=</span> <span class="va">expression.matrix</span>,
   similarity.measure <span class="op">=</span> <span class="st">"correlation_pearson"</span>,
   optimise.window.length.logical <span class="op">=</span> <span class="cn">FALSE</span>,
-  minimise.coefficient.of.variation <span class="op">=</span> <span class="cn">TRUE</span>,
-  similarity.threshold.sequence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, by<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span>
+  similarity.threshold.sequence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, by<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span>,
+  method.chosen.sequence <span class="op">=</span> <span class="fu"><a href="../reference/get_methods_calculate_noise_threshold.html">get_methods_calculate_noise_threshold</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="co">#&gt; &gt;&gt;&gt; noisyR counts approach pipeline &lt;&lt;&lt;</span>
 <span class="co">#&gt; The input matrix has 55573 rows and 4 cols</span>
@@ -474,17 +474,16 @@
 <span class="co">#&gt;   Working with sample 2</span>
 <span class="co">#&gt;   Working with sample 3</span>
 <span class="co">#&gt;   Working with sample 4</span>
-<span class="co">#&gt; Selecting parameters that minimise the coefficient of variation...</span>
 <span class="co">#&gt; Calculating noise thresholds for 4 samples...</span>
-<span class="co">#&gt;     similarity.threshold = 0.21</span>
-<span class="co">#&gt;     method.chosen = Line_plot-loess10_smoothing</span>
+<span class="co">#&gt;     similarity.threshold = 0.25</span>
+<span class="co">#&gt;     method.chosen = Boxplot-IQR</span>
 <span class="co">#&gt; Denoising expression matrix...</span>
 <span class="co">#&gt;     removing noisy genes</span>
 <span class="co">#&gt;     adjusting matrix</span>
 <span class="co">#&gt; &gt;&gt;&gt; Done! &lt;&lt;&lt;</span>
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">expression.matrix.denoised</span>,
-          <span class="va">expression.matrix.denoised.full_pipeline</span><span class="op">)</span>
-<span class="co">#&gt; [1] TRUE</span></code></pre></div>
+          <span class="va">expression.matrix.denoised.full.pipeline</span><span class="op">)</span>
+<span class="co">#&gt; [1] FALSE</span></code></pre></div>
 <h1 id="downstream-analysis">Downstream analysis</h1>
 <p>The denoised matrix can be used instead of the raw count matrix for downstream analysis. Here we present a simple example of a differential expression (DE) analysis and compare the two.</p>
 <p>We create a function to perform the same DE pipeline on both matrices, using <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/">the edgeR package</a>.</p>
@@ -502,7 +501,8 @@
                          timepoint <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"0h"</span>, <span class="st">"0h"</span>, <span class="st">"12h"</span>, <span class="st">"12h"</span><span class="op">)</span><span class="op">)</span>
   
   <span class="co"># quantile normalise</span>
-  <span class="va">expression.matrix.normalised</span> <span class="op">&lt;-</span> <span class="fu">preprocessCore</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/preprocessCore/man/normalize.quantiles.html">normalize.quantiles</a></span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span>
+  <span class="va">expression.matrix.normalised</span> <span class="op">&lt;-</span>
+    <span class="fu">preprocessCore</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/preprocessCore/man/normalize.quantiles.html">normalize.quantiles</a></span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">expression.matrix.normalised</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">expression.matrix.normalised</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">base</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span>
   
@@ -524,7 +524,10 @@
   <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span>
     <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">+</span> 
       <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-      <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">logFC</span>, y<span class="op">=</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FDR</span><span class="op">)</span>, color<span class="op">=</span><span class="va">DE</span><span class="op">)</span>, show.legend<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>
+      <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">logFC</span>, 
+                                       y<span class="op">=</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log10</a></span><span class="op">(</span><span class="va">FDR</span><span class="op">)</span>, 
+                                       colour<span class="op">=</span><span class="va">DE</span><span class="op">)</span>, 
+                          show.legend<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
       <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html">lims</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="fl">12</span><span class="op">)</span>, y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
@@ -533,20 +536,13 @@
   
 <span class="op">}</span>
 
-<span class="va">results.raw</span> <span class="op">&lt;-</span> <span class="fu">DE_edgeR</span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span></code></pre></div>
-<p><img src="vignette_noisyr_counts_files/figure-html/edgeR-1.png" width="700"></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">results.denoised</span> <span class="op">&lt;-</span> <span class="fu">DE_edgeR</span><span class="op">(</span><span class="va">expression.matrix.denoised</span><span class="op">)</span></code></pre></div>
-<p><img src="vignette_noisyr_counts_files/figure-html/edgeR-2.png" width="700"></p>
+<span class="va">results.raw</span> <span class="op">&lt;-</span> <span class="fu">DE_edgeR</span><span class="op">(</span><span class="va">expression.matrix</span><span class="op">)</span>
+<span class="va">results.denoised</span> <span class="op">&lt;-</span> <span class="fu">DE_edgeR</span><span class="op">(</span><span class="va">expression.matrix.denoised</span><span class="op">)</span></code></pre></div>
+<p><img src="volcanos.png" width="100%"></p>
 <blockquote>
 <p>We observe the distribution of genes in the volcano plots becoming a lot tighter for the denoised matrix. For the raw matrix, there are a lot of genes with low p-values and high log-fold changes that are barely called DE. Those “whiskers” are corrected for the denoised matrix.</p>
 </blockquote>
-<p>We can also see the number of differentially expressed genes has been reduced:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">results.raw</span><span class="op">$</span><span class="va">DE</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3810</span>
-<span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">results.denoised</span><span class="op">$</span><span class="va">DE</span><span class="op">)</span>
-<span class="co">#&gt; [1] 3347</span></code></pre></div>
+<p>We can also see the number of differentially expressed genes has been reduced.</p>
 </div>
   </div>
 

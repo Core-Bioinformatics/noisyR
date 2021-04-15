@@ -1,21 +1,23 @@
 #' Function to tabulate statistics for different methods of calculating the noise threshold
 #' @description This function is used to tabulate and compare different combinations of similarity
 #' threshold and method to calculate the noise threshold for a given expression matrix.
-#' @param expression either an expression summary (as calculated by calculate_expression_similarity_*()),
+#' @param expression either an expression summary (as calculated by
+#' \code{\link{calculate_expression_similarity_counts}} or \code{\link{calculate_expression_similarity_transcript}}),
 #' which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 #' alternatively, just an expression matrix; only density based methods are available for the latter case
 #' @param similarity.threshold.sequence similarity (correlation or inverse distance) threshold(s) to be used
 #' to find corresponding noise threshold; can be a single value or a numeric vector;
 #'  the default, 0.25 is usually suitable for the Pearson correlation (the default similarity measure)
 #' @param method.chosen.sequence methods to use to calculate the noise thresholds,
-#' must be a subset of get_methods_calculate_noise_threshold(); defaults to all
+#' must be a subset of \code{\link{get_methods_calculate_noise_threshold}}; defaults to all
 #' @param dump.stats name of csv to export different thresholds calculated (optional)
-#' @param ... other arguments (for the boxplot methods) passed to calculate_noise_threshold_base()
+#' @param ... other arguments (for the boxplot methods) passed to \code{\link{calculate_noise_threshold}}
 #' @return A tibble containing information on noise thresholds calculated using the input
 #' similarity thresholds and methods (optionally written in a csv file).
 #' The columns list the chosen method and similarity threshold, the minimum, mean,
 #' coefficient of variation, and maximum of the noise thresholds, and all the noise thresholds
 #' concatenated as a string.
+#' @seealso \code{\link{calculate_noise_threshold}}
 #' @export
 #' @examples
 #' expression.summary <- calculate_expression_similarity_counts(
@@ -70,7 +72,7 @@ calculate_noise_threshold_method_statistics <- function(
   for(similarity.threshold in similarity.threshold.sequence){
     for(method.chosen in method.chosen.sequence){
       noise.thresholds <- base::suppressMessages(
-        noisyr::calculate_noise_threshold_base(
+        noisyr::calculate_noise_threshold(
           expression = expression,
           similarity.threshold = similarity.threshold,
           method.chosen = method.chosen,

@@ -1,13 +1,13 @@
 #' Optimise the elements per window for the count matrix approach
 #' @description This function optimises the number of elements per window
-#' that is used in calculate_expression_similarity_counts(), by requiring
+#' that is used in \code{\link{calculate_expression_similarity_counts}}, by requiring
 #' the distribution of correlations/distances to stabilise to a
 #' uniform distribution. The Jensen-Shannon divergence is used to assess
 #' the stability.
 #' @param expression.matrix expression matrix, can be normalized or not
 #' @param similarity.measure one of the correlation or distance metrics to be used,
 #' defaults to pearson correlation; list of all methods in
-#' get_methods_correlation_distance()
+#' \code{\link{get_methods_correlation_distance}}
 #' @param window.length.min,window.length.max,window.length.by definition of the parameter search space;
 #' default is between 1\% and 33\% of the number of rows in the expression matrix,
 #' incremented by 1\%
@@ -22,9 +22,11 @@
 #' @return A single value of the optimal number of elements per window.
 #' If no optimal value was found, this function returns NULL.
 #' @export
-#' @examples optimise_window_length(
-#' matrix(1:100+runif(100), ncol=5, byrow=TRUE),
-#'   window.length.min=3, window.length.max=5, iteration.number=5)
+#' @examples
+#' optimise_window_length(
+#'   matrix(1:100+runif(100), ncol=5, byrow=TRUE),
+#'   window.length.min=3, window.length.max=5, iteration.number=5
+#' )
 optimise_window_length = function(
   expression.matrix,
   similarity.measure = "correlation_pearson",

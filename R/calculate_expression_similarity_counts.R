@@ -1,11 +1,11 @@
-#' Calcualte the expression levels and expression levels similarity matrices using the count matrix
+#' Calcualate the expression levels and expression levels similarity matrices using the count matrix
 #' @description This function generates an average similarity (correlation/inverse distance) coefficient
 #' for every sliding window, for each sample in the expression matrix.
 #' That is done by comparing the distribution of genes in each window across samples.
 #' @param expression.matrix the expression matrix, can be normalized or not
 #' @param similarity.measure one of the correlation or distance metrics to be used,
 #' defaults to pearson correlation; list of all methods in
-#' get_methods_correlation_distance()
+#' \code{\link{get_methods_correlation_distance}}
 #' @param n.elements.per.window number of elements to have in a window,
 #' default 10\% of the number of rows
 #' @param n.step step size to slide across, default 1\% of n.elements.per.window
@@ -17,6 +17,7 @@
 #'         expression levels similarity matrix;
 #'         they have the same # of columns as the expression matrix,
 #'         and n.elements.per.window * n.step rows.
+#' @seealso \code{\link{calculate_expression_similarity_transcript}}
 #' @export
 #' @examples
 #' calculate_expression_similarity_counts(
@@ -63,7 +64,7 @@ calculate_expression_similarity_counts = function(
     fun_corr_dist = function(cols.in){
       stats::cor(cols.in, method=base.method)[1,2]
     }
-  }else if(use.corr.dist=="distance"){
+  }else if(use.corr.dist == "distance"){
     fun_corr_dist = function(cols.in){
       vecsums <- base::colSums(cols.in)
       if(base::any(is.na(vecsums) | vecsums==0)){

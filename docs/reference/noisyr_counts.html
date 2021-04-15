@@ -68,7 +68,12 @@
 
 <meta property="og:title" content="Run the noisyR pipeline for the count matrix approach — noisyr_counts" />
 <meta property="og:description" content="Calls the functions to run each of the three steps of the pipeline
-(similarity calculation, noise quantification, noise removal), with the specified parameters." />
+(similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: calculate_expression_similarity_counts,
+calculate_noise_threshold. remove_noise_from_matrix.
+Optional steps: optimise_window_length,
+calculate_noise_threshold_method_statistics" />
 
 
 
@@ -169,7 +174,12 @@
 
     <div class="ref-description">
     <p>Calls the functions to run each of the three steps of the pipeline
-(similarity calculation, noise quantification, noise removal), with the specified parameters.</p>
+(similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: <code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code>,
+<code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code>. <code><a href='remove_noise_from_matrix.html'>remove_noise_from_matrix</a></code>.
+Optional steps: <code><a href='optimise_window_length.html'>optimise_window_length</a></code>,
+<code><a href='calculate_noise_threshold_method_statistics.html'>calculate_noise_threshold_method_statistics</a></code></p>
     </div>
 
     <pre class="usage"><span class='fu'>noisyr_counts</span><span class='op'>(</span>
@@ -178,7 +188,6 @@
   optimise.window.length.logical <span class='op'>=</span> <span class='cn'>FALSE</span>,
   similarity.threshold <span class='op'>=</span> <span class='fl'>0.25</span>,
   method.chosen <span class='op'>=</span> <span class='st'>"Boxplot-IQR"</span>,
-  minimise.coefficient.of.variation <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -202,27 +211,25 @@ optimise the value of n.elements.per.window</p></td>
     </tr>
     <tr>
       <th>similarity.threshold, method.chosen</th>
-      <td><p>parameters passed on to calculate_noise_threshold_base()</p></td>
-    </tr>
-    <tr>
-      <th>minimise.coefficient.of.variation</th>
-      <td><p>whether to compute optimal values for similarity.threshold
-and method.chosen by minimising the coefficient of variation across samples</p></td>
+      <td><p>parameters passed on to
+<code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code>; they can be single values or vectors;
+if they are vectors optimal values are computed by calling
+<code><a href='calculate_noise_threshold_method_statistics.html'>calculate_noise_threshold_method_statistics</a></code> and
+minimising the coefficient of variation across samples; all possible values for
+method.chosen can be viewed by <code><a href='get_methods_calculate_noise_threshold.html'>get_methods_calculate_noise_threshold</a></code></p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>arguments to be passed on to individual pipeline steps; see their documentation
-for more details and required arguments</p></td>
+      <td><p>arguments to be passed on to individual pipeline steps</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>For the counts approach, the denoised expression matrix. For the transcript approach,
-the numeric vector of noise thresholds per sample. For more details, see their respective documentation.</p>
+    <p>The denoised expression matrix.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p>[noisyr()], [noisyr_transcript()]</p></div>
+    <div class='dont-index'><p><code><a href='noisyr.html'>noisyr</a></code>, <code><a href='noisyr_transcript.html'>noisyr_transcript</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>noisyr_counts</span><span class='op'>(</span>

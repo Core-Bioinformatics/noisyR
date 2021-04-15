@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_expression_similarity_counts.R
 \name{calculate_expression_similarity_counts}
 \alias{calculate_expression_similarity_counts}
-\title{Calcualte the expression levels and expression levels similarity matrices using the count matrix}
+\title{Calcualate the expression levels and expression levels similarity matrices using the count matrix}
 \usage{
 calculate_expression_similarity_counts(
   expression.matrix,
@@ -18,7 +18,7 @@ calculate_expression_similarity_counts(
 
 \item{similarity.measure}{one of the correlation or distance metrics to be used,
 defaults to pearson correlation; list of all methods in
-get_methods_correlation_distance()}
+\code{\link{get_methods_correlation_distance}}}
 
 \item{n.elements.per.window}{number of elements to have in a window,
 default 10\% of the number of rows}
@@ -47,4 +47,7 @@ calculate_expression_similarity_counts(
     expression.matrix = matrix(1:100, ncol = 5),
     similarity.measure = "correlation_pearson",
     n.elements.per.window = 3)
+}
+\seealso{
+\code{\link{calculate_expression_similarity_transcript}}
 }

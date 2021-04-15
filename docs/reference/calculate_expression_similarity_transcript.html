@@ -74,7 +74,7 @@ across the transcript of each exon and comparing it across samples.
 The reason why exons are used instead of full length genes is that long
 intronic regions artificially increase the correlation since there is
 consistently no expression there, across samples. The user has the
-option to use genes instead, by running cast_gtf_to_genes() separately,
+option to use genes instead, by running cast_gtf_to_genes separately,
 with non default parameters." />
 
 
@@ -182,7 +182,7 @@ across the transcript of each exon and comparing it across samples.
 The reason why exons are used instead of full length genes is that long
 intronic regions artificially increase the correlation since there is
 consistently no expression there, across samples. The user has the
-option to use genes instead, by running cast_gtf_to_genes() separately,
+option to use genes instead, by running <code><a href='cast_gtf_to_genes.html'>cast_gtf_to_genes</a></code> separately,
 with non default parameters.</p>
     </div>
 
@@ -215,7 +215,7 @@ it extracts all files that end in .bam; looks in the working directory by defaul
     <tr>
       <th>genes</th>
       <td><p>a tibble of the exons extracted from the gtf file;
-this is meant for speed if the output of cast_gtf_to_genes() is already generated,
+this is meant for speed if the output of <code><a href='cast_gtf_to_genes.html'>cast_gtf_to_genes</a></code> is already generated,
 or if the user wants to only calculate similarity for a subset of exons</p></td>
     </tr>
     <tr>
@@ -289,6 +289,9 @@ but parallelisation is highly encouraged; it is set to detectCores() if higher</
         expression levels similarity matrix;
         they have the same # of columns as the expression matrix,
         and as many rows as exons processed.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>bams</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata"</span>, <span class='st'>"ex1.bam"</span>, package<span class='op'>=</span><span class='st'>"Rsamtools"</span>, mustWork<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>, <span class='fl'>2</span><span class='op'>)</span>
@@ -302,7 +305,7 @@ but parallelisation is highly encouraged; it is set to detectCores() if higher</
   genes <span class='op'>=</span> <span class='va'>genes</span>,
   mapq.unique <span class='op'>=</span> <span class='fl'>99</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.54 secs</span></div></pre>
+</div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.68 secs</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

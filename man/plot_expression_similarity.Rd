@@ -22,7 +22,8 @@ plot_expression_similarity(
 }
 \arguments{
 \item{expression.summary}{list containing expression_levels and expression_levels_similarity
-matrices, as calculated by calculate_expression_similarity_*()}
+matrices, as calculated by \code{\link{calculate_expression_similarity_counts}} or
+\code{\link{calculate_expression_similarity_transcript}}}
 
 \item{sample.names}{names for the plots, defaults to the column names of the expression matrix}
 

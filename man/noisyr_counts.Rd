@@ -10,7 +10,6 @@ noisyr_counts(
   optimise.window.length.logical = FALSE,
   similarity.threshold = 0.25,
   method.chosen = "Boxplot-IQR",
-  minimise.coefficient.of.variation = FALSE,
   ...
 )
 }
@@ -24,21 +23,26 @@ calculate_expression_similarity_counts(); default 10\% of the number of rows}
 \item{optimise.window.length.logical}{whether to call optimise_window_length to try and
 optimise the value of n.elements.per.window}
 
-\item{similarity.threshold, method.chosen}{parameters passed on to calculate_noise_threshold_base()}
+\item{similarity.threshold, method.chosen}{parameters passed on to
+\code{\link{calculate_noise_threshold}}; they can be single values or vectors;
+if they are vectors optimal values are computed by calling
+\code{\link{calculate_noise_threshold_method_statistics}} and
+minimising the coefficient of variation across samples; all possible values for
+method.chosen can be viewed by \code{\link{get_methods_calculate_noise_threshold}}}
 
-\item{minimise.coefficient.of.variation}{whether to compute optimal values for similarity.threshold
-and method.chosen by minimising the coefficient of variation across samples}
-
-\item{...}{arguments to be passed on to individual pipeline steps; see their documentation
-for more details and required arguments}
+\item{...}{arguments to be passed on to individual pipeline steps}
 }
 \value{
-For the counts approach, the denoised expression matrix. For the transcript approach,
-the numeric vector of noise thresholds per sample. For more details, see their respective documentation.
+The denoised expression matrix.
 }
 \description{
 Calls the functions to run each of the three steps of the pipeline
 (similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: \code{\link{calculate_expression_similarity_counts}},
+\code{\link{calculate_noise_threshold}}. \code{\link{remove_noise_from_matrix}}.
+Optional steps: \code{\link{optimise_window_length}},
+\code{\link{calculate_noise_threshold_method_statistics}}
 }
 \examples{
 noisyr_counts(
@@ -47,5 +51,5 @@ noisyr_counts(
     n.elements.per.window = 3)
 }
 \seealso{
-[noisyr()], [noisyr_transcript()]
+\code{\link{noisyr}}, \code{\link{noisyr_transcript}}
 }

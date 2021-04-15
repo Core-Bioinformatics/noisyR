@@ -68,10 +68,10 @@
 
 <meta property="og:title" content="Function to filter the gene table for the transcript approach — filter_genes_transcript" />
 <meta property="og:description" content="This function is used to filter the gene table (usually created with
-cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+cast_gtf_to_genes), only keeping genes above the noise thresholds.
 It uses as input the gene table (usually containing individual exons),
 an expression matrix for each of these and a vector of abundance thresholds.
-This function is used internally by remove_noise_from_bams() to determine
+This function is used internally by remove_noise_from_bams to determine
 which genes to retain." />
 
 
@@ -173,10 +173,10 @@ which genes to retain." />
 
     <div class="ref-description">
     <p>This function is used to filter the gene table (usually created with
-cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+<code><a href='cast_gtf_to_genes.html'>cast_gtf_to_genes</a></code>), only keeping genes above the noise thresholds.
 It uses as input the gene table (usually containing individual exons),
 an expression matrix for each of these and a vector of abundance thresholds.
-This function is used internally by remove_noise_from_bams() to determine
+This function is used internally by <code><a href='remove_noise_from_bams.html'>remove_noise_from_bams</a></code> to determine
 which genes to retain.</p>
     </div>
 
@@ -194,12 +194,12 @@ which genes to retain.</p>
     <tr>
       <th>genes</th>
       <td><p>a tibble of the exons extracted from the gtf file;
-(usually the the output of cast_gtf_to_genes())</p></td>
+(usually the the output of <code><a href='cast_gtf_to_genes.html'>cast_gtf_to_genes</a></code>)</p></td>
     </tr>
     <tr>
       <th>expression.matrix</th>
       <td><p>the expression matrix, usually
-calculated by calculate_expression_similarity_transcript()</p></td>
+calculated by <code><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></code></p></td>
     </tr>
     <tr>
       <th>noise.thresholds</th>
@@ -236,7 +236,7 @@ if it is below the corresponding noise thresholds.</p></td>
   genes <span class='op'>=</span> <span class='va'>genes</span>,
   mapq.unique <span class='op'>=</span> <span class='fl'>99</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.85 secs</span></div><div class='input'><span class='fu'>filter_genes_transcript</span><span class='op'>(</span>
+</div><div class='output co'>#&gt; <span class='message'>Calculating expression similarity for 2 genes...</span></div><div class='output co'>#&gt; <span class='message'>    this process may take a long time...</span></div><div class='output co'>#&gt; <span class='message'>    ncores=1, running sequentially...</span></div><div class='output co'>#&gt; <span class='message'>Finished! Time elapsed: 0.51 secs</span></div><div class='input'><span class='fu'>filter_genes_transcript</span><span class='op'>(</span>
     genes <span class='op'>=</span> <span class='va'>genes</span>,
     expression.matrix <span class='op'>=</span> <span class='va'>expression.summary</span><span class='op'>$</span><span class='va'>expression.matrix</span>,
     noise.thresholds <span class='op'>=</span> <span class='va'>noise.thresholds</span>,

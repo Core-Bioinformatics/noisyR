@@ -13,7 +13,8 @@ calculate_noise_threshold_method_statistics(
 )
 }
 \arguments{
-\item{expression}{either an expression summary (as calculated by calculate_expression_similarity_*()),
+\item{expression}{either an expression summary (as calculated by
+\code{\link{calculate_expression_similarity_counts}} or \code{\link{calculate_expression_similarity_transcript}}),
 which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 alternatively, just an expression matrix; only density based methods are available for the latter case}
 
@@ -22,11 +23,11 @@ to find corresponding noise threshold; can be a single value or a numeric vector
  the default, 0.25 is usually suitable for the Pearson correlation (the default similarity measure)}
 
 \item{method.chosen.sequence}{methods to use to calculate the noise thresholds,
-must be a subset of get_methods_calculate_noise_threshold(); defaults to all}
+must be a subset of \code{\link{get_methods_calculate_noise_threshold}}; defaults to all}
 
 \item{dump.stats}{name of csv to export different thresholds calculated (optional)}
 
-\item{...}{other arguments (for the boxplot methods) passed to calculate_noise_threshold_base()}
+\item{...}{other arguments (for the boxplot methods) passed to \code{\link{calculate_noise_threshold}}}
 }
 \value{
 A tibble containing information on noise thresholds calculated using the input
@@ -45,4 +46,7 @@ expression.summary <- calculate_expression_similarity_counts(
     method = "correlation_pearson",
     n.elements.per.window = 3)
 calculate_noise_threshold_method_statistics(expression.summary)
+}
+\seealso{
+\code{\link{calculate_noise_threshold}}
 }

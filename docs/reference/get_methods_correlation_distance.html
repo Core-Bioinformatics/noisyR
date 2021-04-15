@@ -70,7 +70,8 @@
 <meta property="og:description" content="This function outputs the methods available for the calculation of
 the correlation or distance. The standard correlation methods use stats::cor and
 a wide variety of distance methods are available using the philentropy package.
-To be used as input in calculate_expression_similarity_*()." />
+To be used as input in calculate_expression_similarity_counts or
+calculate_expression_similarity_transcript." />
 
 
 
@@ -173,7 +174,8 @@ To be used as input in calculate_expression_similarity_*()." />
     <p>This function outputs the methods available for the calculation of
 the correlation or distance. The standard correlation methods use stats::cor and
 a wide variety of distance methods are available using the philentropy package.
-To be used as input in calculate_expression_similarity_*().</p>
+To be used as input in <code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code> or
+<code><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_methods_correlation_distance</span><span class='op'>(</span>names <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
@@ -190,7 +192,7 @@ as similarity or dissimilarity (used internally to invert dissimilarity measures
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A character vector of options for the method arguement of calculate_expression_similarity_*();
+    <p>A character vector of options for the method arguement of the similarity calculation;
 if names=FALSE, a vector of types (similarity/dissimilarity measure) of the same length</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

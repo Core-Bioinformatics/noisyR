@@ -21,7 +21,7 @@ optimise_window_length(
 
 \item{similarity.measure}{one of the correlation or distance metrics to be used,
 defaults to pearson correlation; list of all methods in
-get_methods_correlation_distance()}
+\code{\link{get_methods_correlation_distance}}}
 
 \item{window.length.min, window.length.max, window.length.by}{definition of the parameter search space;
 default is between 1\% and 33\% of the number of rows in the expression matrix,
@@ -45,13 +45,14 @@ If no optimal value was found, this function returns NULL.
 }
 \description{
 This function optimises the number of elements per window
-that is used in calculate_expression_similarity_counts(), by requiring
+that is used in \code{\link{calculate_expression_similarity_counts}}, by requiring
 the distribution of correlations/distances to stabilise to a
 uniform distribution. The Jensen-Shannon divergence is used to assess
 the stability.
 }
 \examples{
 optimise_window_length(
-matrix(1:100+runif(100), ncol=5, byrow=TRUE),
-  window.length.min=3, window.length.max=5, iteration.number=5)
+  matrix(1:100+runif(100), ncol=5, byrow=TRUE),
+  window.length.min=3, window.length.max=5, iteration.number=5
+)
 }

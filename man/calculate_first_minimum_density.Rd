@@ -36,6 +36,8 @@ The plot option can be used to visualise the process.
 }
 \examples{
 calculate_first_minimum_density(
-    matrix(c(rep(0,100),rep(3,30),rep(10,50),12,13,15,20),ncol=1),
-    log.transform=FALSE, makeplots=TRUE)
+  matrix(c(rep(0,100),rep(3,30),rep(10,50),12,13,15,20),ncol=1),
+  log.transform=FALSE, makeplots=TRUE
+)
+
 }

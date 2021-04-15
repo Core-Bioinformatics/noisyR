@@ -14,9 +14,12 @@
 #' @return The function outputs a single value corresponding to the median of the minima calculated
 #' for each column of the matrix. floor() is taken as a conservative estimate
 #' @export
-#' @examples calculate_first_minimum_density(
-#'     matrix(c(rep(0,100),rep(3,30),rep(10,50),12,13,15,20),ncol=1),
-#'     log.transform=FALSE, makeplots=TRUE)
+#' @examples
+#' calculate_first_minimum_density(
+#'   matrix(c(rep(0,100),rep(3,30),rep(10,50),12,13,15,20),ncol=1),
+#'   log.transform=FALSE, makeplots=TRUE
+#' )
+#'
 calculate_first_minimum_density = function(mat, log.transform=TRUE, adjust=2, makeplots=FALSE){
   something.is.wrong <- FALSE
   if(base::is.vector(mat)){mat <- base::as.matrix(mat, ncol=1)}

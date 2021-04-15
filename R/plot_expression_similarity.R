@@ -1,7 +1,8 @@
 #' Plot the similarity against expression levels
 #' @description Creates the expression-similarity line and box plots for each sample.
 #' @param expression.summary list containing expression_levels and expression_levels_similarity
-#' matrices, as calculated by calculate_expression_similarity_*()
+#' matrices, as calculated by \code{\link{calculate_expression_similarity_counts}} or
+#' \code{\link{calculate_expression_similarity_transcript}}
 #' @param sample.names names for the plots, defaults to the column names of the expression matrix
 #' @param similarity.name similarity metric used (for the y-axis title)
 #' @param log.transform should the count matrix be log-transformed? If not, boxplot is skipped

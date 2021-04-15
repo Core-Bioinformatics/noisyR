@@ -14,10 +14,10 @@ filter_genes_transcript(
 }
 \arguments{
 \item{genes}{a tibble of the exons extracted from the gtf file;
-(usually the the output of cast_gtf_to_genes())}
+(usually the the output of \code{\link{cast_gtf_to_genes}})}
 
 \item{expression.matrix}{the expression matrix, usually
-calculated by calculate_expression_similarity_transcript()}
+calculated by \code{\link{calculate_expression_similarity_transcript}}}
 
 \item{noise.thresholds}{a vector of expression thresholds by sample}
 
@@ -34,10 +34,10 @@ Returns a filtered tibble of exons, with the noise removed.
 }
 \description{
 This function is used to filter the gene table (usually created with
-cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+\code{\link{cast_gtf_to_genes}}), only keeping genes above the noise thresholds.
 It uses as input the gene table (usually containing individual exons),
 an expression matrix for each of these and a vector of abundance thresholds.
-This function is used internally by remove_noise_from_bams() to determine
+This function is used internally by \code{\link{remove_noise_from_bams}} to determine
 which genes to retain.
 }
 \examples{

@@ -7,12 +7,12 @@
 get_methods_calculate_noise_threshold()
 }
 \value{
-A character vector of options for the method arguement of
-calculate_noise_threshold_*()
+A character vector of options for the method.chosen arguement of
+\code{\link{calculate_noise_threshold}}
 }
 \description{
 This function outputs the methods available for the calculation of
-the noise threshold. To be used as input in calculate_noise_threshold_*().
+the noise threshold. To be used as input in \code{\link{calculate_noise_threshold}}.
 }
 \examples{
 get_methods_calculate_noise_threshold()

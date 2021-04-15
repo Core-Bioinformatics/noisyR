@@ -1,14 +1,14 @@
 #' Function to filter the gene table for the transcript approach
 #' @description This function is used to filter the gene table (usually created with
-#' cast_gtf_to_genes()), only keeping genes above the noise thresholds.
+#' \code{\link{cast_gtf_to_genes}}), only keeping genes above the noise thresholds.
 #' It uses as input the gene table (usually containing individual exons),
 #' an expression matrix for each of these and a vector of abundance thresholds.
-#' This function is used internally by remove_noise_from_bams() to determine
+#' This function is used internally by \code{\link{remove_noise_from_bams}} to determine
 #' which genes to retain.
 #' @param genes a tibble of the exons extracted from the gtf file;
-#' (usually the the output of cast_gtf_to_genes())
+#' (usually the the output of \code{\link{cast_gtf_to_genes}})
 #' @param expression.matrix the expression matrix, usually
-#' calculated by calculate_expression_similarity_transcript()
+#' calculated by \code{\link{calculate_expression_similarity_transcript}}
 #' @param noise.thresholds a vector of expression thresholds by sample
 #' @param filter.by Either "gene" (default) or "exon"; if filter.by="gene", a gene
 #' (as determined by its ENSEMBL id) is removed

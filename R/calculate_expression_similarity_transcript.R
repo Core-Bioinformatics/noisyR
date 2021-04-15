@@ -6,13 +6,13 @@
 #' The reason why exons are used instead of full length genes is that long
 #' intronic regions artificially increase the correlation since there is
 #' consistently no expression there, across samples. The user has the
-#' option to use genes instead, by running cast_gtf_to_genes() separately,
+#' option to use genes instead, by running \code{\link{cast_gtf_to_genes}} separately,
 #' with non default parameters.
 #' @param bams,path.bams either a path to the directory where the BAM files are
 #' or a vector of paths to each individual file; if a path is specified,
 #' it extracts all files that end in .bam; looks in the working directory by default
 #' @param genes a tibble of the exons extracted from the gtf file;
-#' this is meant for speed if the output of cast_gtf_to_genes() is already generated,
+#' this is meant for speed if the output of \code{\link{cast_gtf_to_genes}} is already generated,
 #' or if the user wants to only calculate similarity for a subset of exons
 #' @param path.gtf the path to the gtf/gff annotation file (only used if genes is not
 #' provided); if unspecified, looks for one in the working directory
@@ -48,6 +48,7 @@
 #'         expression levels similarity matrix;
 #'         they have the same # of columns as the expression matrix,
 #'         and as many rows as exons processed.
+#' @seealso \code{\link{calculate_expression_similarity_counts}}
 #' @export
 #' @examples
 #' bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)

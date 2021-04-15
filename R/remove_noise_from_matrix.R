@@ -15,8 +15,10 @@
 #' @param export.csv option to write the matrix into a csv after the noise removal;
 #' should be NULL or the name of the output file
 #' @param ... arguments passed on to other methods
-#' @return Returns a matrix of the same dims as the expression matrix, with the noise removed.
-#' This matrix has no entries remaining below the noise threshold.
+#' @return Returns the expression matrix with the noise removed. Under default parameters,
+#' the denoised matrix will have fewer rows than the input matrix and will have
+#' no entries remaining below the noise threshold.
+#' @seealso \code{\link{remove_noise_from_bams}}
 #' @export
 #' @examples
 #' expression.matrix <- matrix(1:100, ncol=5)

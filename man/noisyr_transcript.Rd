@@ -12,7 +12,6 @@ noisyr_transcript(
   ncores = 1,
   similarity.threshold = 0.25,
   method.chosen = "Boxplot-IQR",
-  minimise.coefficient.of.variation = FALSE,
   ...
 )
 }
@@ -22,7 +21,7 @@ or a vector of paths to each individual file; if a path is specified,
 it extracts all files that end in .bam; looks in the working directory by default}
 
 \item{genes}{a tibble of the exons extracted from the gtf file;
-this is meant for speed if the output of cast_gtf_to_genes() is already generated,
+this is meant for speed if the output of \code{\link{cast_gtf_to_genes}} is already generated,
 or if the user wants to only calculate similarity for a subset of exons}
 
 \item{path.gtf}{the path to the gtf/gff annotation file (only used if genes is not
@@ -31,12 +30,14 @@ provided); if unspecified, looks for one in the working directory}
 \item{ncores}{Number of cores for parallel computation; defaults to sequential computation,
 but parallelisation is highly encouraged; it is set to detectCores() if higher}
 
-\item{similarity.threshold, method.chosen}{parameters passed on to calculate_noise_threshold_base();
+\item{similarity.threshold, method.chosen}{parameters passed on to
+\code{\link{calculate_noise_threshold}}; they can be single values or vectors;
+if they are vectors optimal values are computed by calling
+\code{\link{calculate_noise_threshold_method_statistics}} and
+minimising the coefficient of variation across samples; all possible values for
+method.chosen can be viewed by \code{\link{get_methods_calculate_noise_threshold}};
 only boxplot based methods are accepted for the transcript approach due to the number of observations
 and high variance}
-
-\item{minimise.coefficient.of.variation}{whether to compute optimal values for similarity.threshold
-and method.chosen by minimising the coefficient of variation across samples}
 
 \item{...}{arguments to be passed on to individual pipeline steps; see their documentation
 for more details and required arguments}
@@ -48,6 +49,10 @@ of remove_noise_from_bams()
 \description{
 Calls the functions to run each of the three steps of the pipeline
 (similarity calculation, noise quantification, noise removal), with the specified parameters.
+See the individual function documentation for more details and required arguments.
+Required steps: \code{\link{calculate_expression_similarity_transcript}},
+\code{\link{calculate_noise_threshold}}. \code{\link{remove_noise_from_bams}}.
+Optional steps: \code{\link{calculate_noise_threshold_method_statistics}}
 }
 \examples{
 bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
@@ -58,9 +63,10 @@ genes <- data.frame("id" = 1:2,
                     "end" = 1600)
 noisyr_transcript(
   bams = bams,
-  genes = genes
+  genes = genes,
+  destination.files = paste0(tempdir(), "/", basename(bams), ".noisefiltered.bam")
 )
 }
 \seealso{
-[noisyr()], [noisyr_counts()]
+\code{\link{noisyr}}, \code{\link{noisyr_counts}}
 }

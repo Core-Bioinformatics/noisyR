@@ -1,16 +1,16 @@
 #' Function to calculate the noise threshold for a given expression matrix and parameters
 #' @description This function is used to calculate the noise threshold for a given expression matrix.
-#' It uses as input an expression profile (as calculated by calculate_expression_similarity_*()),
-#' or just an expression matrix for a simple calculation based on density.
+#' It uses as input an expression profile, or just an expression matrix for a simple calculation based on density.
 #' A variety of methods are available to obtain a noise threshold using an input similarity threshold.
-#' @param expression either an expression summary (as calculated by calculate_expression_similarity_*()),
+#' @param expression either an expression summary (as calculated by
+#' \code{\link{calculate_expression_similarity_counts}} or \code{\link{calculate_expression_similarity_transcript}}),
 #' which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 #' alternatively, just an expression matrix; only density based methods are available for the latter case
 #' @param similarity.threshold similarity (correlation or inverse distance) threshold to be used
 #' to find corresponding noise threshold; the default, 0.25 is usually suitable for the
 #' Pearson correlation (the default similarity measure)
 #' @param method.chosen method to use to obtain a vector of noise thresholds,
-#' must be one of get_methods_calculate_noise_threshold(); defaults to Boxplot-IQR
+#' must be one of \code{\link{get_methods_calculate_noise_threshold}}; defaults to Boxplot-IQR
 #' @param binsize size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)
 #' @param minimum.observations.per.bin minumum number of observations allowed in each bin of the boxplot;
 #' if a bin has fewer observations, it is merged with the one to its left; default is calculated as:
@@ -18,14 +18,15 @@
 #' @param ... arguments passed on to other methods
 #' @return The output is a vector of noise thresholds, the same length as the number of columns in
 #' the expression matrix, or a single value in the case of density based methods.
+#' @seealso \code{\link{calculate_noise_threshold_method_statistics}}
 #' @export
 #' @examples
 #' expression.summary <- calculate_expression_similarity_counts(
 #'     expression.matrix = matrix(1:100, ncol=5),
 #'     method = "correlation_pearson",
 #'     n.elements.per.window = 3)
-#' calculate_noise_threshold_base(expression.summary)
-calculate_noise_threshold_base <- function(
+#' calculate_noise_threshold(expression.summary)
+calculate_noise_threshold <- function(
   expression,
   similarity.threshold=0.25,
   method.chosen="Boxplot-IQR",
@@ -99,7 +100,7 @@ calculate_noise_threshold_base <- function(
   # No smoothing
   method <- "No_smoothing"
   if(method.chosen==base::paste(approach, method, sep="-")){
-    similarity.vector  = base::rep(0,base::ncol(expression.matrix))
+    similarity.vector = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
       similarity.threshold.raw = expression.levels.similarity[,j] > similarity.threshold
@@ -115,7 +116,7 @@ calculate_noise_threshold_base <- function(
   # loess10 smoothing
   method <- "loess10_smoothing"
   if(method.chosen==base::paste(approach, method, sep="-")){
-    similarity.vector  = base::rep(0,base::ncol(expression.matrix))
+    similarity.vector = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
       loessMod10 <- base::suppressWarnings(
@@ -136,7 +137,7 @@ calculate_noise_threshold_base <- function(
   # loess25 smoothing
   method <- "loess25_smoothing"
   if(method.chosen==base::paste(approach, method, sep="-")){
-    similarity.vector  = base::rep(0,base::ncol(expression.matrix))
+    similarity.vector = base::rep(0,base::ncol(expression.matrix))
     noise.thresholds = base::rep(0,base::ncol(expression.matrix))
     for(j in 1:base::ncol(expression.matrix)){
       loessMod25 <- base::suppressWarnings(

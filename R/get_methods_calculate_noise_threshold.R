@@ -1,8 +1,8 @@
 #' Show the methods for calculating a noise threshold
 #' @description This function outputs the methods available for the calculation of
-#' the noise threshold. To be used as input in calculate_noise_threshold_*().
-#' @return A character vector of options for the method arguement of
-#' calculate_noise_threshold_*()
+#' the noise threshold. To be used as input in \code{\link{calculate_noise_threshold}}.
+#' @return A character vector of options for the method.chosen arguement of
+#' \code{\link{calculate_noise_threshold}}
 #' @export
 #' @examples get_methods_calculate_noise_threshold()
 get_methods_calculate_noise_threshold = function(){

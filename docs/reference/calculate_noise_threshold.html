@@ -22,7 +22,7 @@
   }
 </script>
 
-<title>Function to remove the noisy reads from the expression matrix — remove_noise_from_matrix • noisyr</title>
+<title>Function to calculate the noise threshold for a given expression matrix and parameters — calculate_noise_threshold • noisyr</title>
 
 
 <!-- jquery -->
@@ -66,10 +66,10 @@
 
 
 
-<meta property="og:title" content="Function to remove the noisy reads from the expression matrix — remove_noise_from_matrix" />
-<meta property="og:description" content="This function is used to remove the noisy reads from the expression matrix.
-It uses as input a vector of abundance thresholds;
-all entries below the noise threshold are replaced with the noise threshold." />
+<meta property="og:title" content="Function to calculate the noise threshold for a given expression matrix and parameters — calculate_noise_threshold" />
+<meta property="og:description" content="This function is used to calculate the noise threshold for a given expression matrix.
+It uses as input an expression profile, or just an expression matrix for a simple calculation based on density.
+A variety of methods are available to obtain a noise threshold using an input similarity threshold." />
 
 
 
@@ -163,24 +163,23 @@ all entries below the noise threshold are replaced with the noise threshold." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Function to remove the noisy reads from the expression matrix</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Core-Bioinformatics/noisyR/blob/master/R/remove_noise_from_matrix.R'><code>R/remove_noise_from_matrix.R</code></a></small>
-    <div class="hidden name"><code>remove_noise_from_matrix.Rd</code></div>
+    <h1>Function to calculate the noise threshold for a given expression matrix and parameters</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Core-Bioinformatics/noisyR/blob/master/R/calculate_noise_threshold.R'><code>R/calculate_noise_threshold.R</code></a></small>
+    <div class="hidden name"><code>calculate_noise_threshold.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function is used to remove the noisy reads from the expression matrix.
-It uses as input a vector of abundance thresholds;
-all entries below the noise threshold are replaced with the noise threshold.</p>
+    <p>This function is used to calculate the noise threshold for a given expression matrix.
+It uses as input an expression profile, or just an expression matrix for a simple calculation based on density.
+A variety of methods are available to obtain a noise threshold using an input similarity threshold.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>remove_noise_from_matrix</span><span class='op'>(</span>
-  <span class='va'>expression.matrix</span>,
-  <span class='va'>noise.thresholds</span>,
-  add.threshold <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  average.threshold <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  remove.noisy.features <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  export.csv <span class='op'>=</span> <span class='cn'>NULL</span>,
+    <pre class="usage"><span class='fu'>calculate_noise_threshold</span><span class='op'>(</span>
+  <span class='va'>expression</span>,
+  similarity.threshold <span class='op'>=</span> <span class='fl'>0.25</span>,
+  method.chosen <span class='op'>=</span> <span class='st'>"Boxplot-IQR"</span>,
+  binsize <span class='op'>=</span> <span class='fl'>0.1</span>,
+  minimum.observations.per.bin <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -188,34 +187,32 @@ all entries below the noise threshold are replaced with the noise threshold.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>expression.matrix</th>
-      <td><p>the expression matrix</p></td>
+      <th>expression</th>
+      <td><p>either an expression summary (as calculated by
+<code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code> or <code><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></code>),
+which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
+alternatively, just an expression matrix; only density based methods are available for the latter case</p></td>
     </tr>
     <tr>
-      <th>noise.thresholds</th>
-      <td><p>a vector of expression thresholds by sample;
-must be the same length as the number of columns of the expression matrix,
-or a singular value to be used as a fixed noise threshold</p></td>
+      <th>similarity.threshold</th>
+      <td><p>similarity (correlation or inverse distance) threshold to be used
+to find corresponding noise threshold; the default, 0.25 is usually suitable for the
+Pearson correlation (the default similarity measure)</p></td>
     </tr>
     <tr>
-      <th>add.threshold</th>
-      <td><p>whether to add the noise threshold to all values in the expression matrix
-(default), or set entries below the threshold to the threshold</p></td>
+      <th>method.chosen</th>
+      <td><p>method to use to obtain a vector of noise thresholds,
+must be one of <code><a href='get_methods_calculate_noise_threshold.html'>get_methods_calculate_noise_threshold</a></code>; defaults to Boxplot-IQR</p></td>
     </tr>
     <tr>
-      <th>average.threshold</th>
-      <td><p>if TRUE (default), uses tthe average of the vector of thresholds across all samples;
-if FALSE, uses the thresholds as supplied</p></td>
+      <th>binsize</th>
+      <td><p>size of each bin in the boxplot methods; defaults to 0.1 (on a log-scale)</p></td>
     </tr>
     <tr>
-      <th>remove.noisy.features</th>
-      <td><p>logical, whether rows of the expression matrix that are
-fully under the noise threshold should be removed (default TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>export.csv</th>
-      <td><p>option to write the matrix into a csv after the noise removal;
-should be NULL or the name of the output file</p></td>
+      <th>minimum.observations.per.bin</th>
+      <td><p>minumum number of observations allowed in each bin of the boxplot;
+if a bin has fewer observations, it is merged with the one to its left; default is calculated as:
+ceiling(number of observations / number of bins / 10)</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -225,41 +222,19 @@ should be NULL or the name of the output file</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns the expression matrix with the noise removed. Under default parameters,
-the denoised matrix will have fewer rows than the input matrix and will have
-no entries remaining below the noise threshold.</p>
+    <p>The output is a vector of noise thresholds, the same length as the number of columns in
+the expression matrix, or a single value in the case of density based methods.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='remove_noise_from_bams.html'>remove_noise_from_bams</a></code></p></div>
+    <div class='dont-index'><p><code><a href='calculate_noise_threshold_method_statistics.html'>calculate_noise_threshold_method_statistics</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>expression.matrix</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, ncol<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>
-<span class='va'>noise.thresholds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>30</span>,<span class='fl'>45</span>,<span class='fl'>62</span>,<span class='fl'>83</span><span class='op'>)</span>
-<span class='fu'>remove_noise_from_matrix</span><span class='op'>(</span>
-    expression.matrix <span class='op'>=</span> <span class='va'>expression.matrix</span>,
-    noise.thresholds <span class='op'>=</span> <span class='va'>noise.thresholds</span>
-<span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Denoising expression matrix...</span></div><div class='output co'>#&gt; <span class='message'>    removing noisy genes</span></div><div class='output co'>#&gt; <span class='message'>    adjusting matrix</span></div><div class='output co'>#&gt;       [,1] [,2] [,3] [,4] [,5]
-#&gt;  [1,]   47   67   87  107  127
-#&gt;  [2,]   48   68   88  108  128
-#&gt;  [3,]   49   69   89  109  129
-#&gt;  [4,]   50   70   90  110  130
-#&gt;  [5,]   51   71   91  111  131
-#&gt;  [6,]   52   72   92  112  132
-#&gt;  [7,]   53   73   93  113  133
-#&gt;  [8,]   54   74   94  114  134
-#&gt;  [9,]   55   75   95  115  135
-#&gt; [10,]   56   76   96  116  136
-#&gt; [11,]   57   77   97  117  137
-#&gt; [12,]   58   78   98  118  138
-#&gt; [13,]   59   79   99  119  139
-#&gt; [14,]   60   80  100  120  140
-#&gt; [15,]   61   81  101  121  141
-#&gt; [16,]   62   82  102  122  142
-#&gt; [17,]   63   83  103  123  143
-#&gt; [18,]   64   84  104  124  144
-#&gt; [19,]   65   85  105  125  145</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>expression.summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></span><span class='op'>(</span>
+    expression.matrix <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span>, ncol<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>,
+    method <span class='op'>=</span> <span class='st'>"correlation_pearson"</span>,
+    n.elements.per.window <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>The input matrix has 20 rows and 5 cols</span></div><div class='output co'>#&gt; <span class='message'>    number of genes: 20</span></div><div class='output co'>#&gt; <span class='message'>    number of samples: 5</span></div><div class='output co'>#&gt; <span class='message'>    the number of elements per window is 3</span></div><div class='output co'>#&gt; <span class='message'>    the step size is 1</span></div><div class='output co'>#&gt; <span class='message'>    the selected similarity metric is correlation_pearson</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 1</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 2</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 3</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 4</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 5</span></div><div class='input'><span class='fu'>calculate_noise_threshold</span><span class='op'>(</span><span class='va'>expression.summary</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Calculating noise thresholds for 5 samples...</span></div><div class='output co'>#&gt; <span class='message'>    similarity.threshold = 0.25</span></div><div class='output co'>#&gt; <span class='message'>    method.chosen = Boxplot-IQR</span></div><div class='output co'>#&gt; [1] 1 1 1 1 1</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -1,13 +1,13 @@
 #' Function to remove the noisy reads from the BAM files
 #' @description This function is used to remove the noisy reads from the BAM files.
 #' It uses as input the BAM file names, a gene table (usually containing individual exons,
-#' made using cast_gtf_to_genes()), an expression matrix for each of these genes and
+#' made using \code{\link{cast_gtf_to_genes}}), an expression matrix for each of these genes and
 #' a vector of abundance thresholds.
 #' @param bams a character vector of the BAM file names
 #' @param genes a tibble of the exons extracted from the gtf file;
-#' (usually the the output of cast_gtf_to_genes())
+#' (usually the the output of \code{\link{cast_gtf_to_genes}})
 #' @param expression the expression matrix or expression summary list,
-#' as calculated by calculate_expression_similarity_transcript()
+#' as calculated by \code{\link{calculate_expression_similarity_transcript}}
 #' @param noise.thresholds a vector of expression thresholds by sample;
 #' must be the same length as the number of BAM files,
 #' or a singular value to be used as a fixed noise threshold
@@ -30,6 +30,7 @@
 #' @param ... arguments passed on to other methods
 #' @return Returns a matrix of the same dims as the expression matrix, with the noise removed.
 #' This matrix has no entries remaining below the noise threshold.
+#' @seealso \code{\link{remove_noise_from_matrix}}
 #' @export
 #' @examples
 #' bams <- rep(system.file("extdata", "ex1.bam", package="Rsamtools", mustWork=TRUE), 2)
@@ -49,6 +50,7 @@
 #'     genes = genes,
 #'     expression = expression.summary,
 #'     noise.thresholds = noise.thresholds,
+#'     destination.files = paste0(tempdir(), "/", basename(bams), ".noisefiltered.bam"),
 #'     mapq.unique = 99
 #' )
 #'

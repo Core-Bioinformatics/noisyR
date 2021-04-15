@@ -68,7 +68,7 @@
 
 <meta property="og:title" content="Optimise the elements per window for the count matrix approach — optimise_window_length" />
 <meta property="og:description" content="This function optimises the number of elements per window
-that is used in calculate_expression_similarity_counts(), by requiring
+that is used in calculate_expression_similarity_counts, by requiring
 the distribution of correlations/distances to stabilise to a
 uniform distribution. The Jensen-Shannon divergence is used to assess
 the stability." />
@@ -172,7 +172,7 @@ the stability." />
 
     <div class="ref-description">
     <p>This function optimises the number of elements per window
-that is used in calculate_expression_similarity_counts(), by requiring
+that is used in <code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code>, by requiring
 the distribution of correlations/distances to stabilise to a
 uniform distribution. The Jensen-Shannon divergence is used to assess
 the stability.</p>
@@ -201,7 +201,7 @@ the stability.</p>
       <th>similarity.measure</th>
       <td><p>one of the correlation or distance metrics to be used,
 defaults to pearson correlation; list of all methods in
-get_methods_correlation_distance()</p></td>
+<code><a href='get_methods_correlation_distance.html'>get_methods_correlation_distance</a></code></p></td>
     </tr>
     <tr>
       <th>window.length.min, window.length.max, window.length.by</th>
@@ -238,8 +238,9 @@ If no optimal value was found, this function returns NULL.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>optimise_window_length</span><span class='op'>(</span>
-<span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>+</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, ncol<span class='op'>=</span><span class='fl'>5</span>, byrow<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>,
-  window.length.min<span class='op'>=</span><span class='fl'>3</span>, window.length.max<span class='op'>=</span><span class='fl'>5</span>, iteration.number<span class='op'>=</span><span class='fl'>5</span><span class='op'>)</span>
+  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>100</span><span class='op'>+</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='fl'>100</span><span class='op'>)</span>, ncol<span class='op'>=</span><span class='fl'>5</span>, byrow<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span>,
+  window.length.min<span class='op'>=</span><span class='fl'>3</span>, window.length.max<span class='op'>=</span><span class='fl'>5</span>, iteration.number<span class='op'>=</span><span class='fl'>5</span>
+<span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>Window length optimisation</span></div><div class='output co'>#&gt; <span class='message'>    number of windows: 3</span></div><div class='output co'>#&gt; <span class='message'>    minimum window: 3</span></div><div class='output co'>#&gt; <span class='message'>    maximum window: 5</span></div><div class='output co'>#&gt; <span class='message'>    window step: 1</span></div><div class='output co'>#&gt; <span class='message'>    # of iterations: 5</span></div><div class='output co'>#&gt; <span class='message'>    minimum similar windows: 3</span></div><div class='output co'>#&gt; <span class='message'>Calculating expression summary and JSE for each window...</span></div><div class='output co'>#&gt; <span class='message'>Performing t-tests...</span></div><div class='output co'>#&gt; <span class='message'>The number of similar windows found for each window (including itself) were:</span></div><div class='output co'>#&gt; <span class='message'>    1 1 1</span></div><div class='output co'>#&gt; <span class='message'>Optimal window not found, consider less stringent parameters, e.g.</span></div><div class='output co'>#&gt; <span class='message'>    &gt; reducing minimum.smaller.windows</span></div><div class='output co'>#&gt; <span class='message'>    &gt; reducing iteration.number</span></div><div class='output co'>#&gt; <span class='message'>    &gt; reducing window.length.by</span></div><div class='img'><img src='optimise_window_length-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; NULL</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

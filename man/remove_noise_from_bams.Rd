@@ -21,10 +21,10 @@ remove_noise_from_bams(
 \item{bams}{a character vector of the BAM file names}
 
 \item{genes}{a tibble of the exons extracted from the gtf file;
-(usually the the output of cast_gtf_to_genes())}
+(usually the the output of \code{\link{cast_gtf_to_genes}})}
 
 \item{expression}{the expression matrix or expression summary list,
-as calculated by calculate_expression_similarity_transcript()}
+as calculated by \code{\link{calculate_expression_similarity_transcript}}}
 
 \item{noise.thresholds}{a vector of expression thresholds by sample;
 must be the same length as the number of BAM files,
@@ -60,7 +60,7 @@ This matrix has no entries remaining below the noise threshold.
 \description{
 This function is used to remove the noisy reads from the BAM files.
 It uses as input the BAM file names, a gene table (usually containing individual exons,
-made using cast_gtf_to_genes()), an expression matrix for each of these genes and
+made using \code{\link{cast_gtf_to_genes}}), an expression matrix for each of these genes and
 a vector of abundance thresholds.
 }
 \examples{
@@ -81,7 +81,11 @@ remove_noise_from_bams(
     genes = genes,
     expression = expression.summary,
     noise.thresholds = noise.thresholds,
+    destination.files = paste0(tempdir(), "/", basename(bams), ".noisefiltered.bam"),
     mapq.unique = 99
 )
 
+}
+\seealso{
+\code{\link{remove_noise_from_matrix}}
 }

@@ -36,8 +36,9 @@ should be NULL or the name of the output file}
 \item{...}{arguments passed on to other methods}
 }
 \value{
-Returns a matrix of the same dims as the expression matrix, with the noise removed.
-This matrix has no entries remaining below the noise threshold.
+Returns the expression matrix with the noise removed. Under default parameters,
+the denoised matrix will have fewer rows than the input matrix and will have
+no entries remaining below the noise threshold.
 }
 \description{
 This function is used to remove the noisy reads from the expression matrix.
@@ -52,4 +53,7 @@ remove_noise_from_matrix(
     noise.thresholds = noise.thresholds
 )
 
+}
+\seealso{
+\code{\link{remove_noise_from_bams}}
 }

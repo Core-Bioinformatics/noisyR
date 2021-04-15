@@ -25,7 +25,7 @@ The *noisyR* package is an end-to-end pipeline for quantifying and removing tech
 
 Each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined. 
 
-The package and some applications are described in more detail in [this paper](https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2) and is actively maintained on https://github.com/Core-Bioinformatics/noisyR.
+The package and some applications are described in more detail in [this preprint](https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2) and is actively maintained on https://github.com/Core-Bioinformatics/noisyR.
 
 The **count matrix approach** uses the original, un-normalised count matrix, as provided after alignment and feature quantification; each sample is processed individually, only the relative expressions across samples are compared. Relying on the hypothesis that the majority of genes are not DE, most of the evaluations are expected to point towards a high similarity across samples. 
 
@@ -179,8 +179,8 @@ ggplot2::ggplot(plotdf.line) +
 
 Using the output of the similarity calculation, we can compute the signal to noise threshold in each sample:
 
-```{r calc_thr_base}
-noise.thresholds <- noisyr::calculate_noise_threshold_base(expression = expression.summary)
+```{r calc_thr}
+noise.thresholds <- noisyr::calculate_noise_threshold(expression = expression.summary)
 noise.thresholds
 ```
 
@@ -196,7 +196,7 @@ The rest of the methods use either the (smoothed) line plot or the boxplot to fi
 
 It is recommended that the method with the least coefficient of variation across all samples is chosen for noise removal. This can also be applied to compute the correlation/distance threshold instead of supplying it manually, which is especially useful for non-correlation measures which don't have a standard range. 
 
-For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset:
+For example, by looking to minimise the coefficient of variation, we get a correlation threshold of 0.21 and the loess10 smoothing method for this dataset (by default all methods from *get_methods_calculate_noise_threshold()* are used:
 
 ```{r calc_thr_range}
 similarity.threshold.sequence <- seq(0.2, 0.3, by=0.01)
@@ -212,10 +212,10 @@ dplyr::filter(stats.table, round(corr.thr, 2) == 0.21)[, 1:7]
 dplyr::filter(stats.table, method == "loess10_smoothing")[, 1:7]
 ```
 
-We can then call *calculate_noise_threshold_base()* with our optimised parameters:
+We can then call *calculate_noise_threshold()* with our optimised parameters:
 
-```{r calc_thr_base_adjusted}
-noise.thresholds <- noisyr::calculate_noise_threshold_base(
+```{r calc_thr_adjusted}
+noise.thresholds <- noisyr::calculate_noise_threshold(
   expression = expression.summary,
   similarity.threshold = 0.21,
   method.chosen = "Line_plot-loess10_smoothing"
@@ -223,11 +223,11 @@ noise.thresholds <- noisyr::calculate_noise_threshold_base(
 noise.thresholds
 ```
 
-Noise removal parameter optimisation can be turned on using the *minimise.coefficient.of.variation* parameter in *noisyr()* or *noisyr_counts()* and passing further parameters for *similarity.threshold.sequence* and/or *method.chosen.sequence*.
+Parameter optimisation can be turned on by specifying vectors of values for *similarity.threshold* and/or *method.chosen* (a subset of *get_methods_calculate_noise_threshold()*) when calling *noisyr()* or *noisyr_counts()*.
 
 ## Noise removal
 
-To produce the denoised count matrix, the function *remove_noise_from_matrix()* is used with a specified vector of noise thresholds (usually calculated by *calculate_noise_threshold_base()*).
+To produce the denoised count matrix, the function *remove_noise_from_matrix()* is used with a specified vector of noise thresholds (usually calculated by *calculate_noise_threshold()*).
 
 ```{r rm_noise_matrix}
 expression.matrix.denoised <- noisyr::remove_noise_from_matrix(
@@ -254,16 +254,16 @@ nrow(expression.matrix.denoised); nrow(expression.matrix.denoised.fixed)
 By supplying the corresponding parameters to *noisyr()*, we obtain the same final result from the full pipeline:
 
 ```{r pipeline_comparison}
-expression.matrix.denoised.full_pipeline <- noisyr::noisyr(
-  approach_for_similarity_calculation = "counts", 
+expression.matrix.denoised.full.pipeline <- noisyr::noisyr(
+  approach.for.similarity.calculation = "counts", 
   expression.matrix = expression.matrix,
   similarity.measure = "correlation_pearson",
   optimise.window.length.logical = FALSE,
-  minimise.coefficient.of.variation = TRUE,
-  similarity.threshold.sequence = seq(0.2, 0.3, by=0.01)
+  similarity.threshold.sequence = seq(0.2, 0.3, by=0.01),
+  method.chosen.sequence = get_methods_calculate_noise_threshold()
 )
 identical(expression.matrix.denoised,
-          expression.matrix.denoised.full_pipeline)
+          expression.matrix.denoised.full.pipeline)
 ```
 
 # Downstream analysis
@@ -272,7 +272,7 @@ The denoised matrix can be used instead of the raw count matrix for downstream a
 
 We create a function to perform the same DE pipeline on both matrices, using [the edgeR package](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/).
 
-```{r edgeR, message = FALSE}
+```{r edgeR, eval = FALSE}
 DE_edgeR = function(expression.matrix, metadata){
   # load or install edgeR
   if(!require(edgeR)){
@@ -286,7 +286,8 @@ DE_edgeR = function(expression.matrix, metadata){
                          timepoint = c("0h", "0h", "12h", "12h"))
   
   # quantile normalise
-  expression.matrix.normalised <- preprocessCore::normalize.quantiles(expression.matrix)
+  expression.matrix.normalised <-
+    preprocessCore::normalize.quantiles(expression.matrix)
   rownames(expression.matrix.normalised) <- base::rownames(expression.matrix)
   colnames(expression.matrix.normalised) <- base::colnames(expression.matrix)
   
@@ -308,7 +309,10 @@ DE_edgeR = function(expression.matrix, metadata){
   print(
     ggplot2::ggplot(res) + 
       ggplot2::theme_minimal() +
-      ggplot2::geom_point(ggplot2::aes(x=logFC, y=-log10(FDR), color=DE), show.legend=FALSE) +
+      ggplot2::geom_point(ggplot2::aes(x=logFC, 
+                                       y=-log10(FDR), 
+                                       colour=DE), 
+                          show.legend=FALSE) +
       ggplot2::scale_color_manual(values=c("black", "red")) +
       ggplot2::lims(x=c(-12, 12), y=c(0, 120))
   )
@@ -321,13 +325,12 @@ results.raw <- DE_edgeR(expression.matrix)
 results.denoised <- DE_edgeR(expression.matrix.denoised)
 ```
 
+```{r volcanos, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("volcanos.png") 
+```
+
 > We observe the distribution of genes in the volcano plots becoming a lot tighter for the denoised matrix. For the raw matrix, there are a lot of genes with low p-values and high log-fold changes that are barely called DE. Those "whiskers" are corrected for the denoised matrix.
 
-We can also see the number of differentially expressed genes has been reduced:
-
-```{r results_length}
-sum(results.raw$DE)
-sum(results.denoised$DE)
-```
+We can also see the number of differentially expressed genes has been reduced.
 
 </div>

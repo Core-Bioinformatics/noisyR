@@ -185,7 +185,8 @@ threshold and method to calculate the noise threshold for a given expression mat
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>expression</th>
-      <td><p>either an expression summary (as calculated by calculate_expression_similarity_*()),
+      <td><p>either an expression summary (as calculated by
+<code><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></code> or <code><a href='calculate_expression_similarity_transcript.html'>calculate_expression_similarity_transcript</a></code>),
 which should be a list with 3 slots: expression.matrix, expression.levels, expression.levels.similarity;
 alternatively, just an expression matrix; only density based methods are available for the latter case</p></td>
     </tr>
@@ -198,7 +199,7 @@ to find corresponding noise threshold; can be a single value or a numeric vector
     <tr>
       <th>method.chosen.sequence</th>
       <td><p>methods to use to calculate the noise thresholds,
-must be a subset of get_methods_calculate_noise_threshold(); defaults to all</p></td>
+must be a subset of <code><a href='get_methods_calculate_noise_threshold.html'>get_methods_calculate_noise_threshold</a></code>; defaults to all</p></td>
     </tr>
     <tr>
       <th>dump.stats</th>
@@ -206,7 +207,7 @@ must be a subset of get_methods_calculate_noise_threshold(); defaults to all</p>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>other arguments (for the boxplot methods) passed to calculate_noise_threshold_base()</p></td>
+      <td><p>other arguments (for the boxplot methods) passed to <code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code></p></td>
     </tr>
     </table>
 
@@ -217,6 +218,9 @@ similarity thresholds and methods (optionally written in a csv file).
 The columns list the chosen method and similarity threshold, the minimum, mean,
 coefficient of variation, and maximum of the noise thresholds, and all the noise thresholds
 concatenated as a string.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='calculate_noise_threshold.html'>calculate_noise_threshold</a></code></p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>expression.summary</span> <span class='op'>&lt;-</span> <span class='fu'><a href='calculate_expression_similarity_counts.html'>calculate_expression_similarity_counts</a></span><span class='op'>(</span>
