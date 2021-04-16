@@ -1,7 +1,7 @@
 # *noisyR*: Enhancing biological signal in sequencing datasets by characterising random technical noise #
 
-[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/noisyr)](https://github.com/metacran/cranlogs.app)
-[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/noisyr)](https://github.com/metacran/cranlogs.app)
+[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/noisyr)](https://github.com/r-hub/cranlogs.app)
+[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/noisyr)](https://github.com/r-hub/cranlogs.app)
 
 <div style="text-align: justify"> 
 

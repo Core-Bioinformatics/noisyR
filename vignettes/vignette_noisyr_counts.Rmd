@@ -97,7 +97,7 @@ The full *noisyR* pipeline can be run through *noisyr()*, choosing "counts" for 
 
 ```{r noisyr_counts}
 expression.matrix.denoised.standard <- noisyr::noisyr(
-  approach_for_similarity_calculation = "counts", 
+  approach.for.similarity.calculation = "counts", 
   expression.matrix = df
 )
 ```
@@ -332,5 +332,9 @@ knitr::include_graphics("volcanos.png")
 > We observe the distribution of genes in the volcano plots becoming a lot tighter for the denoised matrix. For the raw matrix, there are a lot of genes with low p-values and high log-fold changes that are barely called DE. Those "whiskers" are corrected for the denoised matrix.
 
 We can also see the number of differentially expressed genes has been reduced.
+
+```{r session}
+sessionInfo()
+```
 
 </div>
