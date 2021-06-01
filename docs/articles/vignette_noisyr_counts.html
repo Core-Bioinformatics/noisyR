@@ -103,7 +103,7 @@
 
       
 
-      </header><div class="row">
+      </header><script src="vignette_noisyr_counts_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>noisyR count matrix approach workflow</h1>
@@ -128,7 +128,9 @@
 <p>Each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined.</p>
 <p>The package and some applications are described in more detail in <a href="https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2">this preprint</a> and is actively maintained on <a href="https://github.com/Core-Bioinformatics/noisyR" class="uri">https://github.com/Core-Bioinformatics/noisyR</a>.</p>
 <p>The <strong>count matrix approach</strong> uses the original, un-normalised count matrix, as provided after alignment and feature quantification; each sample is processed individually, only the relative expressions across samples are compared. Relying on the hypothesis that the majority of genes are not DE, most of the evaluations are expected to point towards a high similarity across samples.</p>
-<h1 id="installation">Installation</h1>
+<div id="installation" class="section level1">
+<h1 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h1>
 <p>To install the package, first install all bioconductor dependencies:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">packages.bioc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"preprocessCore"</span>,
@@ -162,7 +164,10 @@
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
   <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"Core-Bioinformatics/noisyR"</span><span class="op">)</span></code></pre></div>
-<h1 id="preprocessing">Preprocessing</h1>
+</div>
+<div id="preprocessing" class="section level1">
+<h1 class="hasAnchor">
+<a href="#preprocessing" class="anchor"></a>Preprocessing</h1>
 <p>First, load <em>noisyR</em>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Core-Bioinformatics/noisyR">noisyr</a></span><span class="op">)</span></code></pre></div>
@@ -187,7 +192,10 @@
 <p>Note that when reading from a file R typically returns a data frame. To convert to a matrix we use the function <em>cast_matrix_to_numeric()</em>. This also converts values to numeric (in case they were read as characters). Any values that are not coercible to numeric are replaced by 0.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">expression.matrix</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/cast_matrix_to_numeric.html">cast_matrix_to_numeric</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></code></pre></div>
-<h1 id="running-noisyr">Running <em>noisyR</em>
+</div>
+<div id="running-noisyr" class="section level1">
+<h1 class="hasAnchor">
+<a href="#running-noisyr" class="anchor"></a>Running <em>noisyR</em>
 </h1>
 <p>The full <em>noisyR</em> pipeline can be run through <em>noisyr()</em>, choosing “counts” for the count matrix approach (internally calls <em>noisyr_counts()</em>). The user can pass many arguments to this function, which alter the behaviour of the different pipeline steps, as discussed in the breakdown below.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -227,9 +235,14 @@
 <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">expression.matrix.denoised.standard</span>, <span class="fl">2</span>, <span class="va">min</span><span class="op">)</span>
 <span class="co">#&gt; SRR7624365 SRR7624366 SRR7624371 SRR7624372 </span>
 <span class="co">#&gt;         18         18         18         18</span></code></pre></div>
-<h1 id="pipeline-breakdown">Pipeline breakdown</h1>
+</div>
+<div id="pipeline-breakdown" class="section level1">
+<h1 class="hasAnchor">
+<a href="#pipeline-breakdown" class="anchor"></a>Pipeline breakdown</h1>
 <p>While for most applications, running <em>noisyr()</em> is sufficient, it may be useful to run individual pipeline steps manually. For example, the user may want to create summary figures for the denoising, store the noise thresholds obtained or other intermediary outputs, or try out different options without rerunning all steps. In this section, we look deeper into <em>noisyr()</em> and break down the three main steps that are performed.</p>
-<h2 id="similarity-calculation">Similarity calculation</h2>
+<div id="similarity-calculation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#similarity-calculation" class="anchor"></a>Similarity calculation</h2>
 <p>We can then run the similarity calculation using <em>calculate_expression_similarity_counts()</em>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">expression.summary</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_expression_similarity_counts.html">calculate_expression_similarity_counts</a></span><span class="op">(</span>
@@ -299,7 +312,7 @@
 <span class="co">#&gt; Calculating expression summary and JSE for each window...</span>
 <span class="co">#&gt; Performing t-tests...</span>
 <span class="co">#&gt; The number of similar windows found for each window (including itself) were:</span>
-<span class="co">#&gt;     1 1 1 1 1 1 1 2 2 2 2 4 2 3 3 2 3 4 5 5 4 3 2 3 3 4 3 2 2 4 4 2 3</span>
+<span class="co">#&gt;     1 1 1 1 1 1 1 2 2 2 2 3 3 3 1 2 4 4 5 6 5 3 3 4 4 4 4 3 2 3 3 3 4</span>
 <span class="co">#&gt; Optimal window found!</span></code></pre></div>
 <p><img src="vignette_noisyr_counts_files/figure-html/window_opt-1.png" width="700"></p>
 <pre><code>#&gt; [1] 6660</code></pre>
@@ -334,7 +347,10 @@
     <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Pearson correlation"</span><span class="op">)</span> <span class="op">+</span>
     <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept<span class="op">=</span><span class="fl">0.25</span>, color<span class="op">=</span><span class="st">"black"</span><span class="op">)</span></code></pre></div>
 <p><img src="vignette_noisyr_counts_files/figure-html/combined_plot-1.png" width="700"></p>
-<h2 id="noise-quantification">Noise quantification</h2>
+</div>
+<div id="noise-quantification" class="section level2">
+<h2 class="hasAnchor">
+<a href="#noise-quantification" class="anchor"></a>Noise quantification</h2>
 <p>Using the output of the similarity calculation, we can compute the signal to noise threshold in each sample:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">noise.thresholds</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/calculate_noise_threshold.html">calculate_noise_threshold</a></span><span class="op">(</span>expression <span class="op">=</span> <span class="va">expression.summary</span><span class="op">)</span>
@@ -416,7 +432,10 @@
 <span class="va">noise.thresholds</span>
 <span class="co">#&gt; [1]  9.664027 13.325175  7.368364  9.171495</span></code></pre></div>
 <p>Parameter optimisation can be turned on by specifying vectors of values for <em>similarity.threshold</em> and/or <em>method.chosen</em> (a subset of <em>get_methods_calculate_noise_threshold()</em>) when calling <em>noisyr()</em> or <em>noisyr_counts()</em>.</p>
-<h2 id="noise-removal">Noise removal</h2>
+</div>
+<div id="noise-removal" class="section level2">
+<h2 class="hasAnchor">
+<a href="#noise-removal" class="anchor"></a>Noise removal</h2>
 <p>To produce the denoised count matrix, the function <em>remove_noise_from_matrix()</em> is used with a specified vector of noise thresholds (usually calculated by <em>calculate_noise_threshold()</em>).</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">expression.matrix.denoised</span> <span class="op">&lt;-</span> <span class="fu">noisyr</span><span class="fu">::</span><span class="fu"><a href="../reference/remove_noise_from_matrix.html">remove_noise_from_matrix</a></span><span class="op">(</span>
@@ -459,8 +478,8 @@
   expression.matrix <span class="op">=</span> <span class="va">expression.matrix</span>,
   similarity.measure <span class="op">=</span> <span class="st">"correlation_pearson"</span>,
   optimise.window.length.logical <span class="op">=</span> <span class="cn">FALSE</span>,
-  similarity.threshold.sequence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, by<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span>,
-  method.chosen.sequence <span class="op">=</span> <span class="fu"><a href="../reference/get_methods_calculate_noise_threshold.html">get_methods_calculate_noise_threshold</a></span><span class="op">(</span><span class="op">)</span>
+  similarity.threshold <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, by<span class="op">=</span><span class="fl">0.01</span><span class="op">)</span>,
+  method.chosen <span class="op">=</span> <span class="fu"><a href="../reference/get_methods_calculate_noise_threshold.html">get_methods_calculate_noise_threshold</a></span><span class="op">(</span><span class="op">)</span>
 <span class="op">)</span>
 <span class="co">#&gt; &gt;&gt;&gt; noisyR counts approach pipeline &lt;&lt;&lt;</span>
 <span class="co">#&gt; The input matrix has 55573 rows and 4 cols</span>
@@ -474,17 +493,22 @@
 <span class="co">#&gt;   Working with sample 2</span>
 <span class="co">#&gt;   Working with sample 3</span>
 <span class="co">#&gt;   Working with sample 4</span>
+<span class="co">#&gt; Selecting parameters that minimise the coefficient of variation...</span>
 <span class="co">#&gt; Calculating noise thresholds for 4 samples...</span>
-<span class="co">#&gt;     similarity.threshold = 0.25</span>
-<span class="co">#&gt;     method.chosen = Boxplot-IQR</span>
+<span class="co">#&gt;     similarity.threshold = 0.21</span>
+<span class="co">#&gt;     method.chosen = Line_plot-loess10_smoothing</span>
 <span class="co">#&gt; Denoising expression matrix...</span>
 <span class="co">#&gt;     removing noisy genes</span>
 <span class="co">#&gt;     adjusting matrix</span>
 <span class="co">#&gt; &gt;&gt;&gt; Done! &lt;&lt;&lt;</span>
 <span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">expression.matrix.denoised</span>,
           <span class="va">expression.matrix.denoised.full.pipeline</span><span class="op">)</span>
-<span class="co">#&gt; [1] FALSE</span></code></pre></div>
-<h1 id="downstream-analysis">Downstream analysis</h1>
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
+</div>
+</div>
+<div id="downstream-analysis" class="section level1">
+<h1 class="hasAnchor">
+<a href="#downstream-analysis" class="anchor"></a>Downstream analysis</h1>
 <p>The denoised matrix can be used instead of the raw count matrix for downstream analysis. Here we present a simple example of a differential expression (DE) analysis and compare the two.</p>
 <p>We create a function to perform the same DE pipeline on both matrices, using <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2796818/">the edgeR package</a>.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
@@ -545,7 +569,7 @@
 <p>We can also see the number of differentially expressed genes has been reduced.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; R version 4.0.3 (2020-10-10)</span>
+<span class="co">#&gt; R version 4.1.0 (2021-05-18)</span>
 <span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
 <span class="co">#&gt; Running under: Windows 10 x64 (build 19042)</span>
 <span class="co">#&gt; </span>
@@ -565,27 +589,29 @@
 <span class="co">#&gt; [1] noisyr_1.0.0</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; loaded via a namespace (and not attached):</span>
-<span class="co">#&gt;  [1] tidyselect_1.1.0      xfun_0.21             purrr_0.3.4          </span>
-<span class="co">#&gt;  [4] splines_4.0.3         lattice_0.20-41       colorspace_2.0-0     </span>
-<span class="co">#&gt;  [7] vctrs_0.3.6           generics_0.1.0        htmltools_0.5.1.1    </span>
-<span class="co">#&gt; [10] yaml_2.2.1            mgcv_1.8-33           utf8_1.1.4           </span>
-<span class="co">#&gt; [13] rlang_0.4.10          pkgdown_1.6.1         pillar_1.4.7         </span>
-<span class="co">#&gt; [16] glue_1.4.2            DBI_1.1.1             foreach_1.5.1        </span>
-<span class="co">#&gt; [19] lifecycle_0.2.0       stringr_1.4.0         munsell_0.5.0        </span>
-<span class="co">#&gt; [22] gtable_0.3.0          ragg_1.1.2            codetools_0.2-18     </span>
+<span class="co">#&gt;  [1] tidyselect_1.1.1      xfun_0.23             bslib_0.2.5.1        </span>
+<span class="co">#&gt;  [4] purrr_0.3.4           lattice_0.20-44       splines_4.1.0        </span>
+<span class="co">#&gt;  [7] colorspace_2.0-1      vctrs_0.3.8           generics_0.1.0       </span>
+<span class="co">#&gt; [10] htmltools_0.5.1.1     yaml_2.2.1            mgcv_1.8-35          </span>
+<span class="co">#&gt; [13] utf8_1.2.1            rlang_0.4.11          pkgdown_1.6.1        </span>
+<span class="co">#&gt; [16] jquerylib_0.1.4       pillar_1.6.1          glue_1.4.2           </span>
+<span class="co">#&gt; [19] DBI_1.1.1             lifecycle_1.0.0       stringr_1.4.0        </span>
+<span class="co">#&gt; [22] munsell_0.5.0         gtable_0.3.0          ragg_1.1.2           </span>
 <span class="co">#&gt; [25] memoise_2.0.0         evaluate_0.14         labeling_0.4.2       </span>
-<span class="co">#&gt; [28] knitr_1.31            fastmap_1.1.0         fansi_0.4.2          </span>
-<span class="co">#&gt; [31] preprocessCore_1.52.1 highr_0.8             Rcpp_1.0.6           </span>
-<span class="co">#&gt; [34] scales_1.1.1          cachem_1.0.3          desc_1.2.0           </span>
-<span class="co">#&gt; [37] farver_2.0.3          systemfonts_1.0.1     fs_1.5.0             </span>
-<span class="co">#&gt; [40] textshaping_0.3.3     ggplot2_3.3.3         digest_0.6.27        </span>
-<span class="co">#&gt; [43] stringi_1.5.3         dplyr_1.0.4           rprojroot_2.0.2      </span>
-<span class="co">#&gt; [46] grid_4.0.3            cli_2.3.0             tools_4.0.3          </span>
-<span class="co">#&gt; [49] magrittr_2.0.1        philentropy_0.4.0     tibble_3.0.6         </span>
-<span class="co">#&gt; [52] crayon_1.4.1          pkgconfig_2.0.3       ellipsis_0.3.1       </span>
-<span class="co">#&gt; [55] Matrix_1.3-2          assertthat_0.2.1      rmarkdown_2.6        </span>
-<span class="co">#&gt; [58] iterators_1.0.13      R6_2.5.0              nlme_3.1-152         </span>
-<span class="co">#&gt; [61] compiler_4.0.3</span></code></pre></div>
+<span class="co">#&gt; [28] knitr_1.33            fastmap_1.1.0         ps_1.6.0             </span>
+<span class="co">#&gt; [31] fansi_0.5.0           preprocessCore_1.54.0 highr_0.9            </span>
+<span class="co">#&gt; [34] Rcpp_1.0.6            scales_1.1.1          cachem_1.0.5         </span>
+<span class="co">#&gt; [37] desc_1.3.0            jsonlite_1.7.2        farver_2.1.0         </span>
+<span class="co">#&gt; [40] systemfonts_1.0.2     fs_1.5.0              textshaping_0.3.4    </span>
+<span class="co">#&gt; [43] ggplot2_3.3.3         digest_0.6.27         stringi_1.6.2        </span>
+<span class="co">#&gt; [46] dplyr_1.0.6           rprojroot_2.0.2       grid_4.1.0           </span>
+<span class="co">#&gt; [49] cli_2.5.0             tools_4.1.0           magrittr_2.0.1       </span>
+<span class="co">#&gt; [52] philentropy_0.5.0     sass_0.4.0            tibble_3.1.2         </span>
+<span class="co">#&gt; [55] crayon_1.4.1          pkgconfig_2.0.3       Matrix_1.3-3         </span>
+<span class="co">#&gt; [58] ellipsis_0.3.2        rstudioapi_0.13       assertthat_0.2.1     </span>
+<span class="co">#&gt; [61] rmarkdown_2.8         R6_2.5.0              nlme_3.1-152         </span>
+<span class="co">#&gt; [64] compiler_4.1.0</span></code></pre></div>
+</div>
 </div>
   </div>
 

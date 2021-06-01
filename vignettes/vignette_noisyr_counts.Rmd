@@ -259,8 +259,8 @@ expression.matrix.denoised.full.pipeline <- noisyr::noisyr(
   expression.matrix = expression.matrix,
   similarity.measure = "correlation_pearson",
   optimise.window.length.logical = FALSE,
-  similarity.threshold.sequence = seq(0.2, 0.3, by=0.01),
-  method.chosen.sequence = get_methods_calculate_noise_threshold()
+  similarity.threshold = seq(0.2, 0.3, by=0.01),
+  method.chosen = get_methods_calculate_noise_threshold()
 )
 identical(expression.matrix.denoised,
           expression.matrix.denoised.full.pipeline)

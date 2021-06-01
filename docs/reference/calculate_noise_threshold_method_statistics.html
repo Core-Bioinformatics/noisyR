@@ -228,21 +228,21 @@ concatenated as a string.</p>
     method <span class='op'>=</span> <span class='st'>"correlation_pearson"</span>,
     n.elements.per.window <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='message'>The input matrix has 20 rows and 5 cols</span></div><div class='output co'>#&gt; <span class='message'>    number of genes: 20</span></div><div class='output co'>#&gt; <span class='message'>    number of samples: 5</span></div><div class='output co'>#&gt; <span class='message'>    the number of elements per window is 3</span></div><div class='output co'>#&gt; <span class='message'>    the step size is 1</span></div><div class='output co'>#&gt; <span class='message'>    the selected similarity metric is correlation_pearson</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 1</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 2</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 3</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 4</span></div><div class='output co'>#&gt; <span class='message'>  Working with sample 5</span></div><div class='input'><span class='fu'>calculate_noise_threshold_method_statistics</span><span class='op'>(</span><span class='va'>expression.summary</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 10 x 8</span><span>
-#&gt;    approach method similarity.thre~ noise.threshold~ noise.threshold~
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span>             </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>            </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>            </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> Density~ No_no~             0.25                0                0
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> Density~ RPM_n~             0.25                0                0
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> Density~ Quant~             0.25                0                0
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> Line_pl~ No_sm~             0.25                2               42
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> Line_pl~ loess~             0.25                2               42
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> Line_pl~ loess~             0.25                2               42
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> Line_pl~ loess~             0.25                2               42
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> Boxplot  Median             0.25                1                1
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> Boxplot  IQR                0.25                1                1
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> Boxplot  Quant5             0.25                1                1
-#&gt; </span><span style='color: #949494;'># ... with 3 more variables: noise.threshold.coefficient.of.variation </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #949494;'>,</span><span>
-#&gt; </span><span style='color: #949494;'>#   noise.threshold.max </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span style='color: #949494;'>, noise.thresholds.all </span><span style='color: #949494;font-style: italic;'>&lt;chr&gt;</span><span></div></span></pre>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 10 x 8</span>
+#&gt;    approach   method       similarity.thres~ noise.threshold.~ noise.threshold.~
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>             <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> Density_b~ No_normalis~              0.25                 0                 0
+#&gt; <span style='color: #BCBCBC;'> 2</span> Density_b~ RPM_normali~              0.25                 0                 0
+#&gt; <span style='color: #BCBCBC;'> 3</span> Density_b~ Quantile_no~              0.25                 0                 0
+#&gt; <span style='color: #BCBCBC;'> 4</span> Line_plot  No_smoothing              0.25                 2                42
+#&gt; <span style='color: #BCBCBC;'> 5</span> Line_plot  loess10_smo~              0.25                 2                42
+#&gt; <span style='color: #BCBCBC;'> 6</span> Line_plot  loess25_smo~              0.25                 2                42
+#&gt; <span style='color: #BCBCBC;'> 7</span> Line_plot  loess50_smo~              0.25                 2                42
+#&gt; <span style='color: #BCBCBC;'> 8</span> Boxplot    Median                    0.25                 1                 1
+#&gt; <span style='color: #BCBCBC;'> 9</span> Boxplot    IQR                       0.25                 1                 1
+#&gt; <span style='color: #BCBCBC;'>10</span> Boxplot    Quant5                    0.25                 1                 1
+#&gt; <span style='color: #949494;'># ... with 3 more variables: noise.threshold.coefficient.of.variation &lt;dbl&gt;,</span>
+#&gt; <span style='color: #949494;'>#   noise.threshold.max &lt;dbl&gt;, noise.thresholds.all &lt;chr&gt;</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
