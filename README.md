@@ -9,7 +9,7 @@ High-throughput sequencing enables an unprecedented resolution in transcript qua
 
 The noisyR package comprises an end-to-end pipeline for quantifying and removing technical noise from HTS datasets. The three main pipeline steps are [i] similarity calculation across samples, [ii] noise quantification, and [iii] noise removal; each step can be finely tuned using hyperparameters; optimal, data-driven values for these parameters are also determined.
 
-Preprint: https://www.biorxiv.org/content/10.1101/2021.01.17.427026v2
+Publication: https://doi.org/10.1093/nar/gkab433
 
 <img src="https://github.com/Core-Bioinformatics/noisyR/blob/master/docs/figures/workflow.png?raw=true" width="900">
 
