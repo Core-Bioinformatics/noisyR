@@ -1,7 +1,7 @@
 Package: noisyr
 Type: Package
 Title: Noise Quantification in High Throughput Sequencing Output
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
             person("Ilias", "Moutsopoulos", , "im383@cam.ac.uk", c("aut", "cre")),
             person("Irina", "Mohorianu", , "iim22@cam.ac.uk", role = c("aut","ctb")),

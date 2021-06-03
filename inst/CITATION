@@ -1,4 +1,4 @@
-citHeader("To cite noisyr in publications please use:")
+citHeader("To cite noisyr in publications please use this paper:")
 
 citEntry(
   entry    = "Article",
