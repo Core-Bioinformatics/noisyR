@@ -12,8 +12,10 @@
 #'     dimnames=list(paste0("X", 1:2),
 #'                   paste0("Y", 1:2))))
 cast_matrix_to_numeric <- function(expression.matrix){
-  expression.matrix.numeric = base::suppressWarnings(
-    base::apply(expression.matrix, 2, base::as.numeric))
+  expression.matrix <- base::as.matrix(expression.matrix)
+  expression.matrix.numeric = base::suppressWarnings(base::matrix(
+    base::as.numeric(expression.matrix), nrow=base::nrow(expression.matrix),
+    dimnames=base::dimnames(expression.matrix)))
   matrix.na <- base::is.na(expression.matrix.numeric)
   if(base::any(matrix.na)){
     base::warning("Count matrix contains non-numeric values: converted to 0.")

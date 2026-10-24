@@ -1,7 +1,7 @@
 Package: noisyr
 Type: Package
 Title: Noise Quantification in High Throughput Sequencing Output
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: c(
             person("Ilias", "Moutsopoulos", , "im383@cam.ac.uk", c("aut", "cre")),
             person("Irina", "Mohorianu", , "iim22@cam.ac.uk", role = c("aut","ctb")),
@@ -28,12 +28,16 @@ Imports:
     Rsamtools,
     philentropy, 
     doParallel, 
-    foreach
+    foreach,
+    parallel
 Suggests: 
     testthat,
     roxygen2,
     knitr,
-    rmarkdown
+    rmarkdown,
+    shiny,
+    bslib,
+    plotly
 License: GPL-2
 Encoding: UTF-8
 URL: https://github.com/Core-Bioinformatics/noisyR

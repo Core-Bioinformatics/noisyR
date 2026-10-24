@@ -67,31 +67,37 @@ calculate_noise_threshold_method_statistics <- function(
     }
   }
 
-  stats.table <- tibble::tibble()
-
-  for(similarity.threshold in similarity.threshold.sequence){
-    for(method.chosen in method.chosen.sequence){
-      noise.thresholds <- base::suppressMessages(
-        noisyr::calculate_noise_threshold(
-          expression = expression,
-          similarity.threshold = similarity.threshold,
-          method.chosen = method.chosen,
-          ...
-        )
+  # the curves do not depend on the similarity threshold, so compute them once per method
+  stats.rows <- base::list()
+  for(method.chosen in method.chosen.sequence){
+    curves <- base::suppressMessages(
+      noisyr::calculate_noise_threshold_curves(
+        expression = expression,
+        method.chosen = method.chosen,
+        ...
       )
-      stats.row <- tibble::tibble(approach=strsplit(method.chosen, "-")[[1]][1],
-                                  method=strsplit(method.chosen, "-")[[1]][2],
-                                  similarity.threshold=similarity.threshold,
-                                  noise.threshold.min=base::min(noise.thresholds),
-                                  noise.threshold.mean=base::mean(noise.thresholds),
-                                  noise.threshold.coefficient.of.variation=
-                                    stats::sd(noise.thresholds) / base::mean(noise.thresholds),
-                                  noise.threshold.max=base::max(noise.thresholds),
-                                  noise.thresholds.all=base::paste(noise.thresholds,
-                                                                   collapse=","))
-      stats.table <- base::rbind(stats.table, stats.row)
+    )
+    for(similarity.threshold in similarity.threshold.sequence){
+      noise.thresholds <- base::suppressMessages(
+        noisyr::noise_thresholds_from_curves(curves, similarity.threshold)
+      )
+      stats.rows[[base::length(stats.rows) + 1]] <- tibble::tibble(
+        approach=strsplit(method.chosen, "-")[[1]][1],
+        method=strsplit(method.chosen, "-")[[1]][2],
+        similarity.threshold=similarity.threshold,
+        noise.threshold.min=base::min(noise.thresholds),
+        noise.threshold.mean=base::mean(noise.thresholds),
+        noise.threshold.coefficient.of.variation=
+          stats::sd(noise.thresholds) / base::mean(noise.thresholds),
+        noise.threshold.max=base::max(noise.thresholds),
+        noise.thresholds.all=base::paste(noise.thresholds,
+                                         collapse=","))
     }
   }
+  # same row order as before: similarity thresholds outer, methods inner
+  row.order <- base::order(base::rep(base::seq_along(similarity.threshold.sequence),
+                                     base::length(method.chosen.sequence)))
+  stats.table <- dplyr::bind_rows(stats.rows[row.order])
 
   if(!base::is.null(dump.stats)){
     utils::write.table(stats.table, file=dump.stats, sep=",", append=FALSE,

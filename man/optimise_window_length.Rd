@@ -13,7 +13,8 @@ optimise_window_length(
   n.step.fraction = 0.05,
   iteration.number = 50,
   minimum.similar.windows = 3,
-  save.plot = NULL
+  save.plot = NULL,
+  n.cores = 1
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ in order to be accepted as optimal; default is 3, but can be reduced to 2 if no 
 
 \item{save.plot}{name of the pdf in which to print the output plot
 showing the distribution of JSE by window; output to the console by default}
+
+\item{n.cores}{number of cores passed to \code{\link{calculate_expression_similarity_counts}}}
 }
 \value{
 A single value of the optimal number of elements per window.

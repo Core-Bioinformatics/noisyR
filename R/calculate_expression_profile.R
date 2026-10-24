@@ -63,14 +63,18 @@ calculate_expression_profile = function(gene,
       reads <- dplyr::filter(reads, mapq %in% mapq.unique)
     }
     expression.vector[j] <- base::nrow(reads)
-    if(base::nrow(reads)>0){
-      for(r in base::seq_len(base::nrow(reads))){
-        add <- base::seq(from=reads$pos[r], length.out=reads$qwidth[r])
-        add <- add[add>0 & add<=base::nrow(profile)]
-        profile[add, j] <- profile[add, j] + 1
-        if(base::is.na(base::sum(profile[,j]))){break}
-      }
-    }
+    profile[, j] <- .coverage_from_reads(reads$pos, reads$qwidth, base::nrow(profile))
   }
   return(base::list("profile"=profile, "expression"=expression.vector))
+}
+
+# Number of reads overlapping each position 1..len, where read r covers
+# pos[r], ..., pos[r]+qwidth[r]-1; computed with a difference array
+# instead of incrementing the positions of every read one by one
+.coverage_from_reads <- function(pos, qwidth, len){
+  start <- base::pmax(pos, 1)
+  end <- base::pmin(pos + qwidth - 1, len)
+  keep <- !base::is.na(start) & !base::is.na(end) & start <= end
+  delta <- base::tabulate(start[keep], nbins=len+1) - base::tabulate(end[keep] + 1, nbins=len+1)
+  base::cumsum(delta)[base::seq_len(len)]
 }

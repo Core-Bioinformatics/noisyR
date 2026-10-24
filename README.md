@@ -59,6 +59,28 @@ The third step uses the noise threshold calculated in step ii to remove noise fr
 
 Main functions: *remove_noise_from_matrix()*, *remove_noise_from_bams()*
 
+## Interactive app ##
+
+`run_noisyr_app()` opens a Shiny app for the count matrix approach (needs the *shiny*, *bslib* and *plotly* packages):
+
+1. **Data**: upload a count matrix (CSV/TSV) or use simulated data; library sizes and expression distributions.
+2. **Similarity**: choose the similarity measure, window length and step; plot the similarity of each sliding window against expression for every sample; optionally search for a stable window length.
+3. **Threshold**: pick a method and move the similarity threshold slider. The thresholds update instantly, because the costly part (loess fits, boxplot bins, densities) is computed once per method with *calculate_noise_threshold_curves()* and read off with *noise_thresholds_from_curves()*. A heatmap compares the coefficient of variation of the thresholds across all methods and similarity thresholds; clicking a cell selects that method and threshold.
+4. **Denoise**: choose the removal options, see how many genes are kept, and download the denoised matrix plus an R script that reproduces the analysis.
+
+## Performance ##
+
+Version 1.2.0 gives the same results as 1.1.0 with less computation (20,000 genes x 12 samples, default parameters; `inst/benchmarks/benchmark_counts.R`):
+
+| step | 1.1.0 | 1.2.0 | speed-up |
+|---|---|---|---|
+| similarity, Pearson | 2.07 s | 0.66 s | 3.1x |
+| similarity, Pearson, `n.cores = 4` | 1.93 s | 0.26 s | 7.5x |
+| similarity, Spearman | 12.8 s | 7.1 s | 1.8x |
+| similarity, Euclidean distance | 4.19 s | 0.94 s | 4.5x |
+| method statistics (9 thresholds x 10 methods) | 22.0 s | 0.39 s | 56x |
+| *optimise_window_length()* (5,000 genes) | 8.8 s | 2.8 s | 3.1x |
+
 ## Required packages ##
 
 ### CRAN (use *install.packages()*) ###

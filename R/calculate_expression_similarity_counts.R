@@ -11,6 +11,8 @@
 #' @param n.step step size to slide across, default 1\% of n.elements.per.window
 #' @param n.step.fraction an alternative way to specify the step size, as a fraction of
 #' the window length; default is 5\%
+#' @param n.cores number of cores used to process samples in parallel (forked
+#' processes via \code{parallel::mclapply}, so only used on unix-alikes); default 1
 #' @param ... arguments passed on to other methods
 #' @return A list with three elements: the first element is the expression matrix,
 #'         as supplied; the other two are the expression levels matrix and
@@ -30,6 +32,7 @@ calculate_expression_similarity_counts = function(
   n.elements.per.window=NULL,
   n.step=NULL,
   n.step.fraction=0.05,
+  n.cores=1,
   ...
 ){
   base::message("The input matrix has ", base::nrow(expression.matrix), " rows and ",
@@ -60,53 +63,63 @@ calculate_expression_similarity_counts = function(
   }
   use.corr.dist <- base::strsplit(similarity.measure, "_")[[1]][1]
   base.method <- base::sub(paste0(use.corr.dist,"_"), "", similarity.measure)
+
+  ## each function compares the window of the sorted sample (x)
+  ## against the same rows of every other sample (columns of Y) in one call,
+  ## instead of one call per pair of samples
   if(use.corr.dist=="correlation"){
-    fun_corr_dist = function(cols.in){
-      stats::cor(cols.in, method=base.method)[1,2]
+    fun_corr_dist = function(x, Y){
+      base::as.vector(stats::cor(x, Y, method=base.method))
     }
   }else if(use.corr.dist == "distance"){
-    fun_corr_dist = function(cols.in){
-      vecsums <- base::colSums(cols.in)
-      if(base::any(is.na(vecsums) | vecsums==0)){
-        return(NA)
-      }else{
-        return(suppressMessages(
-          philentropy::distance(base::t(cols.in)/vecsums,
-                                method=base.method, p=3, test.na=FALSE)))
-      }
+    fun_corr_dist = function(x, Y){
+      out <- base::rep(NA_real_, base::ncol(Y))
+      sum.x <- base::sum(x)
+      sums.Y <- base::colSums(Y)
+      valid <- !(base::is.na(sums.Y) | sums.Y == 0)
+      if(base::is.na(sum.x) || sum.x == 0 || !base::any(valid)) return(out)
+      out[valid] <- base::suppressMessages(philentropy::dist_one_many(
+        x / sum.x, base::t(Y[, valid, drop=FALSE]) / sums.Y[valid],
+        method=base.method, p=3, testNA=FALSE))
+      out
     }
   }
 
   nsequence = base::seq(1, (base::nrow(expression.matrix)-n.elements.per.window+1), n.step)
+  window.offsets <- base::seq_len(n.elements.per.window) - 1
+  n.samples <- base::ncol(expression.matrix)
+  expression.matrix.unnamed <- base::unname(expression.matrix)
+
+  ## for one sample, returns the average expression level of each sliding window
+  ## and the average similarity of the window to the other samples
+  process_sample <- function(j){
+    base::message("  Working with sample ",j)
+    expression.matrix.sorted = expression.matrix.unnamed[
+      base::order(expression.matrix.unnamed[,j]), , drop=FALSE]
+    levels <- base::numeric(base::length(nsequence))
+    similarity <- base::numeric(base::length(nsequence))
+    for(idx in base::seq_along(nsequence)){
+      window <- expression.matrix.sorted[nsequence[idx] + window.offsets, , drop=FALSE]
+      similarity.vector <- base::suppressWarnings(
+        fun_corr_dist(window[, j], window[, -j, drop=FALSE]))
+      similarity[idx] <- base::mean(similarity.vector[similarity.vector != 0])
+      levels[idx] <- base::mean(window[, j])
+    }
+    base::list(levels=levels, similarity=similarity)
+  }
+
+  if(n.cores > 1 && .Platform$OS.type == "unix"){
+    by.sample <- parallel::mclapply(base::seq_len(n.samples), process_sample, mc.cores=n.cores)
+  }else{
+    by.sample <- base::lapply(base::seq_len(n.samples), process_sample)
+  }
   ## the average expression level per window is maintained in expression.levels variable
   ## the expression.levels.similarity matrix contains the similarity calculated for each sample,
   ##     at each expression level.
-  expression.levels = base::rep(0, base::ncol(expression.matrix)*base::length(nsequence))
-  expression.levels = base::matrix(expression.levels, ncol=base::ncol(expression.matrix))
-  expression.levels.similarity = base::rep(0, base::ncol(expression.matrix)*base::length(nsequence))
-  expression.levels.similarity = base::matrix(expression.levels.similarity, ncol=base::ncol(expression.matrix))
-
-  for(j in base::seq_len(base::ncol(expression.matrix))){
-    base::message("  Working with sample ",j)
-    expression.matrix.sorted = expression.matrix[base::order(expression.matrix[,j]),]
-    for(idx in base::seq_len(base::length(nsequence))){
-      #focus on a sliding window, initialize the similarity vector
-      similarity.vector = base::vector(mode="numeric", length=base::ncol(expression.matrix))
-      for(k in base::seq_len(base::ncol(expression.matrix))){
-        if(j != k){
-          col.j = expression.matrix.sorted[nsequence[idx]:(nsequence[idx]+n.elements.per.window-1), j];
-          base::names(col.j)=base::rep("", base::length(col.j))
-          col.k = expression.matrix.sorted[nsequence[idx]:(nsequence[idx]+n.elements.per.window-1), k];
-          base::names(col.k)=base::rep("", base::length(col.k))
-          cols.in = base::cbind(col.j, col.k)
-          similarity.vector[k] = base::suppressWarnings(fun_corr_dist(cols.in))
-        }#end if
-      }#end for k
-      expression.levels.similarity[idx,j] = base::mean(similarity.vector[similarity.vector != 0])
-      expression.levels[idx,j] = base::mean(expression.matrix.sorted[nsequence[idx]:
-                                                                       (nsequence[idx]+n.elements.per.window-1),j])
-    }#end for on the sliding windows
-  }
+  expression.levels <- base::matrix(
+    base::unlist(base::lapply(by.sample, `[[`, "levels")), ncol=n.samples)
+  expression.levels.similarity <- base::matrix(
+    base::unlist(base::lapply(by.sample, `[[`, "similarity")), ncol=n.samples)
 
   if(noisyr::get_methods_correlation_distance(names=FALSE)[
     base::match(similarity.measure, noisyr::get_methods_correlation_distance())] == "d"){

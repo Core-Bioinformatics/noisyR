@@ -10,6 +10,7 @@ calculate_expression_similarity_counts(
   n.elements.per.window = NULL,
   n.step = NULL,
   n.step.fraction = 0.05,
+  n.cores = 1,
   ...
 )
 }
@@ -27,6 +28,9 @@ default 10\% of the number of rows}
 
 \item{n.step.fraction}{an alternative way to specify the step size, as a fraction of
 the window length; default is 5\%}
+
+\item{n.cores}{number of cores used to process samples in parallel (forked
+processes via \code{parallel::mclapply}, so only used on unix-alikes); default 1}
 
 \item{...}{arguments passed on to other methods}
 }

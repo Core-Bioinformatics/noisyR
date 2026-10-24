@@ -19,6 +19,7 @@
 #' in order to be accepted as optimal; default is 3, but can be reduced to 2 if no optimum is found
 #' @param save.plot name of the pdf in which to print the output plot
 #' showing the distribution of JSE by window; output to the console by default
+#' @param n.cores number of cores passed to \code{\link{calculate_expression_similarity_counts}}
 #' @return A single value of the optimal number of elements per window.
 #' If no optimal value was found, this function returns NULL.
 #' @export
@@ -36,7 +37,8 @@ optimise_window_length = function(
   n.step.fraction=0.05,
   iteration.number=50,
   minimum.similar.windows=3,
-  save.plot=NULL
+  save.plot=NULL,
+  n.cores=1
 )
 {
   nrows <- base::nrow(expression.matrix)
@@ -70,7 +72,8 @@ optimise_window_length = function(
         expression.matrix=expression.matrix,
         n.elements.per.window=window.length,
         n.step.fraction=n.step.fraction,
-        similarity.measure=similarity.measure)
+        similarity.measure=similarity.measure,
+        n.cores=n.cores)
     )
     row.means <- base::rowMeans(expression.summary$expression.levels.similarity, na.rm=TRUE)
     x=base::abs(row.means[!base::is.na(row.means)])
@@ -104,18 +107,13 @@ optimise_window_length = function(
   }
 
   base::message("Performing t-tests...")
-  ttests.matrix = base::matrix(0, nrow=length(window.lengths), ncol=length(window.lengths))
-  for(i in base::seq_len(base::length(window.lengths))){
-    ttest.positive.by.window <- base::vector()
-    for(j in base::seq_len(base::length(window.lengths))){
-      if(i!=j){
-        ttest <- stats::t.test(jse.by.window.list[[i]], jse.by.window.list[[j]])
-        ttest.positive.by.window <- base::c(ttest.positive.by.window, ttest$p.value >= 0.05)
-      }else{
-        ttest.positive.by.window <- base::c(ttest.positive.by.window, 1)
-      }
+  # Welch's t-test is symmetric, so only the upper triangle is computed
+  ttests.matrix = base::diag(1, nrow=length(window.lengths))
+  for(i in base::seq_len(base::length(window.lengths) - 1)){
+    for(j in (i+1):base::length(window.lengths)){
+      ttest <- stats::t.test(jse.by.window.list[[i]], jse.by.window.list[[j]])
+      ttests.matrix[i,j] <- ttests.matrix[j,i] <- ttest$p.value >= 0.05
     }
-    ttests.matrix[i,] <- ttest.positive.by.window
   }
 
   base::message("The number of similar windows found for each window (including itself) were:")

@@ -21,13 +21,13 @@
 #' )
 #'
 calculate_first_minimum_density = function(mat, log.transform=TRUE, adjust=2, makeplots=FALSE){
-  something.is.wrong <- FALSE
   if(base::is.vector(mat)){mat <- base::as.matrix(mat, ncol=1)}
   firstmin.vector <- base::vector(length=base::ncol(mat))
   for(j in base::seq_len(base::ncol(mat))){
+    something.is.wrong <- FALSE
     vec <- mat[,j]
     if(log.transform){vec = base::log2(vec+1)}
-    dens <- stats::density(base::sort(vec), adjust=2)
+    dens <- stats::density(vec, adjust=adjust)
     i <- 2
     while(dens$y[i]==base::max(dens$y[1:i])){
       i = i + 1
