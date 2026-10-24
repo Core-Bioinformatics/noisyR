@@ -18,6 +18,7 @@ calculate_expression_similarity_transcript(
   similarity.measure = "correlation_pearson",
   save.image.every.1000 = FALSE,
   ncores = 1,
+  genes.per.batch = 500,
   ...
 )
 }
@@ -67,6 +68,9 @@ are processed; default is FALSE}
 
 \item{ncores}{Number of cores for parallel computation; defaults to sequential computation,
 but parallelisation is highly encouraged; it is set to detectCores() if higher}
+
+\item{genes.per.batch}{number of exons whose reads are fetched from each BAM file in
+a single query; larger batches mean fewer queries but more memory; default 500}
 
 \item{...}{arguments passed on to other methods}
 }

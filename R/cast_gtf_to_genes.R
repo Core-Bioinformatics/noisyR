@@ -20,32 +20,27 @@ cast_gtf_to_genes = function(
   att_of_interest="gene_id",
   ...
 ){
-  genes <- tibble::as_tibble(utils::read.table(filename,
-                                               sep="\t",
-                                               stringsAsFactors = FALSE)) %>%
-    tibble::rowid_to_column(var="id")
-  base::colnames(genes) <- base::c("id", "seqid", "source", "feature", "start",
-                                   "end", "score", "strand", "frame", "attributes")
+  gtf <- utils::read.table(filename,
+                           sep="\t",
+                           stringsAsFactors = FALSE,
+                           colClasses = c("character", "character", "character", "integer",
+                                          "integer", "character", "character", "character",
+                                          "character"))
+  base::colnames(gtf) <- base::c("seqid", "source", "feature", "start",
+                                 "end", "score", "strand", "frame", "attributes")
+  gtf <- gtf[gtf$feature == feature, ]
 
-  extract_attributes <- function(gtf_attributes, att_of_interest){
-    att <- base::strsplit(gtf_attributes, "; ")
-    att <- base::gsub("\"","",base::unlist(att))
-    if(!base::is.null(base::unlist(base::strsplit(
-      att[base::grep(att_of_interest, att)], " ")))){
-      return(base::unlist(base::strsplit(
-        att[base::grep(att_of_interest, att)], " "))[2])
-    }else{
-      return(NA)}
-  }
-  id=NULL; gene_id=NULL; seqid=NULL; start=NULL; end=NULL
-  genes <- genes %>%
-    dplyr::filter(feature==!!feature) %>%
-    dplyr::mutate(
-      gene_id = base::unlist(base::lapply(attributes,
-                                          extract_attributes,
-                                          !!att_of_interest))) %>%
+  # the value of the first attribute that matches att_of_interest, for all rows at once
+  att <- base::strsplit(gtf$attributes, "; ", fixed=TRUE)
+  att.row <- base::rep(base::seq_along(att), base::lengths(att))
+  att <- base::gsub("\"", "", base::unlist(att))
+  matches <- base::grep(att_of_interest, att)
+  first.match <- matches[base::match(base::seq_len(base::nrow(gtf)), att.row[matches])]
+  gene_id <- base::vapply(base::strsplit(att[first.match], " ", fixed=TRUE),
+                          function(x) x[2], base::character(1))
 
-    dplyr::select(id, gene_id, seqid, start, end) %>%
-    dplyr::distinct(gene_id, seqid, start, end)
+  genes <- tibble::tibble(gene_id = gene_id, seqid = gtf$seqid,
+                          start = gtf$start, end = gtf$end)
+  genes <- genes[!base::duplicated(genes), ]
   return(genes)
 }

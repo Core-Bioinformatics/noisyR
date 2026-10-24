@@ -49,7 +49,7 @@ calculate_expression_profile = function(gene,
   gr <- GenomicRanges::GRanges(seqnames = gene$seqid,
                                ranges = IRanges::IRanges(start=gene$start-slack,
                                                          end=gene$end))
-  params <- Rsamtools::ScanBamParam(which=gr, what=Rsamtools::scanBamWhat())
+  params <- Rsamtools::ScanBamParam(which=gr, what=c("pos", "qwidth", "mapq"))
   expression.vector <- base::vector(mode="double", length=base::length(bams))
   for(j in base::seq_len(base::length(bams))){
     bamIndex <- base::paste0(bams[j], ".bai")

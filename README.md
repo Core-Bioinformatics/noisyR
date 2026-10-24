@@ -81,6 +81,15 @@ Version 1.2.0 gives the same results as 1.1.0 with less computation (20,000 gene
 | method statistics (9 thresholds x 10 methods) | 22.0 s | 0.39 s | 56x |
 | *optimise_window_length()* (5,000 genes) | 8.8 s | 2.8 s | 3.1x |
 
+Transcript approach, on simulated data (2,000 exons, 4 BAM files of 400,000 reads; `inst/benchmarks/benchmark_transcript.R`):
+
+| step | 1.1.0 | 1.2.0 | speed-up |
+|---|---|---|---|
+| similarity, sequential | 128.3 s | 4.3 s | 30x |
+| similarity, `ncores = 4` | 36.4 s | 3.0 s | 12x |
+| *cast_gtf_to_genes()*, 200,000 lines | 5.7 s | 1.0 s | 5.5x |
+| *filter_genes_transcript()*, 20,000 genes / 200,000 exons | 18.1 s | 0.03 s | 550x |
+
 ## Required packages ##
 
 ### CRAN (use *install.packages()*) ###

@@ -5,3 +5,6 @@ docs
 ^docs$
 ^pkgdown$
 ^NEWS\.md$
+^OPTIMISATION\.md$
+^\.claude$
+^slides$

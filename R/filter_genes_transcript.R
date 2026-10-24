@@ -52,12 +52,8 @@ filter_genes_transcript = function(
     base::rowSums(expression.matrix >= threshold.matrix) > 0)
   if(filter.by[1] == "gene"){
     base::message("    doing filtering by gene")
-    all.unique.ensids <- base::unique(genes$gene_id)
-    all.unique.ensids.above.noise <-
-      sapply(X = all.unique.ensids, USE.NAMES = FALSE, FUN = function(gene){
-        base::any(above.noise.threshold[genes$gene_id == gene])
-      })
-    genes <- genes[genes$gene_id %in% all.unique.ensids[all.unique.ensids.above.noise], ]
+    # a gene is kept if any of its exons is above the noise threshold
+    genes <- genes[genes$gene_id %in% base::unique(genes$gene_id[above.noise.threshold]), ]
   }else if(filter.by[1] == "exon"){
     base::message("    doing filtering by exon")
     genes <- genes[above.noise.threshold, ]

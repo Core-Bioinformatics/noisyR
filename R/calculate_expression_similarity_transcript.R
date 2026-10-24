@@ -42,6 +42,8 @@
 #' are processed; default is FALSE
 #' @param ncores Number of cores for parallel computation; defaults to sequential computation,
 #' but parallelisation is highly encouraged; it is set to detectCores() if higher
+#' @param genes.per.batch number of exons whose reads are fetched from each BAM file in
+#' a single query; larger batches mean fewer queries but more memory; default 500
 #' @param ... arguments passed on to other methods
 #' @return A list with three elements: the first element is the expression matrix,
 #'         as supplied or calculated; the other two are the expression levels matrix and
@@ -77,6 +79,7 @@ calculate_expression_similarity_transcript <- function(
   similarity.measure = "correlation_pearson",
   save.image.every.1000=FALSE,
   ncores=1,
+  genes.per.batch=500,
   ...
 ){
   if(base::is.null(bams)){
@@ -123,89 +126,50 @@ calculate_expression_similarity_transcript <- function(
                "Please use a correlation measure instead."))
   base.method <- base::sub(paste0(use.corr.dist,"_"), "", similarity.measure)
 
-  expression.levels <- base::matrix(nrow=ngenes, ncol=base::length(bams))
-  base::rownames(expression.levels) <- genes.subset$gene_id
-  expression.levels.similarity <- base::matrix(nrow=ngenes,
-                                               ncol=base::length(bams))
+  ## exons are processed in batches: the reads of a whole batch are fetched from each BAM
+  ## file in one query, instead of one query per exon and BAM file
+  batches <- base::split(base::seq_len(ngenes), base::ceiling(base::seq_len(ngenes) / genes.per.batch))
+  process_batch <- function(rows){
+    .expression_similarity_batch(genes.subset[rows, ], bams=bams, unique.only=unique.only,
+                                 mapq.unique=mapq.unique, slack=slack, base.method=base.method)
+  }
 
   base::message("Calculating expression similarity for ", ngenes, " genes...")
-  base::message("    this process may take a long time...")
   start_time <- base::Sys.time()
   if(ncores>1){
     ncores <- base::min(ncores, parallel::detectCores())
     base::message("    ncores=", ncores)
-
-    cl <- parallel::makePSOCKcluster(ncores)
-    doParallel::registerDoParallel(cl = cl,
-                                   cores = ncores)
-    concatenated.matrices <- foreach::foreach(
-      n=1:ngenes,
-      .combine=rbind,
-      .inorder=TRUE) %dopar% {
-        profile_expression_list <-
-          noisyr::calculate_expression_profile(gene=genes.subset[n,],
-                                               bams=bams,
-                                               unique.only=unique.only,
-                                               mapq.unique=mapq.unique,
-                                               slack=slack)
-        profile <- profile_expression_list$profile
-        cors <- base::suppressWarnings(
-          stats::cor(base::unname(profile), method=base.method))
-        cors[cors==1] = NA
-        avCors <- base::colMeans(cors, na.rm=TRUE)
-        avCors[base::is.nan(avCors)] = NA
-        expression.levels.similarity[n,] <- avCors
-        if(n%%1000==0){
-          if(save.image.every.1000){
-            base::save.image()
-          }
-        }
-        c(avCors, profile_expression_list$expression)
-      }
-    parallel::stopCluster(cl)
-
-    expression.levels[] <- concatenated.matrices[, (base::length(bams)+1):(2*base::length(bams))]
-    expression.levels.similarity[] <- concatenated.matrices[, 1:base::length(bams)]
-
+    if(.Platform$OS.type == "unix"){
+      by.batch <- parallel::mclapply(batches, process_batch, mc.cores=ncores)
+    }else{
+      cl <- parallel::makePSOCKcluster(ncores)
+      on.exit(parallel::stopCluster(cl), add=TRUE)
+      by.batch <- parallel::parLapply(cl, batches, process_batch)
+    }
   }else{
     base::message("    ncores=1, running sequentially...")
     if(ngenes > 5000){
       base::message("    consider increasing ncores for more than a few thousand exons")
-      base::message("    this process may take a long time...")
     }
-    for(n in base::seq_len(ngenes)){
-      profile_expression_list <-
-        noisyr::calculate_expression_profile(gene=genes.subset[n,],
-                                             bams=bams,
-                                             unique.only=unique.only,
-                                             mapq.unique=mapq.unique,
-                                             slack=slack)
-      profile <- profile_expression_list$profile
-
-      cors <- stats::cor(base::unname(profile), method=base.method)
-      cors[cors==1] = NA
-      avCors <- base::colMeans(cors, na.rm=TRUE)
-      avCors[base::is.nan(avCors)] = NA
-
-      expression.levels[n,] <- profile_expression_list$expression
-      expression.levels.similarity[n,] = avCors
-      if(n%%1000==0){
-        if(save.image.every.1000){
-          base::save.image()
-        }
-        part_time <- base::Sys.time()
-        base::message("Done ", n, " genes out of ", ngenes)
-        time_elapsed <- part_time - start_time
-        base::message(" Time elapsed: ", base::round(time_elapsed, 2),
-                      " ", base::units(time_elapsed))
-      }
+    by.batch <- base::vector("list", base::length(batches))
+    for(b in base::seq_along(batches)){
+      by.batch[[b]] <- process_batch(batches[[b]])
+      n <- base::max(batches[[b]])
+      time_elapsed <- base::Sys.time() - start_time
+      base::message("Done ", n, " genes out of ", ngenes, "; time elapsed: ",
+                    base::round(time_elapsed, 2), " ", base::units(time_elapsed))
     }
   }
+  failed <- base::vapply(by.batch, base::inherits, base::logical(1), what="try-error")
+  if(base::any(failed)) base::stop("Similarity calculation failed: ", by.batch[[base::which(failed)[1]]])
+
+  expression.levels <- base::do.call(base::rbind, base::lapply(by.batch, `[[`, "expression"))
+  base::rownames(expression.levels) <- genes.subset$gene_id
+  expression.levels.similarity <- base::do.call(base::rbind, base::lapply(by.batch, `[[`, "similarity"))
   if(save.image.every.1000){
     base::save.image()
   }
-  end_time <- base::Sys.time()
-  time_elapsed <- end_time - start_time
+  time_elapsed <- base::Sys.time() - start_time
   base::message("Finished! Time elapsed: ", base::round(time_elapsed, 2),
                 " ", base::units(time_elapsed))
 
@@ -222,14 +186,56 @@ calculate_expression_similarity_transcript <- function(
     expression.levels.similarity.sorted[,j] <- expression.levels.similarity[ordering,j]
   }
 
-  if(noisyr::get_methods_correlation_distance(names=FALSE)[
-    base::match(similarity.measure, noisyr::get_methods_correlation_distance())] == "d"){
-    base::message("Chosen similarity metric ", similarity.measure, " is a dissimilarity, outputting inverse...")
-    expression.levels.similarity <- 1/expression.levels.similarity
-  }
-
   expression.summary <- base::list("expression.matrix" = expression.matrix,
                                    "expression.levels" = expression.levels.sorted,
                                    "expression.levels.similarity" = expression.levels.similarity.sorted)
   return(expression.summary)
+}
+
+# Raw expression and average profile correlation with the other samples,
+# for a batch of exons (rows of genes); one scanBam query per BAM file for the whole batch
+.expression_similarity_batch <- function(genes, bams, unique.only, mapq.unique, slack, base.method){
+  profiles <- .expression_profiles_batch(genes, bams, unique.only=unique.only,
+                                         mapq.unique=mapq.unique, slack=slack)
+  similarity <- base::t(base::vapply(profiles$profiles, function(profile){
+    cors <- base::suppressWarnings(stats::cor(profile, method=base.method))
+    cors[cors==1] = NA
+    avCors <- base::colMeans(cors, na.rm=TRUE)
+    avCors[base::is.nan(avCors)] = NA
+    avCors
+  }, base::numeric(base::length(bams))))
+  base::list(expression=profiles$expression, similarity=similarity)
+}
+
+# Expression profiles (reads overlapping each position) and read counts of a batch of exons;
+# same output as calling calculate_expression_profile() on each exon
+.expression_profiles_batch <- function(genes, bams, unique.only=TRUE, mapq.unique=c(50,255), slack=200){
+  lengths <- genes$end - genes$start + 1
+  gr <- GenomicRanges::GRanges(seqnames = genes$seqid,
+                               ranges = IRanges::IRanges(start=genes$start-slack,
+                                                         end=genes$end))
+  params <- Rsamtools::ScanBamParam(which=gr, what=c("pos", "qwidth", "mapq"))
+  # scanBam returns one element per range, grouped by seqname (in the order of the
+  # seqlevels) and in input order within each seqname
+  result.order <- base::order(base::as.integer(GenomicRanges::seqnames(gr)), base::seq_along(gr))
+  coord <- function(x) base::format(x, scientific=FALSE, trim=TRUE)
+  expected.names <- base::paste0(genes$seqid, ":", coord(genes$start-slack), "-", coord(genes$end))[result.order]
+  profiles <- base::lapply(lengths, function(len) base::matrix(0, nrow=len, ncol=base::length(bams)))
+  expression <- base::matrix(0, nrow=base::nrow(genes), ncol=base::length(bams))
+  for(j in base::seq_along(bams)){
+    bamFile <- Rsamtools::BamFile(bams[j], base::paste0(bams[j], ".bai"))
+    aln <- Rsamtools::scanBam(bamFile, param = params)
+    if(!identical(base::names(aln), expected.names)){
+      base::stop("Unexpected order of the reads returned by Rsamtools::scanBam")
+    }
+    for(k in base::seq_along(aln)){
+      n <- result.order[k]
+      reads <- aln[[k]]
+      keep <- if(unique.only) reads$mapq %in% mapq.unique else base::rep(TRUE, base::length(reads$pos))
+      expression[n, j] <- base::sum(keep)
+      profiles[[n]][, j] <- .coverage_from_reads(reads$pos[keep] - genes$start[n] + 1,
+                                                 reads$qwidth[keep], lengths[n])
+    }
+  }
+  base::list(profiles=profiles, expression=expression)
 }

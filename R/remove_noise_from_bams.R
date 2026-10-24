@@ -104,9 +104,10 @@ remove_noise_from_bams = function(
       }
     }
   }
-  gr <- GenomicRanges::GRanges(seqnames = genes.sub$seqid,
-                               ranges = IRanges::IRanges(start=genes.sub$start,
-                                                               end=genes.sub$end))
+  # overlapping exons are merged so that each region is only queried once
+  gr <- GenomicRanges::reduce(GenomicRanges::GRanges(seqnames = genes.sub$seqid,
+                                                     ranges = IRanges::IRanges(start=genes.sub$start,
+                                                                               end=genes.sub$end)))
   params <- Rsamtools::ScanBamParam(which = gr,
                                     what = Rsamtools::scanBamWhat(),
                                     mapqFilter = ifelse(unique.only, mapq.unique, 0))

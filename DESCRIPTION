@@ -27,8 +27,6 @@ Imports:
     GenomicRanges, 
     Rsamtools,
     philentropy, 
-    doParallel, 
-    foreach,
     parallel
 Suggests: 
     testthat,
@@ -42,5 +40,5 @@ License: GPL-2
 Encoding: UTF-8
 URL: https://github.com/Core-Bioinformatics/noisyR
 BugReports: https://github.com/Core-Bioinformatics/noisyR/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
