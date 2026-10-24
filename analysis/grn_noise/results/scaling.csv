@@ -1,0 +1,55 @@
+"G","inference","stage","seconds","peak.Mb","n.edges","F1.direct"
+500,"corr","inference: 5 split replicates (5 cores)",0.05,51,NA,NA
+500,"corr","prepare_edges, top.m = 10 G",0.05,86,124750,NA
+500,"corr","concordance + threshold (top.m = 10 G)",0.96,113,124750,0.0300547741945668
+500,"corr","concordance + threshold (no pre-filter)",0.23,108,124750,NA
+500,"corr","native noisyR (top.m = 5 G, 5 cores)",0.14,118,124750,NA
+500,"corr","native noisyR (no pre-filter, 5 cores)",0.4,138,124750,NA
+500,"corr","re-threshold 19 similarity thresholds",0.21,118,124750,NA
+500,"corr","stability selection",0,62,124750,NA
+500,"corr","permutation null (1 inference + FDR cut)",0.33,110,124750,NA
+500,"ridge","inference: 5 split replicates (5 cores)",0.04,45,NA,NA
+500,"ridge","prepare_edges, top.m = 10 G",0.02,50,24950,NA
+500,"ridge","concordance + threshold (top.m = 10 G)",0.04,79,24950,0.881052631578947
+500,"ridge","concordance + threshold (no pre-filter)",0.05,89,24950,NA
+500,"ridge","native noisyR (top.m = 5 G, 5 cores)",0.07,63,24950,NA
+500,"ridge","native noisyR (no pre-filter, 5 cores)",0.11,67,24950,NA
+500,"ridge","re-threshold 19 similarity thresholds",0.03,68,24950,NA
+500,"ridge","stability selection",0,42,24950,NA
+500,"ridge","permutation null (1 inference + FDR cut)",0.16,111,24950,NA
+2000,"corr","inference: 5 split replicates (5 cores)",0.57,232,NA,NA
+2000,"corr","prepare_edges, top.m = 10 G",0.84,352,1999000,NA
+2000,"corr","concordance + threshold (top.m = 10 G)",2.57,441,1999000,0.234855408913099
+2000,"corr","concordance + threshold (no pre-filter)",8.94,876,1999000,NA
+2000,"corr","native noisyR (top.m = 5 G, 5 cores)",0.88,715,1999000,NA
+2000,"corr","native noisyR (no pre-filter, 5 cores)",11.24,718,1999000,NA
+2000,"corr","re-threshold 19 similarity thresholds",0.42,683,1999000,NA
+2000,"corr","stability selection",0,235,1999000,NA
+2000,"corr","permutation null (1 inference + FDR cut)",4.96,653,1999000,NA
+2000,"ridge","inference: 5 split replicates (5 cores)",0.2,117,NA,NA
+2000,"ridge","prepare_edges, top.m = 10 G",0.23,228,399800,NA
+2000,"ridge","concordance + threshold (top.m = 10 G)",0.28,314,399800,0.804477189005384
+2000,"ridge","concordance + threshold (no pre-filter)",0.87,314,399800,NA
+2000,"ridge","native noisyR (top.m = 5 G, 5 cores)",0.27,249,399800,NA
+2000,"ridge","native noisyR (no pre-filter, 5 cores)",1.2,313,399800,NA
+2000,"ridge","re-threshold 19 similarity thresholds",0.13,246,399800,NA
+2000,"ridge","stability selection",0,116,399800,NA
+2000,"ridge","permutation null (1 inference + FDR cut)",1.63,318,399800,NA
+5000,"corr","inference: 5 split replicates (5 cores)",3.36,1221,NA,NA
+5000,"corr","prepare_edges, top.m = 10 G",5.14,1902,12497500,NA
+5000,"corr","concordance + threshold (top.m = 10 G)",16.21,2315,12497500,0.297093690248566
+5000,"corr","concordance + threshold (no pre-filter)",148.52,4898,12497500,NA
+5000,"corr","native noisyR (top.m = 5 G, 5 cores)",4.98,3141,12497500,NA
+5000,"corr","native noisyR (no pre-filter, 5 cores)",167.87,3753,12497500,NA
+5000,"corr","re-threshold 19 similarity thresholds",1.45,2390,12497500,NA
+5000,"corr","stability selection",0.1,1175,12497500,NA
+5000,"corr","permutation null (1 inference + FDR cut)",31.35,2848,12497500,NA
+5000,"ridge","inference: 5 split replicates (5 cores)",1.35,501,NA,NA
+5000,"ridge","prepare_edges, top.m = 10 G",1.75,1139,2499500,NA
+5000,"ridge","concordance + threshold (top.m = 10 G)",1.98,1269,2499500,0.776281494352737
+5000,"ridge","concordance + threshold (no pre-filter)",13.25,1265,2499500,NA
+5000,"ridge","native noisyR (top.m = 5 G, 5 cores)",1.45,1182,2499500,NA
+5000,"ridge","native noisyR (no pre-filter, 5 cores)",15.34,1264,2499500,NA
+5000,"ridge","re-threshold 19 similarity thresholds",0.38,783,2499500,NA
+5000,"ridge","stability selection",0,452,2499500,NA
+5000,"ridge","permutation null (1 inference + FDR cut)",10.3,1260,2499500,NA
